@@ -1,7 +1,7 @@
 #ifndef FACE_H
 #define FACE_H
 #include "halfedge.h"
-#include <include/glm/glm.hpp>
+#include <la.h>
 
 using namespace glm;
 
@@ -17,7 +17,7 @@ public:
     Face();
     Face(HalfEdge* e, vec4 c, int i);
 
-    void setStartEdge(HalfEdge &e);
+    void setStartEdge(HalfEdge *e);
     void setColor(vec4 &c);
     void setID(int i);
 

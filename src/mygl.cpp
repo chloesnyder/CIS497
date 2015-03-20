@@ -5,6 +5,8 @@
 #include <QApplication>
 #include <QKeyEvent>
 
+using namespace glm;
+
 
 MyGL::MyGL(QWidget *parent)
     : GLWidget277(parent)
@@ -19,6 +21,8 @@ MyGL::~MyGL()
     vao.destroy();
     geom_cylinder.destroy();
     geom_sphere.destroy();
+
+    mesh.destroy();
 }
 
 void MyGL::initializeGL()
@@ -45,9 +49,12 @@ void MyGL::initializeGL()
     vao.create();
 
     // Create the example sphere (you should delete this when you add your own code elsewhere)
-    geom_cylinder.create();
+//    geom_cylinder.create();
 
-    geom_sphere.create();
+//    geom_sphere.create();
+
+    //create example square
+    mesh.create();
 
     // Create and set up the diffuse shader
     prog_lambert.create(":/glsl/lambert.vert.glsl", ":/glsl/lambert.frag.glsl");
@@ -83,14 +90,20 @@ void MyGL::paintGL()
     prog_lambert.setViewProjMatrix(camera.getViewProj());
     prog_wire.setViewProjMatrix(camera.getViewProj());
 
-    // Sphere
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-2, 0, 0)) * glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3));
+    //mesh
+    mat4 model = mat4(1.0f);//translate(mat4(1.0f), vec3(1, 0, 0)) * scale(mat4(1.0f), vec3(1,1,1));
     prog_lambert.setModelMatrix(model);
-    prog_lambert.draw(*this, geom_sphere);
-    // Cylinder
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(2, 2, 0)) * glm::rotate(glm::mat4(1.0f), -45.0f, glm::vec3(0, 0, 1));
-    prog_lambert.setModelMatrix(model);
-    prog_lambert.draw(*this, geom_cylinder);
+    prog_lambert.draw(*this, mesh);
+
+
+//    // Sphere
+//    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-2, 0, 0)) * glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3));
+//    prog_lambert.setModelMatrix(model);
+//    prog_lambert.draw(*this, geom_sphere);
+//    // Cylinder
+//    model = glm::translate(glm::mat4(1.0f), glm::vec3(2, 2, 0)) * glm::rotate(glm::mat4(1.0f), -45.0f, glm::vec3(0, 0, 1));
+//    prog_lambert.setModelMatrix(model);
+//    prog_lambert.draw(*this, geom_cylinder);
 }
 
 void MyGL::keyPressEvent(QKeyEvent *e)

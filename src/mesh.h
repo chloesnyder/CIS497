@@ -34,6 +34,7 @@ public:
     void destroy();
 
     void createSquare();
+    void createCube();
 
     virtual GLenum drawMode();
     virtual int elemCount();

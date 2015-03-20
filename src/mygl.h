@@ -10,6 +10,7 @@
 #include <scene/sphere.h>
 #include <scene/camera.h>
 #include <la.h>
+#include "mesh.h"
 
 
 class MyGL
@@ -23,6 +24,8 @@ private:
     Sphere geom_sphere;
     ShaderProgram prog_lambert;
     ShaderProgram prog_wire;
+
+    Mesh mesh;
 
     Camera camera;
 

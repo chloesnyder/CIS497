@@ -14,8 +14,8 @@ void Vertex::setPos(vec4 &p){
     pos = p;
 }
 
-void Vertex::setEdge(HalfEdge &e){
-    edge = &e;
+void Vertex::setEdge(HalfEdge *e){
+    edge = e;
 }
 
 void Vertex::setID(int i){

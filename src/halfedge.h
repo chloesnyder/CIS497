@@ -2,7 +2,6 @@
 #define HALFEDGE_H
 #include "face.h"
 #include "vertex.h"
-#include <include/glm/glm.hpp>
 
 using namespace glm;
 class Face;
@@ -21,10 +20,10 @@ public:
     HalfEdge();
     HalfEdge(Face* f, Vertex* v, HalfEdge* n, HalfEdge* s, int i);
 
-    void setFace(Face &f);
-    void setVert(Vertex &v);
-    void setNext(HalfEdge &n);
-    void setSym(HalfEdge &s);
+    void setFace(Face *f);
+    void setVert(Vertex *v);
+    void setNext(HalfEdge *n);
+    void setSym(HalfEdge *s);
     void setID(int i);
 
     Face* getFace();

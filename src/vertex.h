@@ -1,7 +1,7 @@
 #ifndef VERTEX_H
 #define VERTEX_H
-#include <include/glm/glm.hpp>
 #include "halfedge.h"
+#include <la.h>
 
 using namespace glm;
 
@@ -19,7 +19,7 @@ public:
   //  Vertex(vec4 p, HalfEdge* e, int i);
 
     void setPos(vec4 &p);
-    void setEdge(HalfEdge &e);
+    void setEdge(HalfEdge *e);
     void setID(int i);
 
     vec4 getPos();
