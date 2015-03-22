@@ -16,10 +16,12 @@ private:
 public:
     Face();
     Face(HalfEdge* e, vec4 c, int i);
+    ~Face();
 
     void setStartEdge(HalfEdge *e);
     void setColor(vec4 &c);
     void setID(int i);
+
 
     HalfEdge* getStartEdge();
     vec4 getColor();

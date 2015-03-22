@@ -26,7 +26,7 @@ public:
 
     list<Face*> f_list;
     list<HalfEdge*> HE_list;
-    list<Vertex*> v_list;
+    vector<Vertex*> v_list;
 
     static vec4 crossVec4(vec4 _v1, vec4 _v2);
 

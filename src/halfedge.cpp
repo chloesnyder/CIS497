@@ -12,12 +12,22 @@ HalfEdge::HalfEdge(Face* f, Vertex* v, HalfEdge* n, HalfEdge* s, int i){
     id = i;
 }
 
+HalfEdge::~HalfEdge(){
+    face = NULL;
+    next = NULL;
+    sym = NULL;
+    Vertex v = *vert;
+    vert = NULL;
+    v.~Vertex();
+}
+
 void HalfEdge::setFace(Face *f){
     face = f;
 }
 
 void HalfEdge::setVert(Vertex *v){
     vert = v;
+    v->setEdge(this);
 }
 
 void HalfEdge::setNext(HalfEdge* n){

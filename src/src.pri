@@ -13,7 +13,8 @@ SOURCES += \
     $$PWD/vertex.cpp \
     $$PWD/mesh.cpp \
     $$PWD/halfedge.cpp \
-    $$PWD/face.cpp
+    $$PWD/face.cpp \
+    $$PWD/facelisthelper.cpp
 
 HEADERS += \
     $$PWD/mainwindow.h \
@@ -27,4 +28,5 @@ HEADERS += \
     $$PWD/vertex.h \
     $$PWD/mesh.h \
     $$PWD/halfedge.h \
-    $$PWD/face.h
+    $$PWD/face.h \
+    $$PWD/facelisthelper.h

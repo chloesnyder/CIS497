@@ -16,7 +16,7 @@ private:
 
 public:
     Vertex();
-  //  Vertex(vec4 p, HalfEdge* e, int i);
+    ~Vertex();
 
     void setPos(vec4 &p);
     void setEdge(HalfEdge *e);

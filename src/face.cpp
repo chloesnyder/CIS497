@@ -10,6 +10,17 @@ Face::Face(HalfEdge *e, vec4 c, int i) {
     id = i;
 }
 
+Face::~Face(){
+    HalfEdge* start = this->getStartEdge();
+    HalfEdge* e = this->getStartEdge()->getNext();
+    start_edge = NULL;
+    while(e != start) {
+        HalfEdge temp = *e;
+        e = e->getNext();
+        temp.~HalfEdge();
+    }
+}
+
 void Face::setStartEdge(HalfEdge *e){
     start_edge = e;
 }

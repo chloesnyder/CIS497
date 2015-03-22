@@ -1,6 +1,6 @@
 #include "mesh.h"
 
-
+#include <iostream>
 
 Mesh::Mesh()
     : bufIdx(QOpenGLBuffer::IndexBuffer),
@@ -20,14 +20,32 @@ vec4 Mesh::crossVec4(vec4 _v1, vec4 _v2){
 //Use triangle fan method
 //create faces. Draw per face
 void createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, vector<vec4>& mesh_vert_nor, vector<vec4>& mesh_vert_col, vector<GLuint>& mesh_idx, list<Face*>& faces){
-   for(Face* f : faces) {
+   GLuint base_idx = 0;
+    for(Face* f : faces) {
+       GLuint temp_idx = base_idx;
        vec4 color = (*f).getColor();
        int idx_count = 1;
 
        ///Compute Vertex Positions for the face
        //save first start edge pointer
        HalfEdge* start = (*f).getStartEdge();
-       mesh_vert_pos.push_back((*(*start).getVert()).getPos());
+       mesh_vert_pos.push_back(start->getVert()->getPos());
+       std::cout << start->getVert()->getID() << " ";
+
+       char x, y, z;
+       x = y = z = 'p';
+       if(start->getVert()->getPos().x < 0){
+           x = 'n';
+       }
+       if(start->getVert()->getPos().y < 0){
+           y = 'n';
+       }
+       if(start->getVert()->getPos().z < 0){
+           z = 'n';
+       }
+       std::cout << x << y << z << std::endl;
+
+       base_idx++;
        HalfEdge* e = (*start).getNext();
 
        ///Compute vertex normals for the face
@@ -51,7 +69,22 @@ void createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, vector
        //loop through each edge until you hit the start edge
        while(e != start) {
            ///store info about vertex positions
-            mesh_vert_pos.push_back((*(*e).getVert()).getPos());
+            mesh_vert_pos.push_back(e->getVert()->getPos());
+            std::cout << e->getVert()->getID()  << " ";
+
+            x = y = z = 'p';
+            if(e->getVert()->getPos().x < 0){
+                x = 'n';
+            }
+            if(e->getVert()->getPos().y < 0){
+                y = 'n';
+            }
+            if(e->getVert()->getPos().z < 0){
+                z = 'n';
+            }
+            std::cout << x << y << z << std::endl;
+
+            base_idx++;
             ///store info about vertex normals
             mesh_vert_nor.push_back(cp);
 
@@ -66,77 +99,265 @@ void createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, vector
 
        ///Compute indices using triangle fan method
        // Base vertex = 0, the start edge's vertex
-       for(int i = 0; i < (idx_count - 2); i++) {
-            int i1 = i + 1;
-            int i2 = i + 2;
-            mesh_idx.push_back(0);
-            mesh_idx.push_back(i1);
-            mesh_idx.push_back(i2);
+       for(GLuint i = 0; i < (idx_count - 2); i++) {
+            GLuint i1 = i + 1;
+            GLuint i2 = i + 2;
+            mesh_idx.push_back(temp_idx);
+            mesh_idx.push_back(i1 + temp_idx);
+            mesh_idx.push_back(i2 + temp_idx);
        }
+       std::cout << std::endl;
    }
 }
 
 void Mesh::createCube() {
 
-    ///set up Vertex info
-    //back face
-    Vertex* nx_ny_pz = new Vertex(); //lower back left
-    Vertex* px_ny_pz = new Vertex(); //lower back right
-    Vertex* px_py_pz = new Vertex(); //upper back right
-    Vertex* nx_py_pz = new Vertex(); //upper back left
-    //front face
-    Vertex* nx_ny_nz = new Vertex(); //lower front right
-    Vertex* px_ny_nz = new Vertex(); //lower front left
-    Vertex* px_py_nz = new Vertex(); //upper front right
-    Vertex* nx_py_nz = new Vertex(); //upper front left
-    //id
-    nx_ny_pz->setID(0);
-    px_ny_pz->setID(1);
-    px_py_pz ->setID(2);
-    nx_py_pz->setID(3);
-    nx_ny_nz->setID(4);
-    px_ny_nz->setID(5);
-    px_py_nz->setID(6);
-    nx_py_nz->setID(7);
-    //pos
-    vec4 a = vec4(-.5f, -.5f, .5f, 1);
-    vec4 b = vec4(.5f, -.5f, .5f, 1);
-    vec4 c = vec4(.5f, .5f, .5f, 1);
-    vec4 d = vec4(-.5f, .5f, .5f, 1);
 
-    vec4 e = vec4(-.5f, -.5f, -.5f, 1);
-    vec4 f = vec4(.5f, -.5f, -.5f, 1);
-    vec4 g = vec4(.5f, .5f, -.5f, 1);
-    vec4 h = vec4(-.5f, .5f, -.5f, 1);
-    nx_ny_pz->setPos(a);
-    px_ny_pz->setPos(b);
-    px_py_pz ->setPos(c);
-    nx_py_pz->setPos(d);
-    nx_ny_nz->setPos(e);
-    px_py_nz->setPos(f);
-    px_py_nz->setPos(g);
-    nx_py_nz->setPos(h);
+        //back face
+        Vertex* v0 = new Vertex(); //lower back left
+        Vertex* v1 = new Vertex(); //lower back right
+        Vertex* v2 = new Vertex(); //upper back right
+        Vertex* v3 = new Vertex(); //upper back left
+        //front face
+        Vertex* v4 = new Vertex(); //lower front right
+        Vertex* v5 = new Vertex(); //lower front left
+        Vertex* v6 = new Vertex(); //upper front right
+        Vertex* v7 = new Vertex(); //upper front left
+        //assign ids for vertices
+        v0->setID(0);
+        v1->setID(1);
+        v2 ->setID(2);
+        v3->setID(3);
+        v4->setID(4);
+        v5->setID(5);
+        v6->setID(6);
+        v7->setID(7);
+        //assign vertice positions
+        vec4 a = vec4(.5f, .5f, .5f, 1); //0
+        vec4 b = vec4(-.5f, .5f, .5f, 1); //1
+        vec4 c = vec4(-.5f, -.5f, .5f, 1); //2
+        vec4 d = vec4(.5f, -.5f, .5f, 1); //3
+        vec4 e = vec4(.5f, -.5f, -.5f, 1); //4
+        vec4 f = vec4(.5f, .5f, -.5f, 1); //5
+        vec4 g = vec4(-.5f, .5f, -.5f, 1); //6
+        vec4 h = vec4(-.5f, -.5f, -.5f, 1); //7
+        v0->setPos(a);
+        v1->setPos(b);
+        v2 ->setPos(c);
+        v3->setPos(d);
+        v4->setPos(e);
+        v5->setPos(f);
+        v6->setPos(g);
+        v7->setPos(h);
+        v_list.push_back(v0);
+        v_list.push_back(v1);
+        v_list.push_back(v2);
+        v_list.push_back(v3);
+        v_list.push_back(v4);
+        v_list.push_back(v5);
+        v_list.push_back(v6);
+        v_list.push_back(v7);
 
-    Face* front_face = new Face();
-    Face* back_face = new Face();
-    Face* top_face = new Face();
-    Face* bottom_face = new Face();
-    Face* left_face = new Face();
-    Face* right_face = new Face();
 
+        ///Create faces (id, color)
+        vec4 col = vec4(0,0,1,0);
+        Face* front_face = new Face();
+        front_face->setID(0);
+        front_face->setColor(col);
+        Face* back_face = new Face();
+        back_face->setID(1);
+        back_face->setColor(c);
+        Face* top_face = new Face();
+        top_face->setID(2);
+        top_face->setColor(c);
+        Face* bottom_face = new Face();
+        bottom_face->setID(3);
+        bottom_face->setColor(c);
+        Face* left_face = new Face();
+        left_face->setID(4);
+        left_face->setColor(c);
+        Face* right_face = new Face();
+        right_face->setID(5);
+        right_face->setColor(c);
 
-    //TODO: make a real unfolded cube, label EVERYTHING and then program from there.
-    //Set Up Half Edge Info
+        //create half edges
+        //NAMING CONVENTION: second part is the vert it points to (indicates direction), second part is where it points from
+        HalfEdge* v0v1 = new HalfEdge(); //front face top edge (1 edge)
+        HalfEdge* v1v0 = new HalfEdge(); //top face bottom edge (1 edge)
+        v0v1->setID(0);
+        v1v0->setID(1);
+        v0v1->setVert(v1);
+        v1v0->setVert(v0);
+        v0v1->setSym(v1v0);
+        v1v0->setSym(v0v1);
+        v0v1->setFace(front_face);
+        v1v0->setFace(top_face);
 
-    //Set up Face Info
+        HalfEdge* v1v2 = new HalfEdge();//front face left edge (2e)
+        HalfEdge* v2v1 = new HalfEdge();//left face right edge (1 edge)
+        v1v2->setID(2);
+        v2v1->setID(3);
+        v1v2->setVert(v2);
+        v2v1->setVert(v1);
+        v1v2->setSym(v2v1);
+        v2v1->setSym(v1v2);
+        v1v2->setFace(front_face);
+        v2v1->setFace(left_face);
 
-    //put the face in the global list of faces
-    f_list.push_back(front_face);
-    f_list.push_back(back_face);
-    f_list.push_back(top_face);
-    f_list.push_back(bottom_face);
-    f_list.push_back(left_face);
-    f_list.push_back(right_face);
+        HalfEdge* v2v3 = new HalfEdge(); //front face bottom edge (3e)
+        HalfEdge* v3v2 = new HalfEdge(); //bottom face top edge (1e)
+        v2v3->setID(4);
+        v3v2->setID(5);
+        v2v3->setVert(v3);
+        v3v2->setVert(v2);
+        v2v3->setSym(v3v2);
+        v3v2->setSym(v2v3);
+        v2v3->setFace(front_face);
+        v3v2->setFace(bottom_face);
+
+        HalfEdge* v0v5 = new HalfEdge(); //top face right edge (2e)
+        HalfEdge* v5v0 = new HalfEdge(); //right face top edge (1e)
+        v0v5->setID(6);
+        v5v0->setID(7);
+        v0v5->setVert(v5);
+        v5v0->setVert(v0);
+        v0v5->setSym(v5v0);
+        v5v0->setSym(v0v5);
+        v0v5->setFace(top_face);
+        v5v0->setFace(right_face);
+
+        HalfEdge* v5v6 = new HalfEdge(); //top face top edge (3e)
+        HalfEdge* v6v5 = new HalfEdge(); //back face top edge (1e)
+        v5v6->setID(8);
+        v6v5->setID(9);
+        v5v6->setVert(v6);
+        v6v5->setVert(v5);
+        v5v6->setSym(v6v5);
+        v6v5->setSym(v5v6);
+        v5v6->setFace(top_face);
+        v6v5->setFace(back_face);
+
+        HalfEdge* v6v1 = new HalfEdge(); //top face left edge (4e DONE TOP FACE)
+        HalfEdge* v1v6 = new HalfEdge(); //left face top edge (2e)
+        v6v1->setID(10);
+        v1v6->setID(11);
+        v6v1->setVert(v1);
+        v1v6->setVert(v6);
+        v1v6->setSym(v6v1);
+        v6v1->setSym(v1v6);
+        v1v6->setFace(left_face);
+        v6v1->setFace(top_face);
+
+        HalfEdge* v6v7 = new HalfEdge(); //left face left edge (3e)
+        HalfEdge* v7v6 = new HalfEdge(); //back face right edge (2e)
+        v6v7->setID(12);
+        v7v6->setID(13);
+        v6v7->setVert(v7);
+        v7v6->setVert(v6);
+        v6v7->setSym(v7v6);
+        v7v6->setSym(v6v7);
+        v6v7->setFace(left_face);
+        v7v6->setFace(back_face);
+
+        HalfEdge* v7v2 = new HalfEdge();//left face bottom edge (4e DONE LEFT FACE)
+        HalfEdge* v2v7 = new HalfEdge();//bottom face left edge (2e)
+        v7v2->setID(14);
+        v2v7->setID(15);
+        v2v7->setVert(v7);
+        v7v2->setVert(v2);
+        v7v2->setSym(v2v7);
+        v2v7->setSym(v7v2);
+        v2v7->setFace(bottom_face);
+        v7v2->setFace(left_face);
+
+        HalfEdge* v3v0 = new HalfEdge(); //front face right edge (4e DONE FRONT FACE)
+        HalfEdge* v0v3 = new HalfEdge(); //right face left edge (2e)
+        v3v0->setID(16);
+        v0v3->setID(17);
+        v0v3->setVert(v3);
+        v3v0->setVert(v0);
+        v0v3->setSym(v3v0);
+        v3v0->setSym(v0v3);
+        v0v3->setFace(right_face);
+        v3v0->setFace(front_face);
+
+        HalfEdge* v3v4 = new HalfEdge(); //right face bottom edge (3e)
+        HalfEdge* v4v3 = new HalfEdge(); //bottom face right edge (3e)
+        v3v4->setID(18);
+        v4v3->setID(19);
+        v3v4->setVert(v4);
+        v4v3->setVert(v3);
+        v3v4->setSym(v4v3);
+        v4v3->setSym(v3v4);
+        v3v4->setFace(right_face);
+        v4v3->setFace(bottom_face);
+
+        HalfEdge* v4v5 = new HalfEdge(); // right face top edge (4e) DONE RIGHT FACE
+        HalfEdge* v5v4 = new HalfEdge(); //back face left edge (3e)
+        v5v4->setID(20);
+        v4v5->setID(21);
+        v5v4->setVert(v4);
+        v4v5->setVert(v5);
+        v5v4->setSym(v4v5);
+        v4v5->setSym(v5v4);
+        v4v5->setFace(right_face);
+        v5v4->setFace(back_face);
+
+        HalfEdge* v7v4 = new HalfEdge(); //back face bottom edge (4e) DONE BACK FACE
+        HalfEdge* v4v7 = new HalfEdge(); //bottom face bottom edge (4e) DONE BOTTOM FACE
+        v7v4->setID(22);
+        v4v7->setID(23);
+        v7v4->setVert(v4);
+        v4v7->setVert(v7);
+        v4v7->setSym(v7v4);
+        v7v4->setSym(v4v7);
+        v4v7->setFace(bottom_face);
+        v7v4->setFace(back_face);
+
+        //set face start edge and next loops
+        front_face->setStartEdge(v0v1);
+        v0v1->setNext(v1v2);
+        v1v2->setNext(v2v3);
+        v2v3->setNext(v3v0);
+        v3v0->setNext(v0v1);
+
+        top_face->setStartEdge(v1v0);
+        v1v0->setNext(v0v5);
+        v0v5->setNext(v5v6);
+        v5v6->setNext(v6v1);
+        v6v1->setNext(v1v0);
+
+        left_face->setStartEdge(v1v6);
+        v1v6->setNext(v6v7);
+        v6v7->setNext(v7v2);
+        v7v2->setNext(v2v1);
+        v2v1->setNext(v1v6);
+
+        back_face->setStartEdge(v6v5);
+        v6v5->setNext(v5v4);
+        v5v4->setNext(v4v7);
+        v4v7->setNext(v7v6);
+        v7v6->setNext(v6v5);
+
+        right_face->setStartEdge(v5v0);
+        v5v0->setNext(v0v3);
+        v0v3->setNext(v3v4);
+        v3v4->setNext(v4v5);
+        v4v5->setNext(v5v0);
+
+        bottom_face->setStartEdge(v3v2);
+        v3v2->setNext(v2v7);
+        v2v7->setNext(v7v4);
+        v7v4->setNext(v4v3);
+        v4v3->setNext(v3v2);
+
+        //put the face in the global list of faces
+        f_list.push_back(front_face);
+        f_list.push_back(back_face);
+        f_list.push_back(top_face);
+        f_list.push_back(bottom_face);
+        f_list.push_back(left_face);
+        f_list.push_back(right_face);
 
 }
 
@@ -215,7 +436,7 @@ void Mesh::createSquare() {
 void Mesh::create()
 {
 
-  createSquare();
+  createCube();
 
   vector<GLuint> mesh_idx;
   vector<vec4> mesh_vert_pos;

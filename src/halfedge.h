@@ -19,6 +19,7 @@ private:
 public:
     HalfEdge();
     HalfEdge(Face* f, Vertex* v, HalfEdge* n, HalfEdge* s, int i);
+    ~HalfEdge();
 
     void setFace(Face *f);
     void setVert(Vertex *v);

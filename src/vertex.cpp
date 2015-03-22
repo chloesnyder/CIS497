@@ -4,11 +4,9 @@ Vertex::Vertex()
 {
 }
 
-//Vertex::Vertex(vec4 p, HalfEdge *e, int i){
-//    pos = p;
-//    edge = e;
-//    id = i;
-//}
+Vertex::~Vertex(){
+    edge = NULL;
+}
 
 void Vertex::setPos(vec4 &p){
     pos = p;
