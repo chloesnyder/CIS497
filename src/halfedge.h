@@ -31,8 +31,6 @@ private:
 
 public:
 
-    HalfEdge* selectedEdge;
-
     HalfEdge();
     HalfEdge(Face* f, Vertex* v, HalfEdge* n, HalfEdge* s, int i);
     ~HalfEdge();

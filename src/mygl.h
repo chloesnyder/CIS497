@@ -27,7 +27,8 @@ private:
     ShaderProgram prog_wire;
 
     Mesh mesh;
-    HalfEdge edge;
+//    HalfEdge edge;
+//    Vertex vert;
 
     Camera camera;
 
@@ -50,7 +51,9 @@ protected:
 signals:
     void sig_SendFaceList(QListWidgetItem*);
     void sig_sendEdgeList(QListWidgetItem*);
+    void sig_SendVertList(QListWidgetItem*);
 private slots:
     void slot_ReceiveFaceList(QListWidgetItem*);
     void slot_ReceiveEdgeList(QListWidgetItem*);
+    void slot_ReceiveVertList(QListWidgetItem*v);
 };

@@ -15,6 +15,7 @@ MyGL::MyGL(QWidget *parent)
     setFocusPolicy(Qt::ClickFocus);
     selectedFace = NULL;
     selectedEdge = NULL;
+    selectedVertex = NULL;
 
 }
 
@@ -27,7 +28,6 @@ MyGL::~MyGL()
     geom_sphere.destroy();
 
     mesh.destroy();
-   // edge.destroy();
 }
 
 void MyGL::initializeGL()
@@ -54,8 +54,6 @@ void MyGL::initializeGL()
     vao.create();
 
     mesh.create();
-  //  edge.create();
-
 
 
     // Create and set up the diffuse shader
@@ -73,6 +71,9 @@ void MyGL::initializeGL()
     }
     for(int i = 0; i < mesh.HE_list.size(); i++){
         emit sig_sendEdgeList(mesh.HE_list[i]);
+    }
+    for(int i = 0; i < mesh.v_list.size(); i++){
+        emit sig_SendVertList(mesh.v_list[i]);
     }
 
 }
@@ -104,14 +105,34 @@ void MyGL::paintGL()
 
     mesh.destroy();
     mesh.create();
-   // edge.destroy();
-  //  edge.create();
+
 
 
     mat4 model = mat4(1.0f);//translate(mat4(1.0f), vec3(1, 0, 0)) * scale(mat4(1.0f), vec3(1,1,1));
     prog_lambert.setModelMatrix(model);
-    prog_lambert.draw(*this, edge);
     prog_lambert.draw(*this, mesh);
+
+    if(selectedEdge != NULL){
+        if(!selectedEdge->bindPos()){
+            selectedEdge->create();
+        }
+        //other stuff to set up shader vars
+        glDisable(GL_DEPTH_TEST);
+        prog_wire.setModelMatrix(model);
+        prog_wire.draw(*this, *selectedEdge);
+        glEnable(GL_DEPTH_TEST);
+    }
+    if(selectedVertex != NULL){
+        if(!selectedVertex->bindPos()){
+            selectedVertex->create();
+        }
+        //other stuff to set up shader vars
+        glDisable(GL_DEPTH_TEST);
+        prog_wire.setModelMatrix(model);
+        prog_wire.draw(*this, *selectedVertex);
+        glEnable(GL_DEPTH_TEST);
+
+    }
 
 
 }
@@ -150,8 +171,11 @@ void MyGL::slot_ReceiveFaceList(QListWidgetItem * f){
 
 void MyGL::slot_ReceiveEdgeList(QListWidgetItem* e){
     selectedEdge = (HalfEdge*) e;
-    edge.selectedEdge = selectedEdge;
     update();
 }
 
+void MyGL::slot_ReceiveVertList(QListWidgetItem *v){
+    selectedVertex = (Vertex*) v;
+    update();
+}
 

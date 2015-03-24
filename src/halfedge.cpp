@@ -60,7 +60,7 @@ Face* HalfEdge::getFace(){
 
 Vertex* HalfEdge::getVert(){
     return vert;
-}//maybe try Vertex*&? losing info by returning a pointer?
+}
 
 HalfEdge* HalfEdge::getNext(){
     return next;
@@ -88,12 +88,8 @@ void HalfEdge::createEdgeVertexIndices(GLuint he_idx[HE_IDX_COUNT], vec4 he_vert
      he_vert_pos[0] = this->getVert()->getPos();
      he_vert_pos[1] = this->getSym()->getVert()->getPos();
 
-     vec4 color;
-     if(this == selectedEdge) {
-         color = vec4(1,1,0,1);
-     } else {
-         color = vec4(1,0,1,1);
-     }
+     vec4 color = vec4(1,1,0,1);
+
      he_vert_col[0] = color;
      he_vert_col[1] = color;
 
@@ -107,7 +103,6 @@ void HalfEdge::create(){
     vec4 he_vert_pos[HE_VERT_COUNT];
     vec4 he_vert_col[HE_COL_COUNT];
 
-    qDebug()<<this->getID();
     createEdgeVertexIndices(he_idx, he_vert_pos, he_vert_col);
 
     count = HE_IDX_COUNT;

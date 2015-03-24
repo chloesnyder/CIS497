@@ -15,7 +15,8 @@ SOURCES += \
     $$PWD/halfedge.cpp \
     $$PWD/face.cpp \
     $$PWD/facelisthelper.cpp \
-    $$PWD/edgelisthelper.cpp
+    $$PWD/edgelisthelper.cpp \
+    $$PWD/vertexlisthelper.cpp
 
 HEADERS += \
     $$PWD/mainwindow.h \
@@ -31,4 +32,5 @@ HEADERS += \
     $$PWD/halfedge.h \
     $$PWD/face.h \
     $$PWD/facelisthelper.h \
-    $$PWD/edgelisthelper.h
+    $$PWD/edgelisthelper.h \
+    $$PWD/vertexlisthelper.h
