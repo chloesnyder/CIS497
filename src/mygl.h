@@ -12,6 +12,7 @@
 #include <la.h>
 #include "mesh.h"
 
+#include <QListWidget>
 
 class MyGL
     : public GLWidget277
@@ -26,10 +27,16 @@ private:
     ShaderProgram prog_wire;
 
     Mesh mesh;
+    HalfEdge edge;
 
     Camera camera;
 
 public:
+
+    Vertex* selectedVertex;
+    Face* selectedFace;
+    HalfEdge* selectedEdge;
+
     explicit MyGL(QWidget *parent = 0);
     ~MyGL();
 
@@ -39,4 +46,11 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent *e);
+
+signals:
+    void sig_SendFaceList(QListWidgetItem*);
+    void sig_sendEdgeList(QListWidgetItem*);
+private slots:
+    void slot_ReceiveFaceList(QListWidgetItem*);
+    void slot_ReceiveEdgeList(QListWidgetItem*);
 };

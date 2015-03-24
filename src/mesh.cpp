@@ -19,32 +19,20 @@ vec4 Mesh::crossVec4(vec4 _v1, vec4 _v2){
 
 //Use triangle fan method
 //create faces. Draw per face
-void createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, vector<vec4>& mesh_vert_nor, vector<vec4>& mesh_vert_col, vector<GLuint>& mesh_idx, list<Face*>& faces){
+void Mesh::createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, vector<vec4>& mesh_vert_nor, vector<vec4>& mesh_vert_col, vector<GLuint>& mesh_idx, vector<Face*>& faces){
    GLuint base_idx = 0;
     for(Face* f : faces) {
        GLuint temp_idx = base_idx;
        vec4 color = (*f).getColor();
+       if(f == selectedFace) {
+           color = vec4(1, 1, 1, 1);
+       }
        int idx_count = 1;
 
        ///Compute Vertex Positions for the face
        //save first start edge pointer
        HalfEdge* start = (*f).getStartEdge();
        mesh_vert_pos.push_back(start->getVert()->getPos());
-       std::cout << start->getVert()->getID() << " ";
-
-       char x, y, z;
-       x = y = z = 'p';
-       if(start->getVert()->getPos().x < 0){
-           x = 'n';
-       }
-       if(start->getVert()->getPos().y < 0){
-           y = 'n';
-       }
-       if(start->getVert()->getPos().z < 0){
-           z = 'n';
-       }
-       std::cout << x << y << z << std::endl;
-
        base_idx++;
        HalfEdge* e = (*start).getNext();
 
@@ -55,8 +43,6 @@ void createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, vector
        vec4 v2 = e2->getVert()->getPos();
        HalfEdge* e3 = e2->getNext();
        vec4 v3 = e3->getVert()->getPos();
-//       HalfEdge* e4 = e3->getNext();
-//       vec4 v4 = e4->getVert()->getPos();
 
 
        vec4 first = v2 - v1;
@@ -70,19 +56,6 @@ void createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, vector
        while(e != start) {
            ///store info about vertex positions
             mesh_vert_pos.push_back(e->getVert()->getPos());
-            std::cout << e->getVert()->getID()  << " ";
-
-            x = y = z = 'p';
-            if(e->getVert()->getPos().x < 0){
-                x = 'n';
-            }
-            if(e->getVert()->getPos().y < 0){
-                y = 'n';
-            }
-            if(e->getVert()->getPos().z < 0){
-                z = 'n';
-            }
-            std::cout << x << y << z << std::endl;
 
             base_idx++;
             ///store info about vertex normals
@@ -106,7 +79,6 @@ void createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, vector
             mesh_idx.push_back(i1 + temp_idx);
             mesh_idx.push_back(i2 + temp_idx);
        }
-       std::cout << std::endl;
    }
 }
 
@@ -184,6 +156,8 @@ void Mesh::createCube() {
         //NAMING CONVENTION: second part is the vert it points to (indicates direction), second part is where it points from
         HalfEdge* v0v1 = new HalfEdge(); //front face top edge (1 edge)
         HalfEdge* v1v0 = new HalfEdge(); //top face bottom edge (1 edge)
+        HE_list.push_back(v0v1);
+        HE_list.push_back(v1v0);
         v0v1->setID(0);
         v1v0->setID(1);
         v0v1->setVert(v1);
@@ -195,6 +169,8 @@ void Mesh::createCube() {
 
         HalfEdge* v1v2 = new HalfEdge();//front face left edge (2e)
         HalfEdge* v2v1 = new HalfEdge();//left face right edge (1 edge)
+        HE_list.push_back(v1v2);
+        HE_list.push_back(v2v1);
         v1v2->setID(2);
         v2v1->setID(3);
         v1v2->setVert(v2);
@@ -206,6 +182,8 @@ void Mesh::createCube() {
 
         HalfEdge* v2v3 = new HalfEdge(); //front face bottom edge (3e)
         HalfEdge* v3v2 = new HalfEdge(); //bottom face top edge (1e)
+        HE_list.push_back(v2v3);
+        HE_list.push_back(v3v2);
         v2v3->setID(4);
         v3v2->setID(5);
         v2v3->setVert(v3);
@@ -217,6 +195,8 @@ void Mesh::createCube() {
 
         HalfEdge* v0v5 = new HalfEdge(); //top face right edge (2e)
         HalfEdge* v5v0 = new HalfEdge(); //right face top edge (1e)
+        HE_list.push_back(v0v5);
+        HE_list.push_back(v5v0);
         v0v5->setID(6);
         v5v0->setID(7);
         v0v5->setVert(v5);
@@ -228,6 +208,8 @@ void Mesh::createCube() {
 
         HalfEdge* v5v6 = new HalfEdge(); //top face top edge (3e)
         HalfEdge* v6v5 = new HalfEdge(); //back face top edge (1e)
+        HE_list.push_back(v5v6);
+        HE_list.push_back(v6v5);
         v5v6->setID(8);
         v6v5->setID(9);
         v5v6->setVert(v6);
@@ -239,6 +221,8 @@ void Mesh::createCube() {
 
         HalfEdge* v6v1 = new HalfEdge(); //top face left edge (4e DONE TOP FACE)
         HalfEdge* v1v6 = new HalfEdge(); //left face top edge (2e)
+        HE_list.push_back(v6v1);
+        HE_list.push_back(v1v6);
         v6v1->setID(10);
         v1v6->setID(11);
         v6v1->setVert(v1);
@@ -250,6 +234,8 @@ void Mesh::createCube() {
 
         HalfEdge* v6v7 = new HalfEdge(); //left face left edge (3e)
         HalfEdge* v7v6 = new HalfEdge(); //back face right edge (2e)
+        HE_list.push_back(v6v7);
+        HE_list.push_back(v7v6);
         v6v7->setID(12);
         v7v6->setID(13);
         v6v7->setVert(v7);
@@ -261,6 +247,8 @@ void Mesh::createCube() {
 
         HalfEdge* v7v2 = new HalfEdge();//left face bottom edge (4e DONE LEFT FACE)
         HalfEdge* v2v7 = new HalfEdge();//bottom face left edge (2e)
+        HE_list.push_back(v7v2);
+        HE_list.push_back(v2v7);
         v7v2->setID(14);
         v2v7->setID(15);
         v2v7->setVert(v7);
@@ -272,6 +260,8 @@ void Mesh::createCube() {
 
         HalfEdge* v3v0 = new HalfEdge(); //front face right edge (4e DONE FRONT FACE)
         HalfEdge* v0v3 = new HalfEdge(); //right face left edge (2e)
+        HE_list.push_back(v3v0);
+        HE_list.push_back(v0v3);
         v3v0->setID(16);
         v0v3->setID(17);
         v0v3->setVert(v3);
@@ -283,6 +273,8 @@ void Mesh::createCube() {
 
         HalfEdge* v3v4 = new HalfEdge(); //right face bottom edge (3e)
         HalfEdge* v4v3 = new HalfEdge(); //bottom face right edge (3e)
+        HE_list.push_back(v3v4);
+        HE_list.push_back(v4v3);
         v3v4->setID(18);
         v4v3->setID(19);
         v3v4->setVert(v4);
@@ -294,6 +286,8 @@ void Mesh::createCube() {
 
         HalfEdge* v4v5 = new HalfEdge(); // right face top edge (4e) DONE RIGHT FACE
         HalfEdge* v5v4 = new HalfEdge(); //back face left edge (3e)
+        HE_list.push_back(v5v4);
+        HE_list.push_back(v4v5);
         v5v4->setID(20);
         v4v5->setID(21);
         v5v4->setVert(v4);
@@ -305,6 +299,8 @@ void Mesh::createCube() {
 
         HalfEdge* v7v4 = new HalfEdge(); //back face bottom edge (4e) DONE BACK FACE
         HalfEdge* v4v7 = new HalfEdge(); //bottom face bottom edge (4e) DONE BOTTOM FACE
+        HE_list.push_back(v4v7);
+        HE_list.push_back(v7v4);
         v7v4->setID(22);
         v4v7->setID(23);
         v7v4->setVert(v4);
@@ -358,6 +354,10 @@ void Mesh::createCube() {
         f_list.push_back(bottom_face);
         f_list.push_back(left_face);
         f_list.push_back(right_face);
+
+       // edge.create();
+
+
 
 }
 
@@ -466,6 +466,7 @@ void Mesh::create()
   bufCol.bind();
   bufCol.setUsagePattern(QOpenGLBuffer::StaticDraw);
   bufCol.allocate(mesh_vert_col.data(), mesh_vert_col.size() * sizeof(vec4));
+
 }
 
 void Mesh::destroy()

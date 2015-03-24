@@ -8,10 +8,14 @@
 using namespace glm;
 
 
+
 MyGL::MyGL(QWidget *parent)
     : GLWidget277(parent)
 {
     setFocusPolicy(Qt::ClickFocus);
+    selectedFace = NULL;
+    selectedEdge = NULL;
+
 }
 
 MyGL::~MyGL()
@@ -23,6 +27,7 @@ MyGL::~MyGL()
     geom_sphere.destroy();
 
     mesh.destroy();
+   // edge.destroy();
 }
 
 void MyGL::initializeGL()
@@ -48,13 +53,10 @@ void MyGL::initializeGL()
     // Create a Vertex Attribute Object
     vao.create();
 
-    // Create the example sphere (you should delete this when you add your own code elsewhere)
-//    geom_cylinder.create();
-
-//    geom_sphere.create();
-
-    //create example square
     mesh.create();
+  //  edge.create();
+
+
 
     // Create and set up the diffuse shader
     prog_lambert.create(":/glsl/lambert.vert.glsl", ":/glsl/lambert.frag.glsl");
@@ -64,6 +66,15 @@ void MyGL::initializeGL()
     // We have to have a VAO bound in OpenGL 3.2 Core. But if we're not
     // using multiple VAOs, we can just bind one once.
     vao.bind();
+
+    //face, edge, vertex lists
+    for(int i = 0; i < mesh.f_list.size(); i++){
+        emit sig_SendFaceList(mesh.f_list[i]);
+    }
+    for(int i = 0; i < mesh.HE_list.size(); i++){
+        emit sig_sendEdgeList(mesh.HE_list[i]);
+    }
+
 }
 
 void MyGL::resizeGL(int w, int h)
@@ -90,20 +101,19 @@ void MyGL::paintGL()
     prog_lambert.setViewProjMatrix(camera.getViewProj());
     prog_wire.setViewProjMatrix(camera.getViewProj());
 
-    //mesh
+
+    mesh.destroy();
+    mesh.create();
+   // edge.destroy();
+  //  edge.create();
+
+
     mat4 model = mat4(1.0f);//translate(mat4(1.0f), vec3(1, 0, 0)) * scale(mat4(1.0f), vec3(1,1,1));
     prog_lambert.setModelMatrix(model);
+    prog_lambert.draw(*this, edge);
     prog_lambert.draw(*this, mesh);
 
 
-//    // Sphere
-//    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-2, 0, 0)) * glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 3));
-//    prog_lambert.setModelMatrix(model);
-//    prog_lambert.draw(*this, geom_sphere);
-//    // Cylinder
-//    model = glm::translate(glm::mat4(1.0f), glm::vec3(2, 2, 0)) * glm::rotate(glm::mat4(1.0f), -45.0f, glm::vec3(0, 0, 1));
-//    prog_lambert.setModelMatrix(model);
-//    prog_lambert.draw(*this, geom_cylinder);
 }
 
 void MyGL::keyPressEvent(QKeyEvent *e)
@@ -122,12 +132,26 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     } else if (e->key() == Qt::Key_I) {
         camera.zoom -= 0.5f * DEG2RAD;
     } else if (e->key() == Qt::Key_O) {
-        camera.zoom += 0.5f * DEG2RAD;
+        camera.zoom += 0.5f;
     } else if (e->key() == Qt::Key_1) {
-        camera.fovy += 5.0f * DEG2RAD;
+        camera.fovy += 5.0f;
     } else if (e->key() == Qt::Key_2) {
         camera.fovy -= 5.0f * DEG2RAD;
     }
     camera.RecomputeEye();
     update();  // Calls paintGL, among other things
 }
+
+void MyGL::slot_ReceiveFaceList(QListWidgetItem * f){
+    selectedFace = (Face*) f;
+    mesh.selectedFace = selectedFace;
+    update();
+}
+
+void MyGL::slot_ReceiveEdgeList(QListWidgetItem* e){
+    selectedEdge = (HalfEdge*) e;
+    edge.selectedEdge = selectedEdge;
+    update();
+}
+
+

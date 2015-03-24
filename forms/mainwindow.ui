@@ -36,7 +36,7 @@
      </size>
     </property>
    </widget>
-   <widget class="QListWidget" name="FaceListWidget">
+   <widget class="facelisthelper" name="FaceListWidget">
     <property name="geometry">
      <rect>
       <x>640</x>
@@ -59,7 +59,7 @@
      <string>Faces</string>
     </property>
    </widget>
-   <widget class="QListWidget" name="listWidget">
+   <widget class="edgelisthelper" name="EdgeListWidget">
     <property name="geometry">
      <rect>
       <x>640</x>
@@ -82,7 +82,7 @@
      <string>Edges</string>
     </property>
    </widget>
-   <widget class="QListWidget" name="listWidget_2">
+   <widget class="QListWidget" name="VertexListWidget">
     <property name="geometry">
      <rect>
       <x>640</x>
@@ -141,10 +141,135 @@
    <slots>
     <signal>sig_SendRootNode(QTreeWidgetItem*)</signal>
     <signal>sig_SendRaycastSelection(QTreeWidgetItem*)</signal>
+    <signal>sig_SendFaceList(QListWidgetItem*)</signal>
+    <signal>sig_sendSceneGraph(QTreeWidgetItem*)</signal>
+    <signal>sig_sendRZ(double)</signal>
+    <signal>sig_sendRY(double)</signal>
+    <signal>sig_sendRX(double)</signal>
+    <signal>sig_sendSZ(double)</signal>
+    <signal>sig_sendSY(double)</signal>
+    <signal>sig_sendSX(double)</signal>
+    <signal>sig_sendTZ(double)</signal>
+    <signal>sig_sendTY(double)</signal>
+    <signal>sig_sendTX(double)</signal>
+    <signal>sig_noSelection()</signal>
+    <signal>sig_sendRefX(int)</signal>
+    <signal>sig_sendRefY(int)</signal>
+    <signal>sig_sendRefZ(int)</signal>
+    <signal>sig_sendSelectedNode(QTreeWidgetItem*)</signal>
+    <signal>sig_sendEdgeList(QListWidgetItem*)</signal>
     <slot>slot_ReceiveSelectedNode(QTreeWidgetItem*)</slot>
+    <slot>slot_ReceiveFaceList(QListWidgetItem*)</slot>
+    <slot>slot_storeSceneGraph(QTreeWidgetItem*)</slot>
+    <slot>slot_itemClicked(QTreeWidgetItem*)</slot>
+    <slot>slot_changeRZ(double)</slot>
+    <slot>slot_changeRY(double)</slot>
+    <slot>slot_changeRX(double)</slot>
+    <slot>slot_changeSZ(double)</slot>
+    <slot>slot_changeSY(double)</slot>
+    <slot>slot_changeSX(double)</slot>
+    <slot>slot_changeTX(double)</slot>
+    <slot>slot_changeTZ(double)</slot>
+    <slot>slot_changeTY(double)</slot>
+    <slot>slot_createNewChild()</slot>
+    <slot>slot_deleteChild()</slot>
+    <slot>slot_Cube()</slot>
+    <slot>slot_Cylinder()</slot>
+    <slot>slot_Sphere()</slot>
+    <slot>slot_Cone()</slot>
+    <slot>slot_noGeo()</slot>
+    <slot>slot_rename()</slot>
+    <slot>slot_newNameText()</slot>
+    <slot>slot_newNameText(QString)</slot>
+    <slot>slot_changeRefX(int)</slot>
+    <slot>slot_changeRefY(int)</slot>
+    <slot>slot_changeRefZ(int)</slot>
+    <slot>slot_showWireframe()</slot>
+    <slot>slot_ReceiveEdgeList(QListWidgetItem*)</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>facelisthelper</class>
+   <extends>QListWidget</extends>
+   <header>facelisthelper.h</header>
+   <slots>
+    <slot>slot_storeFaceList(QListWidgetItem*)</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>edgelisthelper</class>
+   <extends>QListWidget</extends>
+   <header>edgelisthelper.h</header>
+   <slots>
+    <slot>slot_storeEdgeList(QListWidgetItem*)</slot>
    </slots>
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_SendFaceList(QListWidgetItem*)</signal>
+   <receiver>FaceListWidget</receiver>
+   <slot>slot_storeFaceList(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>567</x>
+     <y>91</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>679</x>
+     <y>99</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FaceListWidget</sender>
+   <signal>itemClicked(QListWidgetItem*)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_ReceiveFaceList(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>658</x>
+     <y>159</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>610</x>
+     <y>159</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>EdgeListWidget</sender>
+   <signal>itemClicked(QListWidgetItem*)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_ReceiveEdgeList(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>719</x>
+     <y>311</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>594</x>
+     <y>313</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_sendEdgeList(QListWidgetItem*)</signal>
+   <receiver>EdgeListWidget</receiver>
+   <slot>slot_storeEdgeList(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>614</x>
+     <y>281</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>682</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

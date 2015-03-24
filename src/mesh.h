@@ -19,13 +19,19 @@ private:
     QOpenGLBuffer bufNor;
     QOpenGLBuffer bufCol; // Can be used to pass per-vertex color information to the shader, but is currently unused.
 
-
+    void createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, vector<vec4>& mesh_vert_nor, vector<vec4>& mesh_vert_col, vector<GLuint>& mesh_idx, vector<Face*>& faces);
 
 public:
     Mesh();
 
-    list<Face*> f_list;
-    list<HalfEdge*> HE_list;
+    Vertex* selectedVertex;
+    Face* selectedFace;
+    HalfEdge* selectedEdge;
+
+    //HalfEdge edge;
+
+    vector<Face*> f_list;
+    vector<HalfEdge*> HE_list;
     vector<Vertex*> v_list;
 
     static vec4 crossVec4(vec4 _v1, vec4 _v2);
