@@ -54,6 +54,9 @@ void MyGL::initializeGL()
     vao.create();
 
     mesh.create();
+    total_vertices = mesh.v_list.size();
+    total_edges = mesh.HE_list.size();
+    total_faces = mesh.f_list.size();
 
 
     // Create and set up the diffuse shader
@@ -66,13 +69,13 @@ void MyGL::initializeGL()
     vao.bind();
 
     //face, edge, vertex lists
-    for(int i = 0; i < mesh.f_list.size(); i++){
+    for(int i = 0; i < total_faces; i++){
         emit sig_SendFaceList(mesh.f_list[i]);
     }
-    for(int i = 0; i < mesh.HE_list.size(); i++){
+    for(int i = 0; i < total_edges; i++){
         emit sig_sendEdgeList(mesh.HE_list[i]);
     }
-    for(int i = 0; i < mesh.v_list.size(); i++){
+    for(int i = 0; i < total_vertices; i++){
         emit sig_SendVertList(mesh.v_list[i]);
     }
 
@@ -102,11 +105,8 @@ void MyGL::paintGL()
     prog_lambert.setViewProjMatrix(camera.getViewProj());
     prog_wire.setViewProjMatrix(camera.getViewProj());
 
-
     mesh.destroy();
     mesh.create();
-
-
 
     mat4 model = mat4(1.0f);//translate(mat4(1.0f), vec3(1, 0, 0)) * scale(mat4(1.0f), vec3(1,1,1));
     prog_lambert.setModelMatrix(model);
@@ -133,7 +133,6 @@ void MyGL::paintGL()
         glEnable(GL_DEPTH_TEST);
 
     }
-
 
 }
 
@@ -178,4 +177,29 @@ void MyGL::slot_ReceiveVertList(QListWidgetItem *v){
     selectedVertex = (Vertex*) v;
     update();
 }
+
+void MyGL::slot_addVertex() {
+    if(selectedEdge!= NULL) {
+        selectedVertex = mesh.addVertex(selectedEdge);
+        total_vertices++;
+        total_edges++;
+        total_edges++;
+
+        emit sig_SendVertList(mesh.v_list.at(total_vertices - 1));
+        emit sig_sendEdgeList(mesh.HE_list.at(total_edges - 2));
+        emit sig_sendEdgeList(mesh.HE_list.at(total_edges - 1));
+
+        update();
+    }
+}
+
+
+//void MyGL::slot_triangulate() {
+//    if(selectedFace != NULL) {
+//        selectedFace = mesh.triangulate(selectedFace);
+//        emit sig_SendFaceList(selectedFace);
+//        emit sig_sendEdgeList(mesh.HE_list.at(mesh.HE_list.size()-2));
+//        emit sig_sendEdgeList(mesh.HE_list.at(mesh.HE_list.size()-1));
+//    }
+//}
 

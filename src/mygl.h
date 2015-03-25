@@ -12,7 +12,10 @@
 #include <la.h>
 #include "mesh.h"
 
+
 #include <QListWidget>
+
+class Mesh;
 
 class MyGL
     : public GLWidget277
@@ -27,12 +30,12 @@ private:
     ShaderProgram prog_wire;
 
     Mesh mesh;
-//    HalfEdge edge;
-//    Vertex vert;
-
     Camera camera;
 
 public:
+    int total_vertices;
+    int total_edges;
+    int total_faces;
 
     Vertex* selectedVertex;
     Face* selectedFace;
@@ -45,6 +48,9 @@ public:
     void resizeGL(int w, int h);
     void paintGL();
 
+//    void updateVertList(Vertex* v);
+//    void updateEdgeList(HalfEdge* he);
+
 protected:
     void keyPressEvent(QKeyEvent *e);
 
@@ -56,4 +62,6 @@ private slots:
     void slot_ReceiveFaceList(QListWidgetItem*);
     void slot_ReceiveEdgeList(QListWidgetItem*);
     void slot_ReceiveVertList(QListWidgetItem*v);
+    void slot_addVertex();
+ //   void slot_triangulate();
 };

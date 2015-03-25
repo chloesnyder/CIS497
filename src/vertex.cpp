@@ -11,7 +11,6 @@ Vertex::Vertex()
 }
 
 Vertex::~Vertex(){
-    edge = NULL;
 }
 
 void Vertex::setPos(vec4 &p){

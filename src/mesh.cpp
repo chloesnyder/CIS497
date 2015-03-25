@@ -82,6 +82,11 @@ void Mesh::createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, 
    }
 }
 
+//void Mesh::storeMyGL(MyGL *m){
+//    mygl = m;
+//}
+
+
 void Mesh::createCube() {
 
 
@@ -355,10 +360,6 @@ void Mesh::createCube() {
         f_list.push_back(left_face);
         f_list.push_back(right_face);
 
-       // edge.create();
-
-
-
 }
 
 ///create a square to test mesh with.
@@ -432,6 +433,102 @@ void Mesh::createSquare() {
 
 }
 
+//void Mesh::addVertex(HalfEdge *HE1) {
+Vertex* Mesh::addVertex(HalfEdge *HE1) {
+
+    HalfEdge* HE2 = HE1->getSym();
+    Face* f1 = HE1->getFace();
+    Face* f2 = HE2->getFace();
+
+    //create new vertex
+    Vertex* v3 = new Vertex();
+    Vertex* v1 = HE1->getVert();
+    Vertex* v2 = HE2->getVert();
+    //get the avg position of v1 v2
+    vec4 new_pos = vec4
+            ((v1->getPos().x + v2->getPos().x)/2,
+             (v1->getPos().y + v2->getPos().y)/2,
+             (v1->getPos().z + v2->getPos().z)/2,
+             1.0f
+             );
+    v3->setPos(new_pos);
+
+    //set id and add to global list
+    int v3_id =  v_list.size();
+    v3_id++;
+    v3->setID(v3_id);
+    v_list.push_back(v3);
+
+
+    //create 2 new half edges
+    HalfEdge* HE1B = new HalfEdge();
+    HalfEdge* HE2B = new HalfEdge();
+    int edge_id = HE_list.size();
+    HE1B->setID(edge_id++);
+    HE2B->setID(edge_id++);
+    HE_list.push_back(HE1B);
+    HE_list.push_back(HE2B);
+
+    //set faces
+    HE1B->setFace(f1);
+    HE2B->setFace(f2);
+
+    //adjust sym pointers
+    HE1B->setSym(HE2);
+    HE2->setSym(HE1B);
+    HE2B->setSym(HE1);
+    HE1->setSym(HE2B);
+
+    //adjust next pointers
+    HE1B->setNext(HE1->getNext());
+    HE2B->setNext(HE2->getNext());
+    HE1->setNext(HE1B);
+    HE2->setNext(HE2B);
+
+    //adjust vert pointers
+    HE1B->setVert(v1);
+    HE2B->setVert(v2);
+    HE2->setVert(v3);
+    HE1->setVert(v3);
+
+    return v3;
+}
+
+//Face* Mesh::triangulate(Face* FACE1){
+//    //quad or ngon?
+
+//    HalfEdge* HE_0 = FACE1->getStartEdge();
+//    //create 2 new half edges
+//    HalfEdge* HE_A = new HalfEdge();
+//    HalfEdge* HE_B = new HalfEdge();
+//    HE_A->setVert(HE_0->getVert());
+//    HE_B->setVert(HE_0->getNext()->getNext()->getVert());
+//    HE_A->setSym(HE_B);
+//    HE_B->setSym(HE_A);
+//    int id = HE_list.size();
+//    HE_A->setID(id++);
+//    HE_B->setID(id++);
+
+//    //create new face
+//    Face* FACE2 = new Face();
+//    HE_A->setFace(FACE2);
+//    HE_0->getNext()->setFace(FACE2);
+//    HE_0->getNext()->getNext()->setFace(FACE2);
+//    HE_B->setFace(FACE1);
+//    FACE2->setStartEdge(HE_A);
+//    int id2 = f_list.size();
+//    FACE2->setID(id2++);
+
+//    HE_B->setNext(HE_0->getNext()->getNext()->getNext());
+//    HE_0->getNext()->getNext()->getNext()->setNext(HE_A);
+//    HE_A->getNext()->setNext(HE_0->getNext());
+//    HE_0->getNext()->setNext(HE_B);
+
+//    f_list.push_back(FACE2);
+//    HE_list.push_back(HE_A);
+//    HE_list.push_back(HE_B);
+
+//}
 
 void Mesh::create()
 {

@@ -24,8 +24,6 @@ public:
     void setColor(vec4 &c);
     void setID(int i);
 
-    void addVertex(HalfEdge *e);
-
 
     HalfEdge* getStartEdge();
     vec4 getColor();

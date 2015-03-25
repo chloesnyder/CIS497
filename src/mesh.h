@@ -4,12 +4,17 @@
 #include "face.h"
 #include "halfedge.h"
 #include "vertex.h"
+//#include "mygl.h"
 
 #include <QOpenGLContext>
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 
 using namespace std;
+using namespace glm;
+
+//class MyGL;
+
 class Mesh : public ShaderProgram::Drawable
 {
 private:
@@ -24,11 +29,11 @@ private:
 public:
     Mesh();
 
+    //MyGL* mygl;
+
     Vertex* selectedVertex;
     Face* selectedFace;
     HalfEdge* selectedEdge;
-
-    //HalfEdge edge;
 
     vector<Face*> f_list;
     vector<HalfEdge*> HE_list;
@@ -36,11 +41,16 @@ public:
 
     static vec4 crossVec4(vec4 _v1, vec4 _v2);
 
+    Vertex *addVertex(HalfEdge* HE1);
+  //  Face *triangulate(Face* FACE1);
+
     void create();
     void destroy();
 
     void createSquare();
     void createCube();
+
+ //   void storeMyGL(MyGL* m);
 
     virtual GLenum drawMode();
     virtual int elemCount();

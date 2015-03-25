@@ -105,6 +105,32 @@
      <string>Vertices</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="splitFaceButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>500</y>
+      <width>301</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Split Currently Selected Face</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="addVertexButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>470</y>
+      <width>291</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add Vertex to Currently Selected Edge</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -139,9 +165,6 @@
    <extends>QWidget</extends>
    <header>mygl.h</header>
    <slots>
-    <signal>sig_SendRootNode(QTreeWidgetItem*)</signal>
-    <signal>sig_SendRaycastSelection(QTreeWidgetItem*)</signal>
-    <signal>sig_SendFaceList(QListWidgetItem*)</signal>
     <signal>sig_sendSceneGraph(QTreeWidgetItem*)</signal>
     <signal>sig_sendRZ(double)</signal>
     <signal>sig_sendRY(double)</signal>
@@ -157,10 +180,11 @@
     <signal>sig_sendRefY(int)</signal>
     <signal>sig_sendRefZ(int)</signal>
     <signal>sig_sendSelectedNode(QTreeWidgetItem*)</signal>
+    <signal>sig_SendRootNode(QTreeWidgetItem*)</signal>
+    <signal>sig_SendRaycastSelection(QTreeWidgetItem*)</signal>
+    <signal>sig_SendFaceList(QListWidgetItem*)</signal>
     <signal>sig_sendEdgeList(QListWidgetItem*)</signal>
     <signal>sig_SendVertList(QListWidgetItem*)</signal>
-    <slot>slot_ReceiveSelectedNode(QTreeWidgetItem*)</slot>
-    <slot>slot_ReceiveFaceList(QListWidgetItem*)</slot>
     <slot>slot_storeSceneGraph(QTreeWidgetItem*)</slot>
     <slot>slot_itemClicked(QTreeWidgetItem*)</slot>
     <slot>slot_changeRZ(double)</slot>
@@ -186,10 +210,14 @@
     <slot>slot_changeRefY(int)</slot>
     <slot>slot_changeRefZ(int)</slot>
     <slot>slot_showWireframe()</slot>
+    <slot>slot_ReceiveSelectedNode(QTreeWidgetItem*)</slot>
+    <slot>slot_ReceiveFaceList(QListWidgetItem*)</slot>
     <slot>slot_ReceiveEdgeList(QListWidgetItem*)</slot>
     <slot>slot1()</slot>
     <slot>slot_storeVertList(QListWidgetItem*)</slot>
     <slot>slot_ReceiveVertList(QListWidgetItem*)</slot>
+    <slot>slot_addVertex()</slot>
+    <slot>slot_triangulate()</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -312,6 +340,38 @@
     <hint type="destinationlabel">
      <x>378</x>
      <y>455</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>splitFaceButton</sender>
+   <signal>clicked()</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_triangulate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>532</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>185</x>
+     <y>447</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>addVertexButton</sender>
+   <signal>clicked()</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_addVertex()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>108</x>
+     <y>504</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>108</x>
+     <y>434</y>
     </hint>
    </hints>
   </connection>
