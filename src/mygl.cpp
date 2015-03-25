@@ -202,10 +202,10 @@ void MyGL::slot_triangulate() {
         selectedFace = mesh.triangulate(selectedFace);
         mesh.selectedFace = selectedFace;
 
-        update();
         emit sig_SendFaceList(mesh.f_list.at(total_faces));
         emit sig_sendEdgeList(mesh.HE_list.at(total_edges-1));
         emit sig_sendEdgeList(mesh.HE_list.at(total_edges));
+        update();
     }
 }
 

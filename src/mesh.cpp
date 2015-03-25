@@ -502,33 +502,25 @@ Face* Mesh::triangulate(Face* FACE1){
     //quad or ngon?
     int count_edges = 0;
     HalfEdge* HE_0 = FACE1->getStartEdge();
-    std::cout<< "here a" << std::endl;
     HalfEdge* e = HE_0->getNext();
-    while(e->getNext() != HE_0){
+    while(e != HE_0){
         count_edges++;
-        std::cout<< "here b" << std::endl;
         e = e->getNext();
     }
 
     if(count_edges == 3) {
 
-        std::cout<< "here c" << std::endl;
         //create 2 new half edges
         HalfEdge* HE_A = new HalfEdge();
         HalfEdge* HE_B = new HalfEdge();
 
         //set vertices
         HE_A->setVert(HE_0->getVert());
-        std::cout<< "here d" << std::endl;
         HE_B->setVert((((HE_0->getNext())->getNext())->getVert()));
-        std::cout<< "here e" << std::endl;
 
         //set sym edgs
         HE_A->setSym(HE_B);
-        std::cout<< "here f" << std::endl;
         HE_B->setSym(HE_A);
-        std::cout<< "here g" << std::endl;
-
 
         //assign new ids
         HE_A->setID(++max_edge_id);
