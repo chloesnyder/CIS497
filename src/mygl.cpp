@@ -105,6 +105,9 @@ void MyGL::paintGL()
     prog_lambert.setViewProjMatrix(camera.getViewProj());
     prog_wire.setViewProjMatrix(camera.getViewProj());
 
+    mesh.v_list.erase(mesh.v_list.begin(), mesh.v_list.end());
+    mesh.HE_list.erase(mesh.HE_list.begin(), mesh.HE_list.end());
+
     mesh.destroy();
     mesh.create();
 
@@ -178,18 +181,19 @@ void MyGL::slot_ReceiveVertList(QListWidgetItem *v){
     update();
 }
 
+//Why are my numbers all weird? I call pushback in mesh but the size of the list doesn't seem to actually increase
 void MyGL::slot_addVertex() {
     if(selectedEdge!= NULL) {
-        selectedVertex = mesh.addVertex(selectedEdge);
-        total_vertices++;
-        total_edges++;
-        total_edges++;
-
-        emit sig_SendVertList(mesh.v_list.at(total_vertices - 1));
-        emit sig_sendEdgeList(mesh.HE_list.at(total_edges - 2));
-        emit sig_sendEdgeList(mesh.HE_list.at(total_edges - 1));
+        total_vertices = mesh.v_list.size();
+        total_edges = mesh.HE_list.size();
+        selectedVertex = mesh.addVertex(selectedEdge, total_vertices, total_edges);
 
         update();
+        emit sig_SendVertList(mesh.v_list.at(total_vertices));
+        emit sig_sendEdgeList(mesh.HE_list.at(total_edges - 1));
+        emit sig_sendEdgeList(mesh.HE_list.at(total_edges));
+
+
     }
 }
 

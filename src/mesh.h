@@ -41,7 +41,7 @@ public:
 
     static vec4 crossVec4(vec4 _v1, vec4 _v2);
 
-    Vertex *addVertex(HalfEdge* HE1);
+    Vertex *addVertex(HalfEdge* HE1, int verts, int edges);
   //  Face *triangulate(Face* FACE1);
 
     void create();

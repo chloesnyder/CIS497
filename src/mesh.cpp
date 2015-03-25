@@ -434,7 +434,7 @@ void Mesh::createSquare() {
 }
 
 //void Mesh::addVertex(HalfEdge *HE1) {
-Vertex* Mesh::addVertex(HalfEdge *HE1) {
+Vertex* Mesh::addVertex(HalfEdge *HE1, int verts, int edges) {
 
     HalfEdge* HE2 = HE1->getSym();
     Face* f1 = HE1->getFace();
@@ -454,9 +454,7 @@ Vertex* Mesh::addVertex(HalfEdge *HE1) {
     v3->setPos(new_pos);
 
     //set id and add to global list
-    int v3_id =  v_list.size();
-    v3_id++;
-    v3->setID(v3_id);
+    v3->setID(verts);
     v_list.push_back(v3);
 
 
@@ -464,8 +462,8 @@ Vertex* Mesh::addVertex(HalfEdge *HE1) {
     HalfEdge* HE1B = new HalfEdge();
     HalfEdge* HE2B = new HalfEdge();
     int edge_id = HE_list.size();
-    HE1B->setID(edge_id++);
-    HE2B->setID(edge_id++);
+    HE1B->setID(edges - 1);
+    HE2B->setID(edges);
     HE_list.push_back(HE1B);
     HE_list.push_back(HE2B);
 
@@ -528,6 +526,7 @@ Vertex* Mesh::addVertex(HalfEdge *HE1) {
 //    HE_list.push_back(HE_A);
 //    HE_list.push_back(HE_B);
 
+//    return FACE2;
 //}
 
 void Mesh::create()
