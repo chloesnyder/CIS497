@@ -53,6 +53,7 @@ void MyGL::initializeGL()
     // Create a Vertex Attribute Object
     vao.create();
 
+    mesh.createCube();
     mesh.create();
     total_vertices = mesh.v_list.size();
     total_edges = mesh.HE_list.size();
@@ -105,8 +106,6 @@ void MyGL::paintGL()
     prog_lambert.setViewProjMatrix(camera.getViewProj());
     prog_wire.setViewProjMatrix(camera.getViewProj());
 
-    mesh.v_list.erase(mesh.v_list.begin(), mesh.v_list.end());
-    mesh.HE_list.erase(mesh.HE_list.begin(), mesh.HE_list.end());
 
     mesh.destroy();
     mesh.create();
@@ -186,24 +185,27 @@ void MyGL::slot_addVertex() {
     if(selectedEdge!= NULL) {
         total_vertices = mesh.v_list.size();
         total_edges = mesh.HE_list.size();
-        selectedVertex = mesh.addVertex(selectedEdge, total_vertices, total_edges);
+        selectedVertex = mesh.addVertex(selectedEdge);
 
-        update();
         emit sig_SendVertList(mesh.v_list.at(total_vertices));
         emit sig_sendEdgeList(mesh.HE_list.at(total_edges - 1));
         emit sig_sendEdgeList(mesh.HE_list.at(total_edges));
-
-
+        update();
     }
 }
 
 
-//void MyGL::slot_triangulate() {
-//    if(selectedFace != NULL) {
-//        selectedFace = mesh.triangulate(selectedFace);
-//        emit sig_SendFaceList(selectedFace);
-//        emit sig_sendEdgeList(mesh.HE_list.at(mesh.HE_list.size()-2));
-//        emit sig_sendEdgeList(mesh.HE_list.at(mesh.HE_list.size()-1));
-//    }
-//}
+void MyGL::slot_triangulate() {
+    if(selectedFace != NULL) {
+        total_edges = mesh.HE_list.size();
+        total_faces = mesh.f_list.size();
+        selectedFace = mesh.triangulate(selectedFace);
+        mesh.selectedFace = selectedFace;
+
+        update();
+        emit sig_SendFaceList(mesh.f_list.at(total_faces));
+        emit sig_sendEdgeList(mesh.HE_list.at(total_edges-1));
+        emit sig_sendEdgeList(mesh.HE_list.at(total_edges));
+    }
+}
 

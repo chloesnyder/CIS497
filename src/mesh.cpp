@@ -2,6 +2,10 @@
 
 #include <iostream>
 
+int Mesh::max_vert_id = 0;
+int Mesh::max_edge_id = 0;
+int Mesh::max_face_id = 0;
+
 Mesh::Mesh()
     : bufIdx(QOpenGLBuffer::IndexBuffer),
       bufPos(QOpenGLBuffer::VertexBuffer),
@@ -89,6 +93,9 @@ void Mesh::createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, 
 
 void Mesh::createCube() {
 
+        Mesh::max_vert_id = 7;
+        Mesh::max_edge_id = 23;
+        Mesh::max_face_id = 5;
 
         //back face
         Vertex* v0 = new Vertex(); //lower back left
@@ -433,8 +440,7 @@ void Mesh::createSquare() {
 
 }
 
-//void Mesh::addVertex(HalfEdge *HE1) {
-Vertex* Mesh::addVertex(HalfEdge *HE1, int verts, int edges) {
+Vertex* Mesh::addVertex(HalfEdge *HE1) {
 
     HalfEdge* HE2 = HE1->getSym();
     Face* f1 = HE1->getFace();
@@ -454,7 +460,7 @@ Vertex* Mesh::addVertex(HalfEdge *HE1, int verts, int edges) {
     v3->setPos(new_pos);
 
     //set id and add to global list
-    v3->setID(verts);
+    v3->setID(++max_vert_id);
     v_list.push_back(v3);
 
 
@@ -462,8 +468,8 @@ Vertex* Mesh::addVertex(HalfEdge *HE1, int verts, int edges) {
     HalfEdge* HE1B = new HalfEdge();
     HalfEdge* HE2B = new HalfEdge();
     int edge_id = HE_list.size();
-    HE1B->setID(edges - 1);
-    HE2B->setID(edges);
+    HE1B->setID(++max_edge_id);
+    HE2B->setID(++max_edge_id);
     HE_list.push_back(HE1B);
     HE_list.push_back(HE2B);
 
@@ -492,47 +498,68 @@ Vertex* Mesh::addVertex(HalfEdge *HE1, int verts, int edges) {
     return v3;
 }
 
-//Face* Mesh::triangulate(Face* FACE1){
-//    //quad or ngon?
+Face* Mesh::triangulate(Face* FACE1){
+    //quad or ngon?
+    int count_edges = 0;
+    HalfEdge* HE_0 = FACE1->getStartEdge();
+    std::cout<< "here a" << std::endl;
+    HalfEdge* e = HE_0->getNext();
+    while(e->getNext() != HE_0){
+        count_edges++;
+        std::cout<< "here b" << std::endl;
+        e = e->getNext();
+    }
 
-//    HalfEdge* HE_0 = FACE1->getStartEdge();
-//    //create 2 new half edges
-//    HalfEdge* HE_A = new HalfEdge();
-//    HalfEdge* HE_B = new HalfEdge();
-//    HE_A->setVert(HE_0->getVert());
-//    HE_B->setVert(HE_0->getNext()->getNext()->getVert());
-//    HE_A->setSym(HE_B);
-//    HE_B->setSym(HE_A);
-//    int id = HE_list.size();
-//    HE_A->setID(id++);
-//    HE_B->setID(id++);
+    if(count_edges == 3) {
 
-//    //create new face
-//    Face* FACE2 = new Face();
-//    HE_A->setFace(FACE2);
-//    HE_0->getNext()->setFace(FACE2);
-//    HE_0->getNext()->getNext()->setFace(FACE2);
-//    HE_B->setFace(FACE1);
-//    FACE2->setStartEdge(HE_A);
-//    int id2 = f_list.size();
-//    FACE2->setID(id2++);
+        std::cout<< "here c" << std::endl;
+        //create 2 new half edges
+        HalfEdge* HE_A = new HalfEdge();
+        HalfEdge* HE_B = new HalfEdge();
 
-//    HE_B->setNext(HE_0->getNext()->getNext()->getNext());
-//    HE_0->getNext()->getNext()->getNext()->setNext(HE_A);
-//    HE_A->getNext()->setNext(HE_0->getNext());
-//    HE_0->getNext()->setNext(HE_B);
+        //set vertices
+        HE_A->setVert(HE_0->getVert());
+        std::cout<< "here d" << std::endl;
+        HE_B->setVert((((HE_0->getNext())->getNext())->getVert()));
+        std::cout<< "here e" << std::endl;
 
-//    f_list.push_back(FACE2);
-//    HE_list.push_back(HE_A);
-//    HE_list.push_back(HE_B);
+        //set sym edgs
+        HE_A->setSym(HE_B);
+        std::cout<< "here f" << std::endl;
+        HE_B->setSym(HE_A);
+        std::cout<< "here g" << std::endl;
 
-//    return FACE2;
-//}
+
+        //assign new ids
+        HE_A->setID(++max_edge_id);
+        HE_B->setID(++max_edge_id);
+
+        //create new face
+        Face* FACE2 = new Face();
+        HE_A->setFace(FACE2);
+        (HE_0->getNext())->setFace(FACE2);
+        ((HE_0->getNext())->getNext())->setFace(FACE2);
+        HE_B->setFace(FACE1);
+        FACE2->setStartEdge(HE_A);
+        FACE2->setID(++max_face_id);
+
+        HE_B->setNext(((HE_0->getNext())->getNext())->getNext());
+
+        ((HE_0->getNext())->getNext())->setNext(HE_A);
+        HE_A->setNext((HE_0->getNext()));
+        HE_0->setNext(HE_B);
+
+        f_list.push_back(FACE2);
+        HE_list.push_back(HE_A);
+        HE_list.push_back(HE_B);
+
+        return FACE2;
+    }
+}
+
 
 void Mesh::create()
 {
-
-  createCube();
 
   vector<GLuint> mesh_idx;
   vector<vec4> mesh_vert_pos;

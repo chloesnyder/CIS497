@@ -29,7 +29,9 @@ private:
 public:
     Mesh();
 
-    //MyGL* mygl;
+    static int max_vert_id;
+    static int max_edge_id;
+    static int max_face_id;
 
     Vertex* selectedVertex;
     Face* selectedFace;
@@ -41,16 +43,14 @@ public:
 
     static vec4 crossVec4(vec4 _v1, vec4 _v2);
 
-    Vertex *addVertex(HalfEdge* HE1, int verts, int edges);
-  //  Face *triangulate(Face* FACE1);
+    Vertex *addVertex(HalfEdge* HE1);
+    Face *triangulate(Face* FACE1);
 
     void create();
     void destroy();
 
     void createSquare();
     void createCube();
-
- //   void storeMyGL(MyGL* m);
 
     virtual GLenum drawMode();
     virtual int elemCount();
