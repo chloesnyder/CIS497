@@ -131,6 +131,19 @@
      <string>Add Vertex to Currently Selected Edge</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="deleteVertexButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>530</y>
+      <width>301</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Delete Currently Selected Vertex</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -218,6 +231,7 @@
     <slot>slot_ReceiveVertList(QListWidgetItem*)</slot>
     <slot>slot_addVertex()</slot>
     <slot>slot_triangulate()</slot>
+    <slot>slot_deleteVertex()</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -372,6 +386,22 @@
     <hint type="destinationlabel">
      <x>108</x>
      <y>434</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>deleteVertexButton</sender>
+   <signal>clicked()</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_deleteVertex()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>43</x>
+     <y>566</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>62</x>
+     <y>406</y>
     </hint>
    </hints>
   </connection>

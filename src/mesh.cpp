@@ -546,10 +546,90 @@ Face* Mesh::triangulate(Face* FACE1){
         HE_list.push_back(HE_B);
 
         return FACE2;
+    } else {
+        return NULL;
     }
 }
 
+/*void Mesh::deleteVertex(Vertex *v) {
+    QList<HalfEdge*> v_edges;
 
+    //find all faces incident to vertex
+    //start deleting each of those faces but when you delete a face, set all of its half edge face pointers to null
+    // then for every half edge in the face in the loop, check to see if that half edge's sym pointer's face pointer is also null
+    //if so, we are looking a a degenerate edge that's not bounded by any face. if that's the case, delete both that half edge and the sym.
+
+    //find all faces incident to v
+    HalfEdge* e1 = v->getEdge();
+    QList<Face*> incident_faces;
+    QList<HalfEdge*> delete_later;
+    Face* f = e1->getFace();
+
+    while(!incident_faces.contains(f)) {
+        std::cout << "here a" << std::endl;
+        //add to list of faces
+        incident_faces.push_back(f);
+        e1 = e1->getSym();
+        while(e1->getVert() != v) {
+            e1 = e1->getNext();
+        }
+        f = e1->getFace();
+    }
+
+    //start deleting faces
+    while(!incident_faces.empty()) {
+        std::cout << "here b" << std::endl;
+        //set all its half edge pointers to null
+        Face* f2 = incident_faces.front();
+        HalfEdge* start = f2->getStartEdge();
+        HalfEdge* e = start->getNext();
+        //traverse through all of the face's edges
+        while(e != start){
+            std::cout << "here c" << std::endl;
+            //set all of the half edge face pointers pointing to the face to null
+            e->setFace(NULL);
+
+            //check if the half edge's sym pointer's face pointer is also null
+            if(e->getSym()->getFace() == NULL) {
+                //if so, delete sym edge
+                //remove edge from global list of edges, reduce max edge size
+                for(int i = 0; i < HE_list.size() ; i++){
+                    if(HE_list[i] == e->getSym()) {
+                        HE_list.erase(HE_list.begin(), HE_list.begin()+i);
+                    }
+                    std::cout << "here d" << std::endl;
+                }
+                --max_edge_id;
+                delete e->getSym();
+
+                //delete e by storing in a list of edges to delete later
+//                delete_later.push_back(e);
+                HalfEdge* eold = e;
+                for(int i = 0; i < HE_list.size() ; i++){
+                    if(HE_list[i] == eold) {
+                        HE_list.erase(HE_list.begin(), HE_list.begin()+i);
+                    }
+                    std::cout << "here f" << std::endl;
+                }
+
+                //remove edge from global list of edges, reduce max edge size
+                --max_edge_id;
+                delete eold;
+
+            }
+            //update e
+            e = e->getNext();
+            std::cout << "here g" << std::endl;
+        }
+        //remove face from global list of faces
+        //reduce max size
+        --max_face_id;
+        incident_faces.removeAt(0); //remove f2 from list
+        delete f2; //delete it
+
+    }
+}
+*/
 void Mesh::create()
 {
 

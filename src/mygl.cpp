@@ -200,12 +200,21 @@ void MyGL::slot_triangulate() {
         total_edges = mesh.HE_list.size();
         total_faces = mesh.f_list.size();
         selectedFace = mesh.triangulate(selectedFace);
-        mesh.selectedFace = selectedFace;
+        if(selectedFace != NULL) {
+            mesh.selectedFace = selectedFace;
 
-        emit sig_SendFaceList(mesh.f_list.at(total_faces));
-        emit sig_sendEdgeList(mesh.HE_list.at(total_edges-1));
-        emit sig_sendEdgeList(mesh.HE_list.at(total_edges));
-        update();
+            emit sig_SendFaceList(mesh.f_list.at(total_faces));
+            emit sig_sendEdgeList(mesh.HE_list.at(total_edges-1));
+            emit sig_sendEdgeList(mesh.HE_list.at(total_edges));
+            update();
+        }
     }
 }
+
+//void MyGL::slot_deleteVertex(){
+//    if(selectedVertex != NULL) {
+//        mesh.deleteVertex(selectedVertex);
+//        selectedVertex = NULL;
+//    }
+//}
 

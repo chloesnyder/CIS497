@@ -48,9 +48,6 @@ public:
     void resizeGL(int w, int h);
     void paintGL();
 
-//    void updateVertList(Vertex* v);
-//    void updateEdgeList(HalfEdge* he);
-
 protected:
     void keyPressEvent(QKeyEvent *e);
 
@@ -64,4 +61,5 @@ private slots:
     void slot_ReceiveVertList(QListWidgetItem*v);
     void slot_addVertex();
     void slot_triangulate();
+//    void slot_deleteVertex();
 };
