@@ -21,6 +21,8 @@ vec4 Mesh::crossVec4(vec4 _v1, vec4 _v2){
     return vec4(res[0], res[1], res[2], 0);
 }
 
+
+
 //Use triangle fan method
 //create faces. Draw per face
 void Mesh::createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, vector<vec4>& mesh_vert_nor, vector<vec4>& mesh_vert_col, vector<GLuint>& mesh_idx, vector<Face*>& faces){
@@ -85,10 +87,6 @@ void Mesh::createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, 
        }
    }
 }
-
-//void Mesh::storeMyGL(MyGL *m){
-//    mygl = m;
-//}
 
 
 void Mesh::createCube() {
@@ -463,11 +461,11 @@ Vertex* Mesh::addVertex(HalfEdge *HE1) {
     v3->setID(++max_vert_id);
     v_list.push_back(v3);
 
-
     //create 2 new half edges
     HalfEdge* HE1B = new HalfEdge();
     HalfEdge* HE2B = new HalfEdge();
     int edge_id = HE_list.size();
+
     HE1B->setID(++max_edge_id);
     HE2B->setID(++max_edge_id);
     HE_list.push_back(HE1B);
@@ -494,6 +492,8 @@ Vertex* Mesh::addVertex(HalfEdge *HE1) {
     HE2B->setVert(v2);
     HE2->setVert(v3);
     HE1->setVert(v3);
+
+ //   HE1->updateVertPos(v3->getPos(), v1->getPos());
 
     return v3;
 }
@@ -551,8 +551,8 @@ Face* Mesh::triangulate(Face* FACE1){
     }
 }
 
-/*void Mesh::deleteVertex(Vertex *v) {
-    QList<HalfEdge*> v_edges;
+void Mesh::deleteVertex(Vertex *v) {
+//    QList<HalfEdge*> v_edges;
 
     //find all faces incident to vertex
     //start deleting each of those faces but when you delete a face, set all of its half edge face pointers to null
@@ -562,7 +562,7 @@ Face* Mesh::triangulate(Face* FACE1){
     //find all faces incident to v
     HalfEdge* e1 = v->getEdge();
     QList<Face*> incident_faces;
-    QList<HalfEdge*> delete_later;
+//    QList<HalfEdge*> delete_later;
     Face* f = e1->getFace();
 
     while(!incident_faces.contains(f)) {
@@ -605,6 +605,7 @@ Face* Mesh::triangulate(Face* FACE1){
                 //delete e by storing in a list of edges to delete later
 //                delete_later.push_back(e);
                 HalfEdge* eold = e;
+                e = e->getNext();
                 for(int i = 0; i < HE_list.size() ; i++){
                     if(HE_list[i] == eold) {
                         HE_list.erase(HE_list.begin(), HE_list.begin()+i);
@@ -616,20 +617,34 @@ Face* Mesh::triangulate(Face* FACE1){
                 --max_edge_id;
                 delete eold;
 
-            }
+            } else {
             //update e
             e = e->getNext();
             std::cout << "here g" << std::endl;
+            }
         }
         //remove face from global list of faces
         //reduce max size
         --max_face_id;
         incident_faces.removeAt(0); //remove f2 from list
+        for(int i = 0; i < f_list.size(); i++) {
+            if(f_list[i] == f2) {
+                f_list.erase(f_list.begin(), f_list.begin() + i);
+            }
+        }
         delete f2; //delete it
 
     }
+    for(int i = 0; i < v_list.size(); i++){
+        if(v_list[i] == v) {
+            v_list.erase(v_list.begin(), v_list.begin() + i);
+        }
+    }
+    delete v;
+
+    //what if edge needs to point to edge.next.sym.next?
 }
-*/
+
 void Mesh::create()
 {
 

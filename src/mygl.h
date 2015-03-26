@@ -61,5 +61,5 @@ private slots:
     void slot_ReceiveVertList(QListWidgetItem*v);
     void slot_addVertex();
     void slot_triangulate();
-//    void slot_deleteVertex();
+    void slot_deleteVertex();
 };

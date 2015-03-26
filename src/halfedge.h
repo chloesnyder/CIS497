@@ -41,6 +41,7 @@ public:
     void setSym(HalfEdge *s);
     void setID(int i);
     void setColor(vec4 c);
+    void updateVertPos(vec4 pos1, vec4 pos2);
 
     Face* getFace();
     Vertex* getVert();

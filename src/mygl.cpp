@@ -188,8 +188,8 @@ void MyGL::slot_addVertex() {
         selectedVertex = mesh.addVertex(selectedEdge);
 
         emit sig_SendVertList(mesh.v_list.at(total_vertices));
-        emit sig_sendEdgeList(mesh.HE_list.at(total_edges - 1));
         emit sig_sendEdgeList(mesh.HE_list.at(total_edges));
+        emit sig_sendEdgeList(mesh.HE_list.at(total_edges+1));
         update();
     }
 }
@@ -204,17 +204,23 @@ void MyGL::slot_triangulate() {
             mesh.selectedFace = selectedFace;
 
             emit sig_SendFaceList(mesh.f_list.at(total_faces));
-            emit sig_sendEdgeList(mesh.HE_list.at(total_edges-1));
             emit sig_sendEdgeList(mesh.HE_list.at(total_edges));
+            emit sig_sendEdgeList(mesh.HE_list.at(total_edges+1));
             update();
         }
     }
 }
 
-//void MyGL::slot_deleteVertex(){
-//    if(selectedVertex != NULL) {
-//        mesh.deleteVertex(selectedVertex);
-//        selectedVertex = NULL;
-//    }
-//}
+void MyGL::slot_deleteVertex(){
+    if(selectedVertex != NULL) {
+        mesh.deleteVertex(selectedVertex);
+
+//        for(int i = 0; i < mesh.HE_list.size(); i++) {
+//            emit sig_SendEdgeList(mesh.HE_list.at(i));
+//        }
+
+        update();
+     //   selectedVertex = NULL;
+    }
+}
 

@@ -6,6 +6,10 @@ static const int HE_IDX_COUNT = 2;
 static const int HE_VERT_COUNT = 2;
 static const int HE_COL_COUNT = 2;
 
+GLuint he_idx[HE_IDX_COUNT];
+vec4 he_vert_pos[HE_VERT_COUNT];
+vec4 he_vert_col[HE_COL_COUNT];
+
 HalfEdge::HalfEdge()
     : bufIdx(QOpenGLBuffer::IndexBuffer),
       bufPos(QOpenGLBuffer::VertexBuffer),
@@ -76,6 +80,11 @@ vec4 HalfEdge::getColor(){
     return color;
 }
 
+void HalfEdge::updateVertPos(vec4 pos1, vec4 pos2){
+    he_vert_pos[0] = pos1;
+    he_vert_pos[1] = pos2;
+}
+
 
 void HalfEdge::createEdgeVertexIndices(GLuint he_idx[HE_IDX_COUNT], vec4 he_vert_pos[HE_VERT_COUNT],  vec4 he_vert_col[HE_COL_COUNT]){
 
@@ -93,9 +102,7 @@ void HalfEdge::createEdgeVertexIndices(GLuint he_idx[HE_IDX_COUNT], vec4 he_vert
 
 void HalfEdge::create(){
 
-    GLuint he_idx[HE_IDX_COUNT];
-    vec4 he_vert_pos[HE_VERT_COUNT];
-    vec4 he_vert_col[HE_COL_COUNT];
+
 
     createEdgeVertexIndices(he_idx, he_vert_pos, he_vert_col);
 
