@@ -47,6 +47,8 @@ public:
     Face *triangulate(Face* FACE1);
     void deleteVertex(Vertex* v);
 
+    HalfEdge* getPrev(HalfEdge* e);
+
 
     void create();
     void destroy();

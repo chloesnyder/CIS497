@@ -1,0 +1,7 @@
+Timestamp,Helper(s)/URL,Question/Topic/Solution
+,,
+,,
+,,
+,,
+3/24/2015 16:36:53,Adam,"My edge wasn't drawing when I called create, it was crashing. I was trying to create an instance of an edge and repeat the edge, similar to how we did cylinders and cubes in the last assignment. Adam showed me another method in which I only color the selected edge."
+3/24/2015 23:04:36,Nancy Huang (aka lead member of Chlancy and The Fruits),"I was having trouble figuring out how to update my vertex list and edge list in my gui from my mesh.cpp by calling a method in MyGL that would emit the right signals. It was causing a lot of forward declare errors. Nancy suggested  having my addvertex function return a vertice, and then emit the signal from the addvertex slot in myGL. She also suggested I call the emit edge list from MyGL too. That way, I avoided the need for forward declaration."

@@ -551,6 +551,13 @@ Face* Mesh::triangulate(Face* FACE1){
     }
 }
 
+HalfEdge* Mesh::getPrev(HalfEdge *e) {
+    HalfEdge* e2 = e->getNext();
+    while(e2 != e) {
+        e2 = e2->getNext();
+    }
+}
+
 void Mesh::deleteVertex(Vertex *v) {
 
     //find all faces incident to vertex
@@ -565,7 +572,7 @@ void Mesh::deleteVertex(Vertex *v) {
     Face* f = e1->getFace();
 
     while(!incident_faces.contains(f)) {
-        std::cout << "here a" << std::endl;
+
         //add to list of faces
         incident_faces.push_back(f);
         e1 = e1->getSym();
@@ -577,16 +584,35 @@ void Mesh::deleteVertex(Vertex *v) {
 
     //start deleting faces
     while(!incident_faces.empty()) {
-        std::cout << "here b" << std::endl;
+
         //set all its half edge pointers to null
         Face* f2 = incident_faces.front();
         HalfEdge* start = f2->getStartEdge();
         HalfEdge* e = start->getNext();
         //traverse through all of the face's edges
         while(e != start){
-            std::cout << "here c" << std::endl;
+
+
+            /*KNOWN BUGS
+             * - deleting second vertex fails
+             * - deleting a vertex that I added does weird stuff to the edges
+             * */
+            //for all the vertices that you don't delete, set the incoming edge to the previous edge
+            //that prev is guaranteed to be a qualified edge
+            //set its next to it's next.sym.next
+//            if(e->getVert() != v) {
+//               HalfEdge* prev = getPrev(e->getNext());
+//               if(prev != NULL) {
+//                    prev->setNext(prev->getNext()->getSym()->getNext());
+//               }
+//            }
+
+
+
             //set all of the half edge face pointers pointing to the face to null
             e->setFace(NULL);
+
+
 
             //check if the half edge's sym pointer's face pointer is also null
             if(e->getSym()->getFace() == NULL) {
@@ -596,20 +622,18 @@ void Mesh::deleteVertex(Vertex *v) {
                     if(HE_list[i] == e->getSym()) {
                         HE_list.erase(HE_list.begin()+i);
                     }
-                    std::cout << "here d" << std::endl;
                 }
                 --max_edge_id;
                 delete e->getSym();
 
                 //delete e by storing in a list of edges to delete later
-//                delete_later.push_back(e);
+
                 HalfEdge* eold = e;
                 e = e->getNext();
                 for(int i = 0; i < HE_list.size() ; i++){
                     if(HE_list[i] == eold) {
                         HE_list.erase(HE_list.begin()+i);
                     }
-                    std::cout << "here f" << std::endl;
                 }
 
                 //remove edge from global list of edges, reduce max edge size
@@ -618,8 +642,7 @@ void Mesh::deleteVertex(Vertex *v) {
 
             } else {
             //update e
-            e = e->getNext();
-            std::cout << "here g" << std::endl;
+                e = e->getNext();
             }
         }
         //remove face from global list of faces
@@ -641,7 +664,6 @@ void Mesh::deleteVertex(Vertex *v) {
     }
     delete v;
 
-    //what if edge needs to point to edge.next.sym.next?
 }
 
 void Mesh::create()
