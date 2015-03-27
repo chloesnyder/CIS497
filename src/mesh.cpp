@@ -311,14 +311,15 @@ void Mesh::createCube() {
         HalfEdge* v4v7 = new HalfEdge(); //bottom face bottom edge (4e) DONE BOTTOM FACE
         HE_list.push_back(v4v7);
         HE_list.push_back(v7v4);
+        //check later
         v7v4->setID(22);
         v4v7->setID(23);
         v7v4->setVert(v4);
         v4v7->setVert(v7);
         v4v7->setSym(v7v4);
         v7v4->setSym(v4v7);
-        v4v7->setFace(bottom_face);
-        v7v4->setFace(back_face);
+        v4v7->setFace(back_face);
+        v7v4->setFace(bottom_face);
 
         //set face start edge and next loops
         front_face->setStartEdge(v0v1);
@@ -552,10 +553,11 @@ Face* Mesh::triangulate(Face* FACE1){
 }
 
 HalfEdge* Mesh::getPrev(HalfEdge *e) {
-    HalfEdge* e2 = e->getNext();
-    while(e2 != e) {
+    HalfEdge* e2 = e;
+    while(e2->getNext() != e) {
         e2 = e2->getNext();
     }
+    return e2;
 }
 
 void Mesh::deleteVertex(Vertex *v) {
@@ -569,18 +571,25 @@ void Mesh::deleteVertex(Vertex *v) {
     HalfEdge* e1 = v->getEdge();
     QList<Face*> incident_faces;
 
+    //keep track of a list of "previous edges"
+    QList<HalfEdge*> previousEdges;
+    QList<HalfEdge*> deletedEdges;
+
     Face* f = e1->getFace();
+    Face* startFace = f;
 
-    while(!incident_faces.contains(f)) {
+    do{
+        if(f != NULL) {
+            //add to list of faces
+            incident_faces.push_back(f);
+        }
 
-        //add to list of faces
-        incident_faces.push_back(f);
         e1 = e1->getSym();
         while(e1->getVert() != v) {
             e1 = e1->getNext();
         }
         f = e1->getFace();
-    }
+    }while(e1->getFace() != startFace);
 
     //start deleting faces
     while(!incident_faces.empty()) {
@@ -592,74 +601,82 @@ void Mesh::deleteVertex(Vertex *v) {
         //traverse through all of the face's edges
         while(e != start){
 
-
-            /*KNOWN BUGS
-             * - deleting second vertex fails
-             * - deleting a vertex that I added does weird stuff to the edges
-             * */
-            //for all the vertices that you don't delete, set the incoming edge to the previous edge
-            //that prev is guaranteed to be a qualified edge
-            //set its next to it's next.sym.next
-//            if(e->getVert() != v) {
-//               HalfEdge* prev = getPrev(e->getNext());
-//               if(prev != NULL) {
-//                    prev->setNext(prev->getNext()->getSym()->getNext());
-//               }
-//            }
-
-
+//          for the edge pointing to the vertex you delete, store the previous edge in a list to update
+//          later, update so that its next = this.sym.prev.sym
+            if(e->getVert() == v) {
+                //get the edge previous to current edge, store in list to update the next later
+                HalfEdge* p = getPrev(e);
+                if(p != NULL) {
+                  previousEdges.push_back(p);
+                }
+            }
 
             //set all of the half edge face pointers pointing to the face to null
             e->setFace(NULL);
 
-
-
             //check if the half edge's sym pointer's face pointer is also null
-            if(e->getSym()->getFace() == NULL) {
-                //if so, delete sym edge
-                //remove edge from global list of edges, reduce max edge size
-                for(int i = 0; i < HE_list.size() ; i++){
-                    if(HE_list[i] == e->getSym()) {
-                        HE_list.erase(HE_list.begin()+i);
-                    }
+            if(e->getSym() != NULL) {
+                if(e->getSym()->getFace() == NULL) {
+                    //store this edge and it's sym in list of edges to be deleted later
+                    deletedEdges.push_back(e->getSym());
+                    deletedEdges.push_back(e);
+                    e = e->getNext();
+
+                } else {
+                //update e
+                    e = e->getNext();
                 }
-                --max_edge_id;
-                delete e->getSym();
-
-                //delete e by storing in a list of edges to delete later
-
-                HalfEdge* eold = e;
-                e = e->getNext();
-                for(int i = 0; i < HE_list.size() ; i++){
-                    if(HE_list[i] == eold) {
-                        HE_list.erase(HE_list.begin()+i);
-                    }
-                }
-
-                //remove edge from global list of edges, reduce max edge size
-                --max_edge_id;
-                delete eold;
-
-            } else {
-            //update e
-                e = e->getNext();
             }
         }
+
         //remove face from global list of faces
-        //reduce max size
-        --max_face_id;
+        //reduce max size      
         incident_faces.removeAt(0); //remove f2 from list
         for(int i = 0; i < f_list.size(); i++) {
             if(f_list[i] == f2) {
                 f_list.erase(f_list.begin() + i);
+                --max_face_id;
             }
         }
         delete f2; //delete it
 
     }
+
+    //update the pointers to maintain "empty" HalfEdges on boundary of structure
+    //          for all the vertices that you don't delete, set the incoming edge to the previous edge
+    //          that prev is guaranteed to be a qualified edge
+    //          set its next to it's next.sym.next
+    for(HalfEdge* prev : previousEdges) {
+        if(prev->getNext() != NULL) {
+            if(prev->getNext()->getSym() != NULL) {
+                prev->setNext(getPrev(prev->getSym())->getSym());
+            }
+        }
+    }
+
+    //delete the edges needed to be deleted
+    for(int i = 0; i < HE_list.size(); i++) {
+        HalfEdge* e = HE_list[i];
+        if(deletedEdges.contains(HE_list[i])) {
+            //remove from lsit of edges to delete
+            for(int j = 0; j < deletedEdges.size(); j++) {
+                deletedEdges.erase(deletedEdges.begin() + j);
+            }
+            //remove from list of global edges
+            HE_list.erase(HE_list.begin() + i);
+            //reduce number of total edges
+            --max_edge_id;
+
+            //delete the edge
+            delete e;
+        }
+    }
+
+
     for(int i = 0; i < v_list.size(); i++){
         if(v_list[i] == v) {
             v_list.erase(v_list.begin() + i);
+            --max_vert_id;
         }
     }
     delete v;

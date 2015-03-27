@@ -144,6 +144,111 @@
      <string>Delete Currently Selected Vertex</string>
     </property>
    </widget>
+   <widget class="edgelisthelper" name="nextEdgeDisplay">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>490</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="edgelisthelper" name="symEdgeDisplay">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>520</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="vertexlisthelper" name="edgeVertexDisplay">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>550</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="facelisthelper" name="edgeFaceDisplay">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>580</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>450</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Selected Edge Fields</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>490</y>
+      <width>59</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Next</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>520</y>
+      <width>59</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Sym</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>580</y>
+      <width>59</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Face</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>550</y>
+      <width>59</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Vertex</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -198,6 +303,10 @@
     <signal>sig_SendFaceList(QListWidgetItem*)</signal>
     <signal>sig_sendEdgeList(QListWidgetItem*)</signal>
     <signal>sig_SendVertList(QListWidgetItem*)</signal>
+    <signal>sig_sendNextEdge(QListWidgetItem*)</signal>
+    <signal>sig_sendFace(QListWidgetItem*)</signal>
+    <signal>sig_sendSymEdge(QListWidgetItem*)</signal>
+    <signal>sig_sendVert(QListWidgetItem*)</signal>
     <slot>slot_storeSceneGraph(QTreeWidgetItem*)</slot>
     <slot>slot_itemClicked(QTreeWidgetItem*)</slot>
     <slot>slot_changeRZ(double)</slot>
@@ -402,6 +511,70 @@
     <hint type="destinationlabel">
      <x>62</x>
      <y>406</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_sendNextEdge(QListWidgetItem*)</signal>
+   <receiver>nextEdgeDisplay</receiver>
+   <slot>slot_storeEdgeList(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>341</x>
+     <y>422</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>546</x>
+     <y>520</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_sendSymEdge(QListWidgetItem*)</signal>
+   <receiver>symEdgeDisplay</receiver>
+   <slot>slot_storeEdgeList(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>304</x>
+     <y>455</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>547</x>
+     <y>554</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_sendVert(QListWidgetItem*)</signal>
+   <receiver>edgeVertexDisplay</receiver>
+   <slot>scrollToBottom()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>323</x>
+     <y>461</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>545</x>
+     <y>580</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_sendFace(QListWidgetItem*)</signal>
+   <receiver>edgeFaceDisplay</receiver>
+   <slot>slot_storeFaceList(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>270</x>
+     <y>443</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>546</x>
+     <y>611</y>
     </hint>
    </hints>
   </connection>

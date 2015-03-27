@@ -37,6 +37,9 @@ public:
     int total_edges;
     int total_faces;
 
+    void SelectNextHE();
+    void SelectSymHE();
+
     Vertex* selectedVertex;
     Face* selectedFace;
     HalfEdge* selectedEdge;
@@ -55,6 +58,12 @@ signals:
     void sig_SendFaceList(QListWidgetItem*);
     void sig_sendEdgeList(QListWidgetItem*);
     void sig_SendVertList(QListWidgetItem*);
+
+    void sig_sendNextEdge(QListWidgetItem*);
+    void sig_sendFace(QListWidgetItem*);
+    void sig_sendSymEdge(QListWidgetItem*);
+    void sig_sendVert(QListWidgetItem*);
+
 private slots:
     void slot_ReceiveFaceList(QListWidgetItem*);
     void slot_ReceiveEdgeList(QListWidgetItem*);

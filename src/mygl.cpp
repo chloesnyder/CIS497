@@ -79,6 +79,13 @@ void MyGL::initializeGL()
     for(int i = 0; i < total_vertices; i++){
         emit sig_SendVertList(mesh.v_list[i]);
     }
+    if(selectedEdge != NULL) {
+        emit sig_sendNextEdge(selectedEdge->getNext());
+        emit sig_sendFace(selectedEdge->getFace());
+        emit sig_sendSymEdge(selectedEdge->getSym());
+        emit sig_sendVert(selectedEdge->getVert());
+    }
+
 
 }
 
@@ -138,6 +145,21 @@ void MyGL::paintGL()
 
 }
 
+void MyGL::SelectNextHE() {
+    if (selectedEdge != NULL) {
+        selectedEdge = selectedEdge->getNext();
+        update();
+    }
+}
+
+void MyGL::SelectSymHE() {
+    if (selectedEdge != NULL) {
+        selectedEdge = selectedEdge->getSym();
+        update();
+    }
+}
+
+
 void MyGL::keyPressEvent(QKeyEvent *e)
 {
     // http://doc.qt.io/qt-5/qt.html#Key-enum
@@ -159,6 +181,12 @@ void MyGL::keyPressEvent(QKeyEvent *e)
         camera.fovy += 5.0f;
     } else if (e->key() == Qt::Key_2) {
         camera.fovy -= 5.0f * DEG2RAD;
+    } else if(e->key() == Qt::Key_N){
+        //make currently selected HE become its next
+        SelectNextHE();
+    } else if(e->key() == Qt::Key_S){
+        //become its sym
+        SelectSymHE();
     }
     camera.RecomputeEye();
     update();  // Calls paintGL, among other things

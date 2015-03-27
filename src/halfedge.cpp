@@ -91,10 +91,11 @@ void HalfEdge::createEdgeVertexIndices(GLuint he_idx[HE_IDX_COUNT], vec4 he_vert
      he_vert_pos[0] = this->getVert()->getPos();
      he_vert_pos[1] = this->getSym()->getVert()->getPos();
 
-     vec4 color = vec4(1,1,0,1);
+     vec4 colortail = vec4(1,0,0,1);
+     vec4 colorhead = vec4(1,1,0,1);
 
-     he_vert_col[0] = color;
-     he_vert_col[1] = color;
+     he_vert_col[0] = colorhead;
+     he_vert_col[1] = colortail;
 
      he_idx[0] = 0;
      he_idx[1] = 1;
