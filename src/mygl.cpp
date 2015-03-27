@@ -297,6 +297,7 @@ void MyGL::slot_receiveX(double x){
         vec4 new_pos = selectedVertex->getPos();
         new_pos = vec4(x, new_pos.y, new_pos.z, 1);
         selectedVertex->setPos(new_pos);
+        selectedVertex->create();
         update();
     }
 }
@@ -306,6 +307,7 @@ void MyGL::slot_receiveY(double y) {
         vec4 new_pos = selectedVertex->getPos();
         new_pos = vec4(new_pos.x, y, new_pos.z, 1);
         selectedVertex->setPos(new_pos);
+        selectedVertex->create();
         update();
     }
 }
@@ -315,6 +317,7 @@ void MyGL::slot_receiveZ(double z){
         vec4 new_pos = selectedVertex->getPos();
         new_pos = vec4(new_pos.x, new_pos.y, z, 1);
         selectedVertex->setPos(new_pos);
+        selectedVertex->create();
         update();
     }
 }

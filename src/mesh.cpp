@@ -592,7 +592,7 @@ void Mesh::deleteVertex(Vertex *v, QList<HalfEdge*>& to_remove_from_he_list, QLi
             }
       //  }
         f = e1->getFace();
-    }while(e1->getFace() != startFace);
+    } while(e1->getFace() != startFace);
 
     //start deleting faces
     while(!incident_faces.empty()) {
