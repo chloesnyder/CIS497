@@ -241,11 +241,23 @@ void MyGL::slot_triangulate() {
 
 void MyGL::slot_deleteVertex(){
     if(selectedVertex != NULL) {
-        mesh.deleteVertex(selectedVertex);
+        QList<HalfEdge*> to_remove_from_he_list;
+        QList<Vertex*> to_remove_from_v_list;
+        mesh.deleteVertex(selectedVertex, to_remove_from_he_list, to_remove_from_v_list);
 
-//        for(int i = 0; i < mesh.HE_list.size(); i++) {
-//            emit sig_SendEdgeList(mesh.HE_list.at(i));
-//        }
+        for(HalfEdge* e : to_remove_from_he_list){
+            emit sig_removeHEList(e);
+            for(int i = 0; i < mesh.HE_list.size(); i++) {
+                 mesh.HE_list.erase(mesh.HE_list.begin() + i);
+
+                 --mesh.max_edge_id;
+            }
+            delete e;
+        }
+        for(Vertex* v : to_remove_from_v_list){
+            emit sig_removeVertList(v);
+        }
+
 
         selectedVertex = NULL;
         update();

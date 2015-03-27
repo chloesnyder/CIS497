@@ -560,7 +560,7 @@ HalfEdge* Mesh::getPrev(HalfEdge *e) {
     return e2;
 }
 
-void Mesh::deleteVertex(Vertex *v) {
+void Mesh::deleteVertex(Vertex *v, QList<HalfEdge*>& to_remove_from_he_list, QList<Vertex*>& to_remove_from_v_list) {
 
     //find all faces incident to vertex
     //start deleting each of those faces but when you delete a face, set all of its half edge face pointers to null
@@ -573,7 +573,6 @@ void Mesh::deleteVertex(Vertex *v) {
 
     //keep track of a list of "previous edges"
     QList<HalfEdge*> previousEdges;
-    QList<HalfEdge*> deletedEdges;
 
     Face* f = e1->getFace();
     Face* startFace = f;
@@ -585,9 +584,11 @@ void Mesh::deleteVertex(Vertex *v) {
         }
 
         e1 = e1->getSym();
-        while(e1->getVert() != v) {
-            e1 = e1->getNext();
-        }
+       // if(e1->getVert() != NULL) {
+            while(e1->getVert() != v) {
+                e1 = e1->getNext();
+            }
+      //  }
         f = e1->getFace();
     }while(e1->getFace() != startFace);
 
@@ -597,10 +598,10 @@ void Mesh::deleteVertex(Vertex *v) {
         //set all its half edge pointers to null
         Face* f2 = incident_faces.front();
         HalfEdge* start = f2->getStartEdge();
-        HalfEdge* e = start->getNext();
-        //traverse through all of the face's edges
-        while(e != start){
+        HalfEdge* e = start;
 
+        //traverse through all of the face's edges
+        do{
 //          for the edge pointing to the vertex you delete, store the previous edge in a list to update
 //          later, update so that its next = this.sym.prev.sym
             if(e->getVert() == v) {
@@ -609,6 +610,8 @@ void Mesh::deleteVertex(Vertex *v) {
                 if(p != NULL) {
                   previousEdges.push_back(p);
                 }
+                //set e's vert pointer to null
+               // e->setVert(NULL);
             }
 
             //set all of the half edge face pointers pointing to the face to null
@@ -616,18 +619,17 @@ void Mesh::deleteVertex(Vertex *v) {
 
             //check if the half edge's sym pointer's face pointer is also null
             if(e->getSym() != NULL) {
-                if(e->getSym()->getFace() == NULL) {
+                if(e->getSym()->getFace() == NULL && !to_remove_from_he_list.contains(e)) {
                     //store this edge and it's sym in list of edges to be deleted later
-                    deletedEdges.push_back(e->getSym());
-                    deletedEdges.push_back(e);
+                    to_remove_from_he_list.append(e->getSym());
+                    to_remove_from_he_list.append(e);
                     e = e->getNext();
-
                 } else {
                 //update e
                     e = e->getNext();
                 }
             }
-        }
+        }while(e != start);
 
         //remove face from global list of faces
         //reduce max size      
@@ -639,36 +641,18 @@ void Mesh::deleteVertex(Vertex *v) {
             }
         }
         delete f2; //delete it
-
     }
 
     //update the pointers to maintain "empty" HalfEdges on boundary of structure
-    //          for all the vertices that you don't delete, set the incoming edge to the previous edge
-    //          that prev is guaranteed to be a qualified edge
-    //          set its next to it's next.sym.next
+    // prev.next = prev.sym.prev.sym
     for(HalfEdge* prev : previousEdges) {
         if(prev->getNext() != NULL) {
             if(prev->getNext()->getSym() != NULL) {
-                prev->setNext(getPrev(prev->getSym())->getSym());
+                HalfEdge* s1 = prev->getSym();
+                HalfEdge* p = getPrev(s1);
+                HalfEdge* s2 = p->getSym();
+                prev->setNext(s2);
             }
-        }
-    }
-
-    //delete the edges needed to be deleted
-    for(int i = 0; i < HE_list.size(); i++) {
-        HalfEdge* e = HE_list[i];
-        if(deletedEdges.contains(HE_list[i])) {
-            //remove from lsit of edges to delete
-            for(int j = 0; j < deletedEdges.size(); j++) {
-                deletedEdges.erase(deletedEdges.begin() + j);
-            }
-            //remove from list of global edges
-            HE_list.erase(HE_list.begin() + i);
-            //reduce number of total edges
-            --max_edge_id;
-
-            //delete the edge
-            delete e;
         }
     }
 
@@ -676,11 +660,11 @@ void Mesh::deleteVertex(Vertex *v) {
     for(int i = 0; i < v_list.size(); i++){
         if(v_list[i] == v) {
             v_list.erase(v_list.begin() + i);
+            to_remove_from_v_list.append(v);
             --max_vert_id;
         }
     }
     delete v;
-
 }
 
 void Mesh::create()

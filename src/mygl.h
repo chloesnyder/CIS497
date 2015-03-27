@@ -59,6 +59,9 @@ signals:
     void sig_sendEdgeList(QListWidgetItem*);
     void sig_SendVertList(QListWidgetItem*);
 
+    void sig_removeHEList(QListWidgetItem*);
+    void sig_removeVertList(QListWidgetItem*);
+
     void sig_sendNextEdge(QListWidgetItem*);
     void sig_sendFace(QListWidgetItem*);
     void sig_sendSymEdge(QListWidgetItem*);

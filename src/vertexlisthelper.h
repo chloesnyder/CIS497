@@ -14,6 +14,7 @@ public:
 public slots:
     void slot_storeVertList(QListWidgetItem*);
     void slot_storeSelectedVertex(QListWidgetItem*);
+    void slot_removeVertList(QListWidgetItem*);
 };
 
 #endif // VERTEXLISTHELPER_H

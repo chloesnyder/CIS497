@@ -307,6 +307,8 @@
     <signal>sig_sendFace(QListWidgetItem*)</signal>
     <signal>sig_sendSymEdge(QListWidgetItem*)</signal>
     <signal>sig_sendVert(QListWidgetItem*)</signal>
+    <signal>sig_removeHEList(QListWidgetItem*)</signal>
+    <signal>sig_removeVertList(QListWidgetItem*)</signal>
     <slot>slot_storeSceneGraph(QTreeWidgetItem*)</slot>
     <slot>slot_itemClicked(QTreeWidgetItem*)</slot>
     <slot>slot_changeRZ(double)</slot>
@@ -357,6 +359,7 @@
    <header>edgelisthelper.h</header>
    <slots>
     <slot>slot_storeEdgeList(QListWidgetItem*)</slot>
+    <slot>slot_removeHEList(QListWidgetItem*)</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -365,6 +368,7 @@
    <header location="global">vertexlisthelper.h</header>
    <slots>
     <slot>slot_storeVertList(QListWidgetItem*)</slot>
+    <slot>slot_removeVertList(QListWidgetItem*)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -575,6 +579,38 @@
     <hint type="destinationlabel">
      <x>546</x>
      <y>611</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_removeHEList(QListWidgetItem*)</signal>
+   <receiver>EdgeListWidget</receiver>
+   <slot>slot_removeHEList(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>618</x>
+     <y>355</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>753</x>
+     <y>355</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_removeVertList(QListWidgetItem*)</signal>
+   <receiver>VertexListWidget</receiver>
+   <slot>slot_removeVertList(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>543</x>
+     <y>401</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>689</x>
+     <y>496</y>
     </hint>
    </hints>
   </connection>

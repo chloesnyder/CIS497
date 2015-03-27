@@ -17,3 +17,7 @@ void edgelisthelper::slot_storeEdgeList(QListWidgetItem * el){
 void edgelisthelper::slot_storeSelectedEdge(QListWidgetItem *e){
     this->setCurrentItem(e);
 }
+
+void edgelisthelper::slot_removeHEList(QListWidgetItem* e) {
+    this->removeItemWidget(e);
+}

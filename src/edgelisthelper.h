@@ -15,6 +15,7 @@ public:
 public slots:
     void slot_storeEdgeList(QListWidgetItem*);
     void slot_storeSelectedEdge(QListWidgetItem*);
+    void slot_removeHEList(QListWidgetItem*);
 };
 
 #endif // EDGELISTHELPER_H

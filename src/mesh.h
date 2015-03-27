@@ -45,7 +45,7 @@ public:
 
     Vertex *addVertex(HalfEdge* HE1);
     Face *triangulate(Face* FACE1);
-    void deleteVertex(Vertex* v);
+    void deleteVertex(Vertex* v, QList<HalfEdge *> &to_remove_from_he_list, QList<Vertex *> &to_remove_from_v_list);
 
     HalfEdge* getPrev(HalfEdge* e);
 
