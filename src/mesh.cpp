@@ -309,8 +309,8 @@ void Mesh::createCube() {
 
         HalfEdge* v7v4 = new HalfEdge(); //back face bottom edge (4e) DONE BACK FACE
         HalfEdge* v4v7 = new HalfEdge(); //bottom face bottom edge (4e) DONE BOTTOM FACE
-        HE_list.push_back(v4v7);
         HE_list.push_back(v7v4);
+        HE_list.push_back(v4v7);
         //check later
         v7v4->setID(22);
         v4v7->setID(23);
@@ -569,6 +569,8 @@ void Mesh::deleteVertex(Vertex *v, QList<HalfEdge*>& to_remove_from_he_list, QLi
 
     //find all faces incident to v
     HalfEdge* e1 = v->getEdge();
+    //update
+    v->setEdge(NULL);
     QList<Face*> incident_faces;
 
     //keep track of a list of "previous edges"
@@ -602,16 +604,21 @@ void Mesh::deleteVertex(Vertex *v, QList<HalfEdge*>& to_remove_from_he_list, QLi
 
         //traverse through all of the face's edges
         do{
+
 //          for the edge pointing to the vertex you delete, store the previous edge in a list to update
 //          later, update so that its next = this.sym.prev.sym
             if(e->getVert() == v) {
                 //get the edge previous to current edge, store in list to update the next later
                 HalfEdge* p = getPrev(e);
-                if(p != NULL) {
+                if(p != NULL && !previousEdges.contains(p)) {
                   previousEdges.push_back(p);
                 }
-                //set e's vert pointer to null
-               // e->setVert(NULL);
+            }
+            else if(e->getSym()->getVert() == v){
+                HalfEdge* p = getPrev(e->getSym());
+                if(p != NULL && !previousEdges.contains(p)) {
+                  previousEdges.push_back(p);
+                }
             }
 
             //set all of the half edge face pointers pointing to the face to null

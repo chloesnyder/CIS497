@@ -74,4 +74,11 @@ private slots:
     void slot_addVertex();
     void slot_triangulate();
     void slot_deleteVertex();
+
+    void slot_receiveR(double r);
+    void slot_receiveG(double g);
+    void slot_receiveB(double b);
+    void slot_receiveX(double x);
+    void slot_receiveY(double y);
+    void slot_receiveZ(double z);
 };

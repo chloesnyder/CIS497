@@ -144,109 +144,168 @@
      <string>Delete Currently Selected Vertex</string>
     </property>
    </widget>
-   <widget class="edgelisthelper" name="nextEdgeDisplay">
+   <widget class="QDoubleSpinBox" name="R_value">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>490</y>
-      <width>81</width>
-      <height>21</height>
+      <x>390</x>
+      <y>480</y>
+      <width>66</width>
+      <height>24</height>
      </rect>
     </property>
    </widget>
-   <widget class="edgelisthelper" name="symEdgeDisplay">
+   <widget class="QDoubleSpinBox" name="G_value">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>520</y>
-      <width>81</width>
-      <height>21</height>
+      <x>460</x>
+      <y>480</y>
+      <width>66</width>
+      <height>24</height>
      </rect>
     </property>
    </widget>
-   <widget class="vertexlisthelper" name="edgeVertexDisplay">
+   <widget class="QDoubleSpinBox" name="B_value">
     <property name="geometry">
      <rect>
       <x>530</x>
-      <y>550</y>
-      <width>81</width>
-      <height>21</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="facelisthelper" name="edgeFaceDisplay">
-    <property name="geometry">
-     <rect>
-      <x>530</x>
-      <y>580</y>
-      <width>81</width>
-      <height>21</height>
+      <y>480</y>
+      <width>66</width>
+      <height>24</height>
      </rect>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>450</y>
-      <width>141</width>
-      <height>41</height>
+      <x>410</x>
+      <y>460</y>
+      <width>21</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Selected Edge Fields</string>
+     <string>R</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>490</y>
-      <width>59</width>
+      <x>480</x>
+      <y>460</y>
+      <width>21</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Next</string>
+     <string>G</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>520</y>
-      <width>59</width>
+      <x>550</x>
+      <y>460</y>
+      <width>21</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Sym</string>
+     <string>B</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="x_value">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>560</y>
+      <width>66</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="y_value">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>560</y>
+      <width>66</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="z_value">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>560</y>
+      <width>66</width>
+      <height>24</height>
+     </rect>
     </property>
    </widget>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>580</y>
-      <width>59</width>
+      <x>410</x>
+      <y>540</y>
+      <width>21</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Face</string>
+     <string>X</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>550</y>
-      <width>59</width>
+      <x>480</x>
+      <y>540</y>
+      <width>21</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Vertex</string>
+     <string>Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>540</y>
+      <width>21</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Z</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>520</y>
+      <width>161</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Change Vertex Position</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>440</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Change Face Color</string>
     </property>
    </widget>
   </widget>
@@ -343,12 +402,18 @@
     <slot>slot_addVertex()</slot>
     <slot>slot_triangulate()</slot>
     <slot>slot_deleteVertex()</slot>
+    <slot>slot_receiveR(double)</slot>
+    <slot>slot_receiveG(double)</slot>
+    <slot>slot_receiveB(double)</slot>
+    <slot>slot_receiveX(double)</slot>
+    <slot>slot_receiveY(double)</slot>
+    <slot>slot_receiveZ(double)</slot>
    </slots>
   </customwidget>
   <customwidget>
    <class>facelisthelper</class>
    <extends>QListWidget</extends>
-   <header>facelisthelper.h</header>
+   <header location="global">facelisthelper.h</header>
    <slots>
     <slot>slot_storeFaceList(QListWidgetItem*)</slot>
    </slots>
@@ -365,7 +430,7 @@
   <customwidget>
    <class>vertexlisthelper</class>
    <extends>QListWidget</extends>
-   <header location="global">vertexlisthelper.h</header>
+   <header>vertexlisthelper.h</header>
    <slots>
     <slot>slot_storeVertList(QListWidgetItem*)</slot>
     <slot>slot_removeVertList(QListWidgetItem*)</slot>
@@ -520,70 +585,6 @@
   </connection>
   <connection>
    <sender>mygl</sender>
-   <signal>sig_sendNextEdge(QListWidgetItem*)</signal>
-   <receiver>nextEdgeDisplay</receiver>
-   <slot>slot_storeEdgeList(QListWidgetItem*)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>341</x>
-     <y>422</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>546</x>
-     <y>520</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mygl</sender>
-   <signal>sig_sendSymEdge(QListWidgetItem*)</signal>
-   <receiver>symEdgeDisplay</receiver>
-   <slot>slot_storeEdgeList(QListWidgetItem*)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>304</x>
-     <y>455</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>547</x>
-     <y>554</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mygl</sender>
-   <signal>sig_sendVert(QListWidgetItem*)</signal>
-   <receiver>edgeVertexDisplay</receiver>
-   <slot>scrollToBottom()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>323</x>
-     <y>461</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>545</x>
-     <y>580</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mygl</sender>
-   <signal>sig_sendFace(QListWidgetItem*)</signal>
-   <receiver>edgeFaceDisplay</receiver>
-   <slot>slot_storeFaceList(QListWidgetItem*)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>270</x>
-     <y>443</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>546</x>
-     <y>611</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mygl</sender>
    <signal>sig_removeHEList(QListWidgetItem*)</signal>
    <receiver>EdgeListWidget</receiver>
    <slot>slot_removeHEList(QListWidgetItem*)</slot>
@@ -611,6 +612,102 @@
     <hint type="destinationlabel">
      <x>689</x>
      <y>496</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R_value</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_receiveR(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>390</x>
+     <y>516</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>449</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>G_value</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_receiveG(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>486</x>
+     <y>507</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>372</x>
+     <y>453</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>B_value</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_receiveB(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>549</x>
+     <y>520</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>434</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>x_value</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_receiveX(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>401</x>
+     <y>589</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>283</x>
+     <y>434</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>y_value</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_receiveY(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>487</x>
+     <y>594</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>452</x>
+     <y>430</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>z_value</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_receiveZ(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>558</x>
+     <y>596</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>480</x>
+     <y>432</y>
     </hint>
    </hints>
   </connection>

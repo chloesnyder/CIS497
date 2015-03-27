@@ -265,3 +265,57 @@ void MyGL::slot_deleteVertex(){
     }
 }
 
+void MyGL::slot_receiveR(double r){
+    if(selectedFace != NULL) {
+        vec4 new_col = selectedFace->getColor();
+        new_col = vec4(r, new_col.y, new_col.z, 1);
+        selectedFace->setColor(new_col);
+        update();
+    }
+}
+
+void MyGL::slot_receiveG(double g){
+    if(selectedFace != NULL) {
+        vec4 new_col = selectedFace->getColor();
+        new_col = vec4(new_col.x, g, new_col.z, 1);
+        selectedFace->setColor(new_col);
+        update();
+    }
+}
+
+void MyGL::slot_receiveB(double b){
+    if(selectedFace != NULL) {
+        vec4 new_col = selectedFace->getColor();
+        new_col = vec4(new_col.x, new_col.y, b, 1);
+        selectedFace->setColor(new_col);
+        update();
+    }
+}
+
+void MyGL::slot_receiveX(double x){
+    if(selectedVertex != NULL) {
+        vec4 new_pos = selectedVertex->getPos();
+        new_pos = vec4(x, new_pos.y, new_pos.z, 1);
+        selectedVertex->setPos(new_pos);
+        update();
+    }
+}
+
+void MyGL::slot_receiveY(double y) {
+    if(selectedVertex != NULL) {
+        vec4 new_pos = selectedVertex->getPos();
+        new_pos = vec4(new_pos.x, y, new_pos.z, 1);
+        selectedVertex->setPos(new_pos);
+        update();
+    }
+}
+
+void MyGL::slot_receiveZ(double z){
+    if(selectedVertex != NULL) {
+        vec4 new_pos = selectedVertex->getPos();
+        new_pos = vec4(new_pos.x, new_pos.y, z, 1);
+        selectedVertex->setPos(new_pos);
+        update();
+    }
+}
+
