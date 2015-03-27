@@ -219,8 +219,9 @@ void MyGL::slot_deleteVertex(){
 //            emit sig_SendEdgeList(mesh.HE_list.at(i));
 //        }
 
+        selectedVertex = NULL;
         update();
-     //   selectedVertex = NULL;
+
     }
 }
 

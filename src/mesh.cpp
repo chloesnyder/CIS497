@@ -493,7 +493,7 @@ Vertex* Mesh::addVertex(HalfEdge *HE1) {
     HE2->setVert(v3);
     HE1->setVert(v3);
 
- //   HE1->updateVertPos(v3->getPos(), v1->getPos());
+    HE1->create();
 
     return v3;
 }
@@ -552,7 +552,6 @@ Face* Mesh::triangulate(Face* FACE1){
 }
 
 void Mesh::deleteVertex(Vertex *v) {
-//    QList<HalfEdge*> v_edges;
 
     //find all faces incident to vertex
     //start deleting each of those faces but when you delete a face, set all of its half edge face pointers to null
@@ -562,7 +561,7 @@ void Mesh::deleteVertex(Vertex *v) {
     //find all faces incident to v
     HalfEdge* e1 = v->getEdge();
     QList<Face*> incident_faces;
-//    QList<HalfEdge*> delete_later;
+
     Face* f = e1->getFace();
 
     while(!incident_faces.contains(f)) {
@@ -595,7 +594,7 @@ void Mesh::deleteVertex(Vertex *v) {
                 //remove edge from global list of edges, reduce max edge size
                 for(int i = 0; i < HE_list.size() ; i++){
                     if(HE_list[i] == e->getSym()) {
-                        HE_list.erase(HE_list.begin(), HE_list.begin()+i);
+                        HE_list.erase(HE_list.begin()+i);
                     }
                     std::cout << "here d" << std::endl;
                 }
@@ -608,7 +607,7 @@ void Mesh::deleteVertex(Vertex *v) {
                 e = e->getNext();
                 for(int i = 0; i < HE_list.size() ; i++){
                     if(HE_list[i] == eold) {
-                        HE_list.erase(HE_list.begin(), HE_list.begin()+i);
+                        HE_list.erase(HE_list.begin()+i);
                     }
                     std::cout << "here f" << std::endl;
                 }
@@ -629,7 +628,7 @@ void Mesh::deleteVertex(Vertex *v) {
         incident_faces.removeAt(0); //remove f2 from list
         for(int i = 0; i < f_list.size(); i++) {
             if(f_list[i] == f2) {
-                f_list.erase(f_list.begin(), f_list.begin() + i);
+                f_list.erase(f_list.begin() + i);
             }
         }
         delete f2; //delete it
@@ -637,7 +636,7 @@ void Mesh::deleteVertex(Vertex *v) {
     }
     for(int i = 0; i < v_list.size(); i++){
         if(v_list[i] == v) {
-            v_list.erase(v_list.begin(), v_list.begin() + i);
+            v_list.erase(v_list.begin() + i);
         }
     }
     delete v;
