@@ -1,7 +1,3 @@
-Brief README… I will be updating my assignment tomorrow to work better.
-
-Known bugs:
-- The delete vertex MOSTLY works but doesn’t completely. There are some issues with maintaining the empty half edge ring around everything. I can delete 2 vertices fine, but deleting the last one doesn’t always work. There’s some error where the next isn’t being updated correctly.
 
 How it works:
 - Add Vertex: select an edge from the list, click add vertex. This adds a vertex at the midpoint of the two, and creates 2 new half edges as appropriate

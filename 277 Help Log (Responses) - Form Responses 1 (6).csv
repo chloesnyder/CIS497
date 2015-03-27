@@ -1,7 +1,7 @@
 Timestamp,Helper(s)/URL,Question/Topic/Solution
 ,,
-,,
-,,
-,,
+3/27/2015 16:50:13,Adam,"My delete vertex was crashing on the second delete. Adam helped me go through my ""maintaining empty half edge"" logic and debug it for null pointers. He also told me to  delete edges from mygl instead of in mesh, because there was garbage being displayed that crashed my program"
+3/27/2015 18:43:04,Adam,I was having an issue with a null pointer in my getPrev function. Adam pointed out I had do to it for the edge and the sym edge
+3/27/2015 18:43:37,Adam,"I was having a crash when I deleted vertices that resulted in no more faces in the list. I thought that I needed to change my logic, but Adam pointed out it was just an edge case I can specifically handle!"
 3/24/2015 16:36:53,Adam,"My edge wasn't drawing when I called create, it was crashing. I was trying to create an instance of an edge and repeat the edge, similar to how we did cylinders and cubes in the last assignment. Adam showed me another method in which I only color the selected edge."
 3/24/2015 23:04:36,Nancy Huang (aka lead member of Chlancy and The Fruits),"I was having trouble figuring out how to update my vertex list and edge list in my gui from my mesh.cpp by calling a method in MyGL that would emit the right signals. It was causing a lot of forward declare errors. Nancy suggested  having my addvertex function return a vertice, and then emit the signal from the addvertex slot in myGL. She also suggested I call the emit edge list from MyGL too. That way, I avoided the need for forward declaration."

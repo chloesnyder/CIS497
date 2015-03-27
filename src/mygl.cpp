@@ -260,6 +260,7 @@ void MyGL::slot_deleteVertex(){
 
 
         selectedVertex = NULL;
+        selectedEdge = NULL;
         update();
 
     }

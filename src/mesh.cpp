@@ -636,7 +636,7 @@ void Mesh::deleteVertex(Vertex *v, QList<HalfEdge*>& to_remove_from_he_list, QLi
                     e = e->getNext();
                 }
             }
-        }while(e != start);
+        } while(e != start);
 
         //remove face from global list of faces
         //reduce max size      
@@ -652,17 +652,19 @@ void Mesh::deleteVertex(Vertex *v, QList<HalfEdge*>& to_remove_from_he_list, QLi
 
     //update the pointers to maintain "empty" HalfEdges on boundary of structure
     // prev.next = prev.sym.prev.sym
-    for(HalfEdge* prev : previousEdges) {
-        if(prev->getNext() != NULL) {
-            if(prev->getNext()->getSym() != NULL) {
-                HalfEdge* s1 = prev->getSym();
-                HalfEdge* p = getPrev(s1);
-                HalfEdge* s2 = p->getSym();
-                prev->setNext(s2);
+
+    if(f_list.size() > 0){
+        for(HalfEdge* prev : previousEdges) {
+            if(prev->getNext() != NULL) {
+                if(prev->getNext()->getSym() != NULL) {
+                    HalfEdge* s1 = prev->getSym();
+                    HalfEdge* p = getPrev(s1);
+                    HalfEdge* s2 = p->getSym();
+                    prev->setNext(s2);
+                }
             }
         }
     }
-
 
     for(int i = 0; i < v_list.size(); i++){
         if(v_list[i] == v) {
