@@ -1,4 +1,5 @@
 #include "vertex.h"
+#include <stdlib.h>
 
 using namespace std;
 

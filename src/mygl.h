@@ -81,4 +81,6 @@ private slots:
     void slot_receiveX(double x);
     void slot_receiveY(double y);
     void slot_receiveZ(double z);
+
+    void slot_CatmullClark();
 };

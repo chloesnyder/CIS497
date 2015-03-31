@@ -4,6 +4,8 @@
 #include "face.h"
 #include "halfedge.h"
 #include "vertex.h"
+#include <QList>
+#include <QMap>
 //#include "mygl.h"
 
 #include <QOpenGLContext>
@@ -33,6 +35,9 @@ public:
     static int max_edge_id;
     static int max_face_id;
 
+    QMap<Face*, Vertex*> centroid_map;
+    QMap<HalfEdge*, Vertex*> midpoint_map;
+
     Vertex* selectedVertex;
     Face* selectedFace;
     HalfEdge* selectedEdge;
@@ -55,6 +60,12 @@ public:
 
     void createSquare();
     void createCube();
+
+    //subdivision
+    void subdivide();
+    Vertex* calculateCentroid(Face* f);
+    Vertex* calculateMidpoint(HalfEdge* e);
+    void quadrangulate(Face* f, Vertex* centroid, QMap<Vertex*, vector<HalfEdge*>> v_to_edge_set);
 
     virtual GLenum drawMode();
     virtual int elemCount();

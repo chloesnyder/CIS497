@@ -123,7 +123,7 @@
      <rect>
       <x>10</x>
       <y>470</y>
-      <width>291</width>
+      <width>301</width>
       <height>32</height>
      </rect>
     </property>
@@ -308,6 +308,19 @@
      <string>Change Face Color</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="subdividButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>560</y>
+      <width>301</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Subdivide</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -408,6 +421,7 @@
     <slot>slot_receiveX(double)</slot>
     <slot>slot_receiveY(double)</slot>
     <slot>slot_receiveZ(double)</slot>
+    <slot>slot_CatmullClark()</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -708,6 +722,22 @@
     <hint type="destinationlabel">
      <x>480</x>
      <y>432</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>subdividButton</sender>
+   <signal>clicked()</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_CatmullClark()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>97</x>
+     <y>594</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>86</x>
+     <y>433</y>
     </hint>
    </hints>
   </connection>

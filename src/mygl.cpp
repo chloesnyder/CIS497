@@ -53,7 +53,9 @@ void MyGL::initializeGL()
     // Create a Vertex Attribute Object
     vao.create();
 
+   //mesh.createSquare();
     mesh.createCube();
+//    mesh.subdivide();
     mesh.create();
     total_vertices = mesh.v_list.size();
     total_edges = mesh.HE_list.size();
@@ -174,11 +176,11 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     } else if (e->key() == Qt::Key_Down) {
         camera.phi += 5.0f * DEG2RAD;
     } else if (e->key() == Qt::Key_I) {
-        camera.zoom -= 0.5f * DEG2RAD;
+        camera.zoom -= 0.5f;
     } else if (e->key() == Qt::Key_O) {
         camera.zoom += 0.5f;
     } else if (e->key() == Qt::Key_1) {
-        camera.fovy += 5.0f;
+        camera.fovy += 5.0f * DEG2RAD;
     } else if (e->key() == Qt::Key_2) {
         camera.fovy -= 5.0f * DEG2RAD;
     } else if(e->key() == Qt::Key_N){
@@ -321,5 +323,20 @@ void MyGL::slot_receiveZ(double z){
         selectedVertex->create();
         update();
     }
+}
+
+void MyGL::slot_CatmullClark() {
+    int origvertsize = mesh.v_list.size();
+    int origedgesize = mesh.HE_list.size();
+    mesh.subdivide();
+    for(int i = origvertsize; i < mesh.v_list.size(); i++) {
+        emit sig_SendVertList(mesh.v_list.at(i));
+    }
+    for(int j = origedgesize; j < mesh.HE_list.size(); j++) {
+        emit sig_sendEdgeList(mesh.HE_list.at(j));
+    }
+
+
+    update();
 }
 
