@@ -65,7 +65,7 @@ public:
     void subdivide();
     Vertex* calculateCentroid(Face* f);
     Vertex* calculateMidpoint(HalfEdge* e);
-    void quadrangulate(Face* f, Vertex* centroid, QMap<Vertex*, vector<HalfEdge*>> v_to_edge_set);
+    void quadrangulate(Face* f, Vertex* centroid, QMap<Face *, QList<HalfEdge *> > &f_to_mp, QMap<Face *, QList<HalfEdge *> > &f_to_orig_v);
 
     virtual GLenum drawMode();
     virtual int elemCount();

@@ -150,6 +150,8 @@ void MyGL::paintGL()
 void MyGL::SelectNextHE() {
     if (selectedEdge != NULL) {
         selectedEdge = selectedEdge->getNext();
+        selectedEdge->destroy();
+        selectedEdge->create();
         update();
     }
 }
@@ -157,6 +159,8 @@ void MyGL::SelectNextHE() {
 void MyGL::SelectSymHE() {
     if (selectedEdge != NULL) {
         selectedEdge = selectedEdge->getSym();
+        selectedEdge->destroy();
+        selectedEdge->create();
         update();
     }
 }
@@ -202,11 +206,15 @@ void MyGL::slot_ReceiveFaceList(QListWidgetItem * f){
 
 void MyGL::slot_ReceiveEdgeList(QListWidgetItem* e){
     selectedEdge = (HalfEdge*) e;
+    selectedEdge->destroy();
+    selectedEdge->create();
     update();
 }
 
 void MyGL::slot_ReceiveVertList(QListWidgetItem *v){
     selectedVertex = (Vertex*) v;
+    selectedVertex->destroy();
+    selectedVertex->create();
     update();
 }
 
@@ -328,13 +336,27 @@ void MyGL::slot_receiveZ(double z){
 void MyGL::slot_CatmullClark() {
     int origvertsize = mesh.v_list.size();
     int origedgesize = mesh.HE_list.size();
+
+
     mesh.subdivide();
-    for(int i = origvertsize; i < mesh.v_list.size(); i++) {
+    mesh.destroy();
+    mesh.create();
+    for(int i = 0; i < mesh.v_list.size(); i++) {
         emit sig_SendVertList(mesh.v_list.at(i));
     }
-    for(int j = origedgesize; j < mesh.HE_list.size(); j++) {
-        emit sig_sendEdgeList(mesh.HE_list.at(j));
+    for(int i = 0; i < mesh.HE_list.size(); i++) {
+        emit sig_sendEdgeList(mesh.HE_list.at(i));
     }
+    for(int i = 0; i < mesh.f_list.size(); i++) {
+        emit sig_SendFaceList(mesh.f_list.at(i));
+    }
+//    for(int i = origvertsize; i < mesh.v_list.size(); i++) {
+//        emit sig_SendVertList(mesh.v_list.at(i));
+//    }
+//    for(int j = origedgesize; j < mesh.HE_list.size(); j++) {
+//        emit sig_sendEdgeList(mesh.HE_list.at(j));
+////        mesh.HE_list.at(j)->create();
+//    }
 
 
     update();

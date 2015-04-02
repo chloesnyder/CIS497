@@ -31,6 +31,7 @@ HalfEdge::~HalfEdge(){
 
 void HalfEdge::setFace(Face *f){
     face = f;
+    //f->setStartEdge(this);//???
 }
 
 void HalfEdge::setVert(Vertex *v){
@@ -102,8 +103,6 @@ void HalfEdge::createEdgeVertexIndices(GLuint he_idx[HE_IDX_COUNT], vec4 he_vert
  }
 
 void HalfEdge::create(){
-
-
 
     createEdgeVertexIndices(he_idx, he_vert_pos, he_vert_col);
 

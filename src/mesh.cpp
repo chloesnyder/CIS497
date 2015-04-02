@@ -52,9 +52,113 @@ Vertex* Mesh::calculateCentroid(Face* f){
     return centroid_vert;
 }
 
+void Mesh::quadrangulate(Face* f, Vertex* centroid, QMap<Face*, QList<HalfEdge*>>& f_to_mp, QMap<Face*, QList<HalfEdge*>>& f_to_orig_v){
+
+    QList<HalfEdge*> to_centroid;
+    QList<HalfEdge*> from_centroid;
+
+    //get the vector of all half edges pointing to midpoints
+    QList<HalfEdge*> mid_edges = f_to_mp[f];
+    //get the vector of all half edges pointing to orig vertices
+    QList<HalfEdge*> orig_edges = f_to_orig_v[f];
+
+    QList<HalfEdge*> point_to_mp;
+    QList<HalfEdge*> point_to_vert;
+
+    //find number of vertices in orig face
+    HalfEdge* start = f->getStartEdge();
+    HalfEdge* e = start;
+    do {
+        e = e->getNext();
+        //see if the edge points to a midpoint, if so, add to points to midpoint list. Else, add to point to vertex list
+        if(mid_edges.contains(e)) {
+            point_to_mp.append(e);
+        } else {
+            point_to_vert.append(e);
+        }
+    } while (e != start);
+
+    int n = point_to_vert.size();
+
+    //need to make n new faces
+    int orig_f_list_size = f_list.size(); //use this to compare later
+    QList<Face*> new_faces;
+
+    //now will have a list of all the pointing to midpoints and pointing to verts
+    //point_to_vert[i].next = point_to_mp[i] //this should be done already
+    //point_to_mp[i].next = to_centroid[i];
+    //to_centroid[i].next = from_centroid[i]
+    //from_centroid[i].next = point_to_vert[i];
+    for(int i = 0; i < n; i++) {
+        Face* new_face = new Face();
+        new_face->setID(++max_face_id);
+        new_faces.append(new_face);
+        f_list.push_back(new_face);
+
+
+        //update face pointer; next pointer should be done already
+        point_to_vert[i]->setFace(new_face);
+        point_to_vert[i]->getNext()->setFace(new_face);
+
+        //create new edge to centroid
+        HalfEdge* new_to_centroid = new HalfEdge();
+        HE_list.push_back(new_to_centroid);
+        new_to_centroid->setID(++max_edge_id);
+        new_to_centroid->setVert(centroid);
+        new_to_centroid->setFace(new_face);
+        to_centroid.append(new_to_centroid);
+
+        point_to_vert[i]->getNext()->setNext(to_centroid[i]);
+
+        //create new edge from centroid
+        HalfEdge* new_from_centroid = new HalfEdge();
+        new_from_centroid->setID(++max_edge_id);
+        HE_list.push_back(new_from_centroid);
+        Vertex* p = point_to_vert[i]->getSym()->getVert(); //this gives the midpoint the edge should point to
+        new_from_centroid->setVert(p);
+        new_from_centroid->setFace(new_face);
+        from_centroid.append(new_from_centroid);
+
+        to_centroid[i]->setNext(from_centroid[i]);
+
+        from_centroid[i]->setNext(point_to_vert[i]);
+
+//        if(i != 0) {
+//            point_to_vert[i]->setNext(point_to_mp[i-1]);
+//        } else {
+//            point_to_vert[i]->setNext(point_to_mp[point_to_mp.size() - 1]);
+//        }
+
+        new_face->setStartEdge(point_to_vert[i]);
+
+    }
+    //set the syms of the new half edges
+    //first from and last to need to be hardcoded b/c special case
+    to_centroid[to_centroid.size() - 1]->setSym(from_centroid[0]);
+    from_centroid[0]->setSym(to_centroid[to_centroid.size() - 1]);
+
+    for(int i = 1; i < from_centroid.size(); i++) {
+        from_centroid[i]->setSym(to_centroid[i-1]);
+        to_centroid[i-1]->setSym(from_centroid[i]);
+    }
+
+}
+
+
+
 void Mesh::subdivide() {
 
-    vector<Vertex*> orig_mesh_data_verts = v_list;
+    QMap<Face*, QList<HalfEdge*>> mp_he_set; //a map that maps a face to the set of half edges that point to the midpoints on the face
+    QMap<Face*, QList<HalfEdge*>> v_he_set; //a map that maps a face to the set of half edges that point to the original vertices on the face
+
+    QList<Vertex*> orig_mesh_data_verts;
+    QList<Face*> orig_mesh_data_faces;
+    for(Vertex* orig_vert : v_list) {
+        orig_mesh_data_verts.append(orig_vert);
+    }
+    for(Face* orig_face : f_list) {
+        orig_mesh_data_faces.append(orig_face);
+    }
 
     QList<HalfEdge*> visited = QList<HalfEdge*>();
 
@@ -63,15 +167,21 @@ void Mesh::subdivide() {
         Vertex* centroid = calculateCentroid(f);
         centroid_map.insert(f, centroid);
 
-        //  v_list.push_back(centroid);
+        centroid->setID(++max_vert_id);
+        v_list.push_back(centroid);
     }
 
+    QList<HalfEdge*> to_split;
     //go through all the edges in the mesh, calculate midpoint
     for(HalfEdge* e : HE_list){
+        if(!to_split.contains(e->getSym())){
+            to_split.append(e);
+        }
+    }
 
+    for(HalfEdge* e : to_split){
         //make sure you only calculate 1 midpoint per edge, not 2 per half edge
-        if(!visited.contains(e->getSym())) {
-            visited.push_back(e);
+
             vec4 pos = vec4(0,0,0,1);
 
             //call split edge function to get midpoint of edge
@@ -102,7 +212,6 @@ void Mesh::subdivide() {
             mp->setPos(pos);
             midpoint_map.insert(e, mp);
             midpoint_map.insert(e->getSym(), mp);
-        }
     }
 
 
@@ -122,6 +231,8 @@ void Mesh::subdivide() {
             }
 
             e1 = e1->getSym();
+
+            //it's entering an infinite loop here
             while(e1->getVert() != v) {
                 e1 = e1->getNext();
             }
@@ -147,10 +258,11 @@ void Mesh::subdivide() {
             adjacent_edges.push_back(edge);
         }
 
-
         //sum the adjacent midpoints
         for(HalfEdge* e2 : adjacent_edges) {
-            Vertex* v2 = e2->getSym()->getVert();//midpoint_map[e2];
+            Vertex* v2 = e2->getSym()->getVert();
+            //create a vector of all this vertex's adjacent midpoints
+
             adjacent_mp_sum.x += v2->getPos().x;
             adjacent_mp_sum.y += v2->getPos().y;
             adjacent_mp_sum.z += v2->getPos().z;
@@ -166,7 +278,6 @@ void Mesh::subdivide() {
         centroid_sum.y /= (n*n);
         centroid_sum.z /= (n*n);
 
-
         vec4 new_pos = v->getPos();
         new_pos.x *= (n-2);
         new_pos.x /= n;
@@ -181,162 +292,36 @@ void Mesh::subdivide() {
 
     }
 
-//    quadrangulate(Face* qf, Vertex* qc, QList)
+    //populate map with the set of half edges that point to a midpoint in the face
+    for(Face* fc : f_list) {
+        QList<HalfEdge*> midpoints_on_face;
+        QList<HalfEdge*> orig_verts_on_face;
+        HalfEdge* start = fc->getStartEdge();
+        HalfEdge* e = start;
+        do {
+            //if the edge points to a vertex not in the original list of vertices, then we know
+            //that it points to a midpoint. Add it to the vector of midpoints on the face
+            if(!orig_mesh_data_verts.contains(e->getVert())){
+                midpoints_on_face.push_back(e);
+            } else {
+                orig_verts_on_face.push_back(e);
+            }
+            e = e->getNext();
+        } while (e != start);
+        mp_he_set.insert(fc, midpoints_on_face);
+        v_he_set.insert(fc, orig_verts_on_face);
+    }
 
-/*//    //go through all the edges in the mesh, calculate midpoint
-//    for(HalfEdge* e : HE_list) {
-//        if(!visited.contains(e->getSym())) {
-//            //keep track of visited edges
-//            visited.append(e);
-
-//            //get corresponding centroids of incident faces
-//            Face* f = e->getFace();
-//            Vertex* f1 = centroid_map[f];
-//            Vertex* f2 = new Vertex();
-
-//            //call split edge function to get the midpoint of the edge
-//            Vertex* mp = addVertex(e);
-
-//            //if f2 exists (i.e. edge incident to 2 faces, not a border edge)
-//            Face* sym_f = e->getSym()->getFace();
-//            if(sym_f != NULL) {
-//                f2 = centroid_map[sym_f];
-//            }
-//            vec4 pos = vec4(0,0,0,1);
-//            if(f2 != NULL) {
-//                //position is the average of the midpoint and 2 centroids
-//                pos = f1->getPos() + f2->getPos() + mp->getPos();
-//                pos.x /= 4;
-//                pos.y /= 4;
-//                pos.z /= 4;
-//                pos.w = 1;
-//            } else {
-//                //position is the average of the midpoint and a centroid
-//                pos = f1->getPos() + mp->getPos();
-//                pos.x /= 3;
-//                pos.y /= 3;
-//                pos.z /= 3;
-//                pos.w = 1;
-//            }
-
-//            Vertex* midpoint = new Vertex();
-//            midpoint->setPos(pos);
-//            midpoint->setID(++max_vert_id);
-
-//            //put midpoint in midpoint map (for the edge and its sym)
-//            midpoint_map.insert(e, midpoint);
-//           // midpoint_map.insert(e->getSym(), midpoint);
-
-//            //set edge pointer so that I know the adjacent midpoints later
-//            midpoint->setEdge(e);
-//            v_list.push_back(midpoint);
-//        }
-//    }
-
-
-//    //smooth original vertices
-//    for(Vertex* v : orig_mesh_data_verts) {
-//        QList<Vertex*> adjacent_midpoints;
-//        QList<Vertex*> incident_centroids;
-//        QList<Face*> incident_faces;
-//        QList<HalfEdge*> incident_edges;
-
-//        //original vert position
-//        vec4 orig_pos = v->getPos();
-//        //sum of all adjacent midpoints
-//        vec4 sum_midpoints = vec4(0, 0, 0, 1);
-//        //sum of all centroids of all faces incident to v
-//        vec4 sum_centroids = vec4(0,0,0,1);
-
-
-//        //create a list of faces incident to vertex v
-//        HalfEdge* e1 = v->getEdge();
-//        Face* f = e1->getFace();
-//        Face* startFace = f;
-//        do{
-//            if(f != NULL) {
-//                //add to list of faces
-//                incident_faces.push_back(f);
-//            }
-
-//            e1 = e1->getSym();
-//            while(e1->getVert() != v) {
-//                e1 = e1->getNext();
-//            }
-
-//            f = e1->getFace();
-//        } while(e1->getFace() != startFace);
-
-//        //add the incident centroids to a list, calculate sum of positions
-//        for(Face* face : incident_faces) {
-//            incident_centroids.append(centroid_map[face]);
-//            sum_centroids += centroid_map[face]->getPos();
-//        }
-
-//        //split edge on every incident half edge, calculate midpoint sum
-//        for(HalfEdge* he : orig_mesh_data_HE) {
-//            if(he->getVert() == v || he->getSym()->getVert() == v) {
-//                adjacent_midpoints.push_back(midpoint_map[he]);
-//                sum_midpoints += midpoint_map[he]->getPos();
-//            }
-//        }
-
-//        //n is the number of adjacent midpoints.
-//        int n = adjacent_midpoints.size();
-//        sum_centroids.x /= (n*n);
-//        sum_centroids.y /= (n*n);
-//        sum_centroids.z /= (n*n);
-//        sum_centroids.w /= 1;
-
-//        sum_midpoints.x /= (n*n);
-//        sum_midpoints.y /= (n*n);
-//        sum_midpoints.z /= (n*n);
-//        sum_midpoints.w /= 1;
-
-//        float new_posx = ((n - 2)*orig_pos.x)/n + sum_centroids.x + sum_midpoints.x;
-//        float new_posy = ((n - 2)*orig_pos.y)/n + sum_centroids.y + sum_midpoints.y;
-//        float new_posz = ((n - 2)*orig_pos.z)/n + sum_centroids.z + sum_midpoints.z;
-//        vec4 new_pos = vec4(new_posx, new_posy, new_posz, 1);
-
-//        //assign the vertex the new position
-//        v->setPos(new_pos);
-
-// /*       //go through all the edges in the list, check to see if they are incident to the vertex
-//        for(HalfEdge* he : orig_mesh_data_HE) {
-//            if(he->getVert() == v || he->getSym()->getVert() == v) {
-//                incident_edges.append(he);
-//            }
-//        }
-
-//        //go through list of incident edges, store midpoints in list, calculate sum of positions
-//        for(HalfEdge* he : incident_edges) {
-//            //split edge
-//            adjacent_midpoints.append()
-////            adjacent_midpoints.append(midpoint_map[he]);
-////            sum_midpoints += midpoint_map[he]->getPos();
-//        }
-
-//        //n is the number of adjacent midpoints. Divide by 2 because this puts in midpoints twice,
-//        //once for each half edge in an edge
-//        int n = adjacent_midpoints.size() / 2;
-//        sum_centroids.x /= (n*n);
-//        sum_centroids.y /= (n*n);
-//        sum_centroids.z /= (n*n);
-//        sum_centroids.w /= 1;
-
-//        sum_midpoints.x /= (n*n);
-//        sum_midpoints.y /= (n*n);
-//        sum_midpoints.z /= (n*n);
-//        sum_midpoints.w /= 1;
-
-//        float new_posx = ((n - 2)*orig_pos.x)/n + sum_centroids.x + sum_midpoints.x;
-//        float new_posy = ((n - 2)*orig_pos.y)/n + sum_centroids.y + sum_midpoints.y;
-//        float new_posz = ((n - 2)*orig_pos.z)/n + sum_centroids.z + sum_midpoints.z;
-//        vec4 new_pos = vec4(new_posx, new_posy, new_posz, 1);
-
-//        //assign the vertex the new position
-//        v->setPos(new_pos);
-//        */
+    while(!orig_mesh_data_faces.empty()) {
+        quadrangulate(orig_mesh_data_faces[0], centroid_map[orig_mesh_data_faces[0]], mp_he_set, v_he_set);
+        for(int i = 0; i < f_list.size(); i++){
+            if(f_list[i] == orig_mesh_data_faces[0]) {
+                f_list.erase(f_list.begin() + i);
+            }
+        }
+        delete orig_mesh_data_faces[0];
+        orig_mesh_data_faces.erase(orig_mesh_data_faces.begin());
+    }
 
 }
 
@@ -813,8 +798,6 @@ Vertex* Mesh::addVertex(HalfEdge *HE1) {
     HE2->setVert(v3);
     HE1->setVert(v3);
 
-    HE1->create();
-
     return v3;
 }
 
@@ -1003,7 +986,7 @@ void Mesh::create()
   vector<vec4> mesh_vert_nor;
   vector<vec4> mesh_vert_col;
 
-  createMeshVertexPositionsNormalsIndices(mesh_vert_pos, mesh_vert_nor, mesh_vert_col, mesh_idx, Mesh::f_list);
+  createMeshVertexPositionsNormalsIndices(mesh_vert_pos, mesh_vert_nor, mesh_vert_col, mesh_idx, f_list);
 
   count = mesh_idx.size();
 
