@@ -83,4 +83,5 @@ private slots:
     void slot_receiveZ(double z);
 
     void slot_CatmullClark();
+    void slot_importObjFile();
 };

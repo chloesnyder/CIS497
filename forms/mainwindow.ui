@@ -321,6 +321,19 @@
      <string>Subdivide</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="importObjButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>590</y>
+      <width>301</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Import .OBJ file</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -422,6 +435,7 @@
     <slot>slot_receiveY(double)</slot>
     <slot>slot_receiveZ(double)</slot>
     <slot>slot_CatmullClark()</slot>
+    <slot>slot_importObjFile()</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -738,6 +752,22 @@
     <hint type="destinationlabel">
      <x>86</x>
      <y>433</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>importObjButton</sender>
+   <signal>clicked()</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_importObjFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>141</x>
+     <y>628</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>142</x>
+     <y>437</y>
     </hint>
    </hints>
   </connection>

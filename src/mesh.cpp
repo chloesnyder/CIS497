@@ -339,10 +339,10 @@ void Mesh::createMeshVertexPositionsNormalsIndices(vector<vec4>& mesh_vert_pos, 
 
        ///Compute Vertex Positions for the face
        //save first start edge pointer
-       HalfEdge* start = (*f).getStartEdge();
+       HalfEdge* start = f->getStartEdge();
        mesh_vert_pos.push_back(start->getVert()->getPos());
        base_idx++;
-       HalfEdge* e = (*start).getNext();
+       HalfEdge* e = start->getNext();
 
        ///Compute vertex normals for the face
        HalfEdge* e1 = f->getStartEdge();
@@ -976,6 +976,68 @@ void Mesh::deleteVertex(Vertex *v, QList<HalfEdge*>& to_remove_from_he_list, QLi
         }
     }
     delete v;
+}
+
+void Mesh::createFromFile(QList<vec4> vert_pos, QMap<Face*, QList<int>> faces_and_verts){
+    QMap<Face*, QList<HalfEdge*>> faces_and_edges; //maps face to all the half edges in it
+    QMap<Vertex*, QList<HalfEdge*>> verts_and_edges; //maps vert to all the half edges pointing to it
+    //go through every face in the QMap
+    //create half edges based on their vertex info
+    for(Face* f : faces_and_verts.keys()) {
+        QList<int> verts = faces_and_verts[f];
+        QList<HalfEdge*> edges;
+        for(int i : verts) {
+            Vertex* v;
+
+            //create vert if not already created
+            //because v_list is empty,i corresponds to the indice of the vertex (i.e. 1 is first vert created)
+            if(v_list.size() < i) {
+                v = new Vertex();
+                //the position for this vertex corresponds with the order of vec4s in vert_pos
+                v->setPos(vert_pos[i]);
+                v->setID(++max_vert_id); //this should be the same as i
+                v_list.push_back(v);
+            } else {
+                v = v_list[i];
+            }
+
+            //create half edge to point to vert
+            HalfEdge* he = new HalfEdge();
+            he->setVert(v);
+            he->setFace(f);
+            he->setID(++max_edge_id);
+            edges.append(he);
+            HE_list.push_back(he);
+
+            //if a new vert, won't be in map, so add to map
+            if(!verts_and_edges.keys().contains(v)) {
+                QList<HalfEdge*> points_to_newv;
+                points_to_newv.append(he);
+                verts_and_edges.insert(v, points_to_newv);
+            } else {
+                verts_and_edges[v].append(he);
+            }
+
+        }
+        //set up next pointers for face
+        f->setStartEdge(edges[0]);
+        for(int i = 0; i < edges.size() - 2; i++) {
+            edges[i]->setNext(edges[i+1]);
+        }
+        edges[edges.size() - 1]->setNext(edges[0]);
+    }
+
+    //once done creating all individual faces, now need to "sew together" with sym
+    for(Vertex* vert : verts_and_edges.keys()) {
+        QList<HalfEdge*> edgy = verts_and_edges[vert];
+        for(int i = 1; i < edgy.size() - 2; i++){
+            edgy[i]->setSym(edgy[i+1]->getNext());
+            edgy[i+1]->getNext()->setSym(edgy[i]);
+        }
+        edgy[0]->setSym(edgy[edgy.size() - 1]->getNext());
+        edgy[edgy.size() - 1]->getNext()->setSym(edgy[0]);
+    }
+
 }
 
 void Mesh::create()

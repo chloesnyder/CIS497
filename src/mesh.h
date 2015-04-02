@@ -61,6 +61,8 @@ public:
     void createSquare();
     void createCube();
 
+    void createFromFile(QList<vec4> vert_pos, QMap<Face*, QList<int>> faces_and_verts);
+
     //subdivision
     void subdivide();
     Vertex* calculateCentroid(Face* f);

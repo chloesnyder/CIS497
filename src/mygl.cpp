@@ -1,5 +1,8 @@
 #include "mygl.h"
 #include <la.h>
+#include<QFileDialog>
+#include<QFile>
+#include<QStringList>
 
 #include <iostream>
 #include <QApplication>
@@ -350,15 +353,65 @@ void MyGL::slot_CatmullClark() {
     for(int i = 0; i < mesh.f_list.size(); i++) {
         emit sig_SendFaceList(mesh.f_list.at(i));
     }
-//    for(int i = origvertsize; i < mesh.v_list.size(); i++) {
-//        emit sig_SendVertList(mesh.v_list.at(i));
-//    }
-//    for(int j = origedgesize; j < mesh.HE_list.size(); j++) {
-//        emit sig_sendEdgeList(mesh.HE_list.at(j));
-////        mesh.HE_list.at(j)->create();
-//    }
-
-
     update();
+}
+
+void MyGL::slot_importObjFile(){
+
+    mesh.destroy(); //get rid of previously existing mesh
+    //ASSSUMES WELL FORMED
+    QString filename = QFileDialog::getOpenFileName();
+    QFile* file = new QFile(filename);
+    file->open(QIODevice::ReadOnly);
+    QString line;
+    QList<vec4> vert_pos;
+    QMap<Face*, QList<int>> faces_and_verts;
+
+    if(file->exists()) {
+        QTextStream stream(file);
+        line = stream.readLine();
+        do {
+            if(line.startsWith("v")) {
+                //split the line up, read in the vector positions, add to list
+                QStringList positions = line.split(" ");
+                vec4 v_pos = vec4(0,0,0,1);
+                //skip 0 because 0 will be "v"
+                v_pos.x = positions[1].toFloat();
+                v_pos.y = positions[2].toFloat();
+                v_pos.z = positions[3].toFloat();
+                vert_pos.append(v_pos);
+            } else if (line.startsWith("f")) {
+                Face* f = new Face();
+                f->setID(++mesh.max_face_id);
+                float r1 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+                float r2 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+                float r3 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+                vec4 color = vec4(r1, r2, r3, 1);
+                f->setColor(color);
+                mesh.f_list.push_back(f);
+
+                //parse to get the first number of each word
+                //this is a vertex
+                QStringList info = line.split(" ");
+                QList<int> face_vert_info;
+                //get each vertex belonging to a single face
+                for(QString s : info) {
+                    //split each word up with the slash being the delimiter
+                    QStringList numbers = s.split("/");
+                    //the first char in the word is the vertex
+                    int vert = numbers[0].toInt();
+                }
+                //map the face to its list of vertex info
+                faces_and_verts.insert(f, face_vert_info);
+
+            }
+            line = stream.readLine();
+        } while (!line.isNull());
+    }
+
+    file->close();
+
+
+    mesh.createFromFile(vert_pos, faces_and_verts);
 }
 
