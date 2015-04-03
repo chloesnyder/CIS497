@@ -1014,12 +1014,12 @@ void Mesh::createFromFile(const QList<Vertex*>& vertices, const QMap<Face*, QLis
     }
 
     //once done creating all individual faces, now need to "sew together" with sym
+    int count2 = 0;
     for(Vertex* vert : vertices) {
+
 
         //loop through all the edges that point to current vertex
         for(HalfEdge* current_edge : verts_and_edges[vert]) {
-            if(current_edge->getSym() == NULL) {
-
                 //find the vertex previous to the current vert
                 Vertex* prev = getPrev(current_edge)->getVert();
                 //find the other edge that points to vert whose next vert is the same as
@@ -1028,9 +1028,9 @@ void Mesh::createFromFile(const QList<Vertex*>& vertices, const QMap<Face*, QLis
                     if(e->getNext()->getVert() == prev) {
                         current_edge->setSym(e->getNext());
                         e->getNext()->setSym(current_edge);
+                        count2++;
                     }
                 }
-            }
         }
     }
 }

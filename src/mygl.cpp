@@ -445,7 +445,9 @@ void MyGL::slot_importObjFile(){
         emit sig_SendVertList(mesh.v_list.at(i));
     }
     for(int i = 0; i < mesh.HE_list.size(); i++) {
+       // mesh.HE_list.at(i)->create();
         emit sig_sendEdgeList(mesh.HE_list.at(i));
+
     }
     for(int i = 0; i < mesh.f_list.size(); i++) {
         emit sig_SendFaceList(mesh.f_list.at(i));
