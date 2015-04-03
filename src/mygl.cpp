@@ -57,7 +57,7 @@ void MyGL::initializeGL()
     vao.create();
 
    //mesh.createSquare();
-    mesh.createCube();
+  //  mesh.createCube();
 //    mesh.subdivide();
     mesh.create();
     total_vertices = mesh.v_list.size();
@@ -358,20 +358,39 @@ void MyGL::slot_CatmullClark() {
 
 void MyGL::slot_importObjFile(){
 
+    for(int i = 0; i < mesh.HE_list.size(); i++) {
+        --mesh.max_edge_id;
+        delete mesh.HE_list[i];
+    }
+    for(int i = 0; i < mesh.f_list.size(); i++) {
+        --mesh.max_face_id;
+        delete mesh.f_list[i];
+    }
+    for(int i = 0; i < mesh.v_list.size(); i++) {
+        --mesh.max_vert_id;
+        delete mesh.v_list[i];
+    }
+    mesh.HE_list.clear();
+    mesh.v_list.clear();
+    mesh.f_list.clear();
+
     mesh.destroy(); //get rid of previously existing mesh
     //ASSSUMES WELL FORMED
-    QString filename = QFileDialog::getOpenFileName();
+    //QString filename = QString("/Users/chloesnyder/Desktop/CIS277/hw06/objs/cube.obj");//QFileDialog::getOpenFileName(0, QString("Load OBJ"), QString("../"), QString("*.obj"));
+    QString filename = QFileDialog::getOpenFileName(0, QString("Load OBJ"), QString("../"), QString("*.obj"));
     QFile* file = new QFile(filename);
     file->open(QIODevice::ReadOnly);
     QString line;
-    QList<vec4> vert_pos;
+
+    QList<Vertex*> vertices;
+
     QMap<Face*, QList<int>> faces_and_verts;
 
     if(file->exists()) {
         QTextStream stream(file);
         line = stream.readLine();
         do {
-            if(line.startsWith("v")) {
+            if(line.startsWith("v ")) {
                 //split the line up, read in the vector positions, add to list
                 QStringList positions = line.split(" ");
                 vec4 v_pos = vec4(0,0,0,1);
@@ -379,7 +398,14 @@ void MyGL::slot_importObjFile(){
                 v_pos.x = positions[1].toFloat();
                 v_pos.y = positions[2].toFloat();
                 v_pos.z = positions[3].toFloat();
-                vert_pos.append(v_pos);
+
+                //make new vertex
+                Vertex* v = new Vertex();
+                v->setPos(v_pos);
+                v->setID(++mesh.max_vert_id);
+                vertices.push_back(v);
+                mesh.v_list.push_back(v);
+
             } else if (line.startsWith("f")) {
                 Face* f = new Face();
                 f->setID(++mesh.max_face_id);
@@ -395,11 +421,12 @@ void MyGL::slot_importObjFile(){
                 QStringList info = line.split(" ");
                 QList<int> face_vert_info;
                 //get each vertex belonging to a single face
-                for(QString s : info) {
+                for(int i = 1; i < info.size(); i++) {
                     //split each word up with the slash being the delimiter
-                    QStringList numbers = s.split("/");
+                    QStringList numbers = info[i].split("/");
                     //the first char in the word is the vertex
-                    int vert = numbers[0].toInt();
+                    int vert = numbers[0].toInt() - 1;
+                    face_vert_info.append(vert);
                 }
                 //map the face to its list of vertex info
                 faces_and_verts.insert(f, face_vert_info);
@@ -412,6 +439,20 @@ void MyGL::slot_importObjFile(){
     file->close();
 
 
-    mesh.createFromFile(vert_pos, faces_and_verts);
+    mesh.createFromFile(vertices, faces_and_verts);
+    mesh.create();
+    for(int i = 0; i < mesh.v_list.size(); i++) {
+        emit sig_SendVertList(mesh.v_list.at(i));
+    }
+    for(int i = 0; i < mesh.HE_list.size(); i++) {
+        emit sig_sendEdgeList(mesh.HE_list.at(i));
+    }
+    for(int i = 0; i < mesh.f_list.size(); i++) {
+        emit sig_SendFaceList(mesh.f_list.at(i));
+    }
+    selectedEdge = NULL;
+    mesh.selectedFace = NULL;
+    selectedVertex = NULL;
+    update();
 }
 

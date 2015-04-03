@@ -14,7 +14,7 @@ Vertex::Vertex()
 Vertex::~Vertex(){
 }
 
-void Vertex::setPos(vec4 &p){
+void Vertex::setPos(const vec4 &p){
     pos = p;
 }
 

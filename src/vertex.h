@@ -28,7 +28,7 @@ public:
     Vertex();
     ~Vertex();
 
-    void setPos(vec4 &p);
+    void setPos(const vec4 &p);
     void setEdge(HalfEdge *e);
     void setID(int i);
 

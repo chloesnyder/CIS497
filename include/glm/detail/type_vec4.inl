@@ -68,8 +68,8 @@ namespace detail
 		x(v.x),
 		y(v.y),
 		z(v.z),
-		w(v.w)
-	{}
+        w(v.w)
+    {}
 
 	template <typename T, precision P>
 	template <precision Q>

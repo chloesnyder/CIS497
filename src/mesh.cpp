@@ -978,7 +978,7 @@ void Mesh::deleteVertex(Vertex *v, QList<HalfEdge*>& to_remove_from_he_list, QLi
     delete v;
 }
 
-void Mesh::createFromFile(QList<vec4> vert_pos, QMap<Face*, QList<int>> faces_and_verts){
+void Mesh::createFromFile(const QList<Vertex*>& vertices, const QMap<Face*, QList<int>>& faces_and_verts){
     QMap<Face*, QList<HalfEdge*>> faces_and_edges; //maps face to all the half edges in it
     QMap<Vertex*, QList<HalfEdge*>> verts_and_edges; //maps vert to all the half edges pointing to it
     //go through every face in the QMap
@@ -987,57 +987,52 @@ void Mesh::createFromFile(QList<vec4> vert_pos, QMap<Face*, QList<int>> faces_an
         QList<int> verts = faces_and_verts[f];
         QList<HalfEdge*> edges;
         for(int i : verts) {
-            Vertex* v;
-
-            //create vert if not already created
-            //because v_list is empty,i corresponds to the indice of the vertex (i.e. 1 is first vert created)
-            if(v_list.size() < i) {
-                v = new Vertex();
-                //the position for this vertex corresponds with the order of vec4s in vert_pos
-                v->setPos(vert_pos[i]);
-                v->setID(++max_vert_id); //this should be the same as i
-                v_list.push_back(v);
-            } else {
-                v = v_list[i];
-            }
-
             //create half edge to point to vert
             HalfEdge* he = new HalfEdge();
-            he->setVert(v);
+            he->setVert(vertices[i]); //I set a vert here, so how can get vert be null?
             he->setFace(f);
             he->setID(++max_edge_id);
             edges.append(he);
             HE_list.push_back(he);
 
             //if a new vert, won't be in map, so add to map
-            if(!verts_and_edges.keys().contains(v)) {
+            if(!verts_and_edges.keys().contains(vertices[i])) {
                 QList<HalfEdge*> points_to_newv;
                 points_to_newv.append(he);
-                verts_and_edges.insert(v, points_to_newv);
+                verts_and_edges.insert(vertices[i], points_to_newv);
             } else {
-                verts_and_edges[v].append(he);
+                verts_and_edges[vertices[i]].append(he);
             }
 
         }
         //set up next pointers for face
         f->setStartEdge(edges[0]);
-        for(int i = 0; i < edges.size() - 2; i++) {
+        for(int i = 0; i < edges.size() - 1; i++) {
             edges[i]->setNext(edges[i+1]);
         }
         edges[edges.size() - 1]->setNext(edges[0]);
     }
 
     //once done creating all individual faces, now need to "sew together" with sym
-    for(Vertex* vert : verts_and_edges.keys()) {
-        QList<HalfEdge*> edgy = verts_and_edges[vert];
-        for(int i = 1; i < edgy.size() - 2; i++){
-            edgy[i]->setSym(edgy[i+1]->getNext());
-            edgy[i+1]->getNext()->setSym(edgy[i]);
-        }
-        edgy[0]->setSym(edgy[edgy.size() - 1]->getNext());
-        edgy[edgy.size() - 1]->getNext()->setSym(edgy[0]);
-    }
+    for(Vertex* vert : vertices) {
 
+        //loop through all the edges that point to current vertex
+        for(HalfEdge* current_edge : verts_and_edges[vert]) {
+            if(current_edge->getSym() == NULL) {
+
+                //find the vertex previous to the current vert
+                Vertex* prev = getPrev(current_edge)->getVert();
+                //find the other edge that points to vert whose next vert is the same as
+                //current edge's previous vert
+                for(HalfEdge* e : verts_and_edges[vert]) {
+                    if(e->getNext()->getVert() == prev) {
+                        current_edge->setSym(e->getNext());
+                        e->getNext()->setSym(current_edge);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void Mesh::create()

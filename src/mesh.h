@@ -43,7 +43,7 @@ public:
     HalfEdge* selectedEdge;
 
     vector<Face*> f_list;
-    vector<HalfEdge*> HE_list;
+    QList<HalfEdge*> HE_list;
     vector<Vertex*> v_list;
 
     static vec4 crossVec4(vec4 _v1, vec4 _v2);
@@ -61,7 +61,7 @@ public:
     void createSquare();
     void createCube();
 
-    void createFromFile(QList<vec4> vert_pos, QMap<Face*, QList<int>> faces_and_verts);
+    void createFromFile(const QList<Vertex*>& vertices, const QMap<Face *, QList<int> > &faces_and_verts);
 
     //subdivision
     void subdivide();
