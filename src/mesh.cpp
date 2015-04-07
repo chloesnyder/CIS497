@@ -123,12 +123,6 @@ void Mesh::quadrangulate(Face* f, Vertex* centroid, QMap<Face*, QList<HalfEdge*>
 
         from_centroid[i]->setNext(point_to_vert[i]);
 
-//        if(i != 0) {
-//            point_to_vert[i]->setNext(point_to_mp[i-1]);
-//        } else {
-//            point_to_vert[i]->setNext(point_to_mp[point_to_mp.size() - 1]);
-//        }
-
         new_face->setStartEdge(point_to_vert[i]);
 
     }
@@ -232,7 +226,6 @@ void Mesh::subdivide() {
 
             e1 = e1->getSym();
 
-            //it's entering an infinite loop here
             while(e1->getVert() != v) {
                 e1 = e1->getNext();
             }
