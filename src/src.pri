@@ -16,7 +16,8 @@ SOURCES += \
     $$PWD/277files/face.cpp \
     $$PWD/277files/facelisthelper.cpp \
     $$PWD/277files/edgelisthelper.cpp \
-    $$PWD/277files/vertexlisthelper.cpp
+    $$PWD/277files/vertexlisthelper.cpp \
+    $$PWD/cdicomreader.cpp
 
 HEADERS += \
     $$PWD/mainwindow.h \
@@ -33,4 +34,5 @@ HEADERS += \
     $$PWD/277files/face.h \
     $$PWD/277files/facelisthelper.h \
     $$PWD/277files/edgelisthelper.h \
-    $$PWD/277files/vertexlisthelper.h
+    $$PWD/277files/vertexlisthelper.h \
+    $$PWD/cdicomreader.h
