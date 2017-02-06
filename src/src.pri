@@ -7,30 +7,30 @@ SOURCES += \
     $$PWD/glwidget277.cpp \
     $$PWD/mygl.cpp \
     $$PWD/shaderprogram.cpp \
-    $$PWD/scene/camera.cpp \
-    $$PWD/scene/cylinder.cpp \
-    $$PWD/scene/sphere.cpp \
-    $$PWD/vertex.cpp \
-    $$PWD/mesh.cpp \
-    $$PWD/halfedge.cpp \
-    $$PWD/face.cpp \
-    $$PWD/facelisthelper.cpp \
-    $$PWD/edgelisthelper.cpp \
-    $$PWD/vertexlisthelper.cpp
+    $$PWD/277files/scene/camera.cpp \
+    $$PWD/277files/scene/cylinder.cpp \
+    $$PWD/277files/scene/sphere.cpp \
+    $$PWD/277files/vertex.cpp \
+    $$PWD/277files/mesh.cpp \
+    $$PWD/277files/halfedge.cpp \
+    $$PWD/277files/face.cpp \
+    $$PWD/277files/facelisthelper.cpp \
+    $$PWD/277files/edgelisthelper.cpp \
+    $$PWD/277files/vertexlisthelper.cpp
 
 HEADERS += \
     $$PWD/mainwindow.h \
     $$PWD/glwidget277.h \
     $$PWD/mygl.h \
     $$PWD/shaderprogram.h \
-    $$PWD/scene/camera.h \
-    $$PWD/scene/cylinder.h \
-    $$PWD/scene/sphere.h \
+    $$PWD/277files/scene/camera.h \
+    $$PWD/277files/scene/cylinder.h \
+    $$PWD/277files/scene/sphere.h \
     $$PWD/la.h \
-    $$PWD/vertex.h \
-    $$PWD/mesh.h \
-    $$PWD/halfedge.h \
-    $$PWD/face.h \
-    $$PWD/facelisthelper.h \
-    $$PWD/edgelisthelper.h \
-    $$PWD/vertexlisthelper.h
+    $$PWD/277files/vertex.h \
+    $$PWD/277files/mesh.h \
+    $$PWD/277files/halfedge.h \
+    $$PWD/277files/face.h \
+    $$PWD/277files/facelisthelper.h \
+    $$PWD/277files/edgelisthelper.h \
+    $$PWD/277files/vertexlisthelper.h
