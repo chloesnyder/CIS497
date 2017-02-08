@@ -46,4 +46,5 @@ signals:
 
 private slots:
     void slot_importDICOMFile();
+
 };

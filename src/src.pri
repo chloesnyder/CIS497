@@ -35,4 +35,7 @@ HEADERS += \
     $$PWD/277files/facelisthelper.h \
     $$PWD/277files/edgelisthelper.h \
     $$PWD/277files/vertexlisthelper.h \
-    $$PWD/cdicomreader.h
+    $$PWD/cdicomreader.h \
+    $$PWD/dcmtk_ofstd.h \
+    $$PWD/dcmtk_dcmdata.h \
+    $$PWD/dcmtk_dcmimgle.h

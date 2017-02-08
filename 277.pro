@@ -45,3 +45,148 @@ address_sanitizer {
     QMAKE_CXXFLAGS += -fsanitize=address
     QMAKE_LFLAGS += -fsanitize=address
 }
+
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ \
+-loflog \
+-ldcmimgle \
+-ldcmdata \
+-lofstd
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/liboflog.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmimgle
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmimgle.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmdata
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmdata.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -lcharls
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libcharls.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmdsig
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmdsig.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmimage
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmimage.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmjpeg
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmjpeg.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmjpls
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmjpls.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmjpls
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmjpls.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmnet
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmnet.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmpstat
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmpstat.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmqrdb
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmqrdb.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmsr
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmsr.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmtls
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmtls.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -ldcmwlm
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libdcmwlm.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -lijg8
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libijg8.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -lijg12
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libijg12.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -lijg16
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libijg16.a
+
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -llibi2d
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/liblibi2d.a
+unix: LIBS += -L$$PWD/include/dcmtk/lib/ -lofstd
+
+INCLUDEPATH += $$PWD/include/dcmtk/include
+DEPENDPATH += $$PWD/include/dcmtk/include
+
+unix: PRE_TARGETDEPS += $$PWD/include/dcmtk/lib/libofstd.a
+
