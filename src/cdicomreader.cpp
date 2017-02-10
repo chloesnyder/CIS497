@@ -1,6 +1,5 @@
 #include "cdicomreader.h"
 
-#include "dcmtk_dcmimgle.h"
 
 
 CDicomReader::CDicomReader()

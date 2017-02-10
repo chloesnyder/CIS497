@@ -11,7 +11,9 @@
 #include <277files/scene/camera.h>
 #include <la.h>
 #include "277files/mesh.h"
-
+//#include "277files/voxel.h"
+#include "cvoxelplanenode.h"
+#include "cimagereader.h"
 
 #include <QListWidget>
 
@@ -29,6 +31,11 @@ private:
     Mesh mesh;
     Camera camera;
 
+    Voxel voxel;
+    CVoxelPlaneNode* mVoxelNode;
+    CImageReader mImageReader;
+    Voxelizer mVoxelizer;
+
 public:
 
     explicit MyGL(QWidget *parent = 0);
@@ -37,6 +44,8 @@ public:
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
+
+    void drawVoxels();
 
 protected:
     void keyPressEvent(QKeyEvent *e);

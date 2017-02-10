@@ -17,7 +17,12 @@ SOURCES += \
     $$PWD/277files/facelisthelper.cpp \
     $$PWD/277files/edgelisthelper.cpp \
     $$PWD/277files/vertexlisthelper.cpp \
-    $$PWD/cdicomreader.cpp
+    $$PWD/cdicomreader.cpp \
+    $$PWD/277files/scene/voxel.cpp \
+    $$PWD/cimagereader.cpp \
+    $$PWD/ppm.cpp \
+    $$PWD/voxelizer.cpp \
+    $$PWD/cvoxelplanenode.cpp
 
 HEADERS += \
     $$PWD/mainwindow.h \
@@ -36,6 +41,8 @@ HEADERS += \
     $$PWD/277files/edgelisthelper.h \
     $$PWD/277files/vertexlisthelper.h \
     $$PWD/cdicomreader.h \
-    $$PWD/dcmtk_ofstd.h \
-    $$PWD/dcmtk_dcmdata.h \
-    $$PWD/dcmtk_dcmimgle.h
+    $$PWD/277files/scene/voxel.h \
+    $$PWD/cimagereader.h \
+    $$PWD/ppm.h \
+    $$PWD/voxelizer.h \
+    $$PWD/cvoxelplanenode.h

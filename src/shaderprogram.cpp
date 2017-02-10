@@ -1,5 +1,8 @@
 #include "shaderprogram.h"
 #include <la.h>
+#include <cstdlib>
+#include <stdlib.h>
+#include <iostream>
 
 
 void ShaderProgram::create(const char *vertfile, const char *fragfile)
@@ -14,6 +17,15 @@ void ShaderProgram::create(const char *vertfile, const char *fragfile)
     unifModel      = prog.uniformLocation("u_Model");
     unifModelInvTr = prog.uniformLocation("u_ModelInvTr");
     unifViewProj   = prog.uniformLocation("u_ViewProj");
+    unifColor = prog.uniformLocation("u_Color");
+}
+
+void ShaderProgram::Drawable::setColor(const glm::vec4& c) {
+    color = c;
+}
+
+glm::vec4 ShaderProgram::Drawable::getColor() {
+    return color;
 }
 
 void ShaderProgram::setModelMatrix(const glm::mat4 &model)
@@ -29,6 +41,7 @@ void ShaderProgram::setModelMatrix(const glm::mat4 &model)
         modelinvtr = glm::inverse(glm::transpose(model));
         prog.setUniformValue(unifModelInvTr, la::to_qmat(modelinvtr));
     }
+
 }
 
 void ShaderProgram::setViewProjMatrix(const glm::mat4& vp)
@@ -63,6 +76,12 @@ void ShaderProgram::draw(GLWidget277 &f, Drawable &d)
     if (attrCol != -1 && d.bindCol()) {
         prog.enableAttributeArray(attrCol);
         f.glVertexAttribPointer(attrCol, 4, GL_FLOAT, false, 0, NULL);
+    }
+
+
+    if (unifColor != -1) {
+//        std::cout << d.getColor().r << d.getColor().g << d.getColor().b << std::endl;
+        prog.setUniformValue(unifColor, la::to_qvec(d.getColor()));
     }
 
     // Bind the index buffer and then draw shapes from it.

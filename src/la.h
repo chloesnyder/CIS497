@@ -32,6 +32,11 @@ inline QMatrix4x4 to_qmat(const mat4 &m)
 {
     return QMatrix4x4(value_ptr(transpose(m)));
 }
+
+
+inline QVector4D to_qvec(const glm::vec4 &v){
+     return QVector4D(v.x, v.y, v.z, v.w);
+ }
 }
 
 /// Float approximate-equality comparison

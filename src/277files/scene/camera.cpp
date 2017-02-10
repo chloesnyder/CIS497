@@ -9,7 +9,7 @@ Camera::Camera(int w, int h)
 {
     theta = -45 * DEG2RAD;
     phi = -45 * DEG2RAD;
-    zoom = 10;
+    zoom = 100;
     fovy = 45 * DEG2RAD;
     width = w;
     height = h;

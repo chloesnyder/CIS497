@@ -22,6 +22,12 @@ public:
         virtual bool bindPos() = 0;
         virtual bool bindNor() = 0;
         virtual bool bindCol() = 0;
+
+        void setColor(const glm::vec4& c);
+        glm::vec4 getColor();
+
+
+        glm::vec4 color;
     };
 
 public:
