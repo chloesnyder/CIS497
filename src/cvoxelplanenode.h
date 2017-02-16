@@ -3,7 +3,7 @@
 
 #include "la.h"
 #include "voxelizer.h"
-
+/*
 class CVoxelPlaneNode
 {
 public:
@@ -27,5 +27,5 @@ private:
 
     std::vector<Voxel*>* mVoxelPlane;
 };
-
+*/
 #endif // CVOXELPLANENODE_H

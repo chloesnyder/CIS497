@@ -5,16 +5,16 @@ Voxelizer::Voxelizer()
 
 }
 
-Voxelizer::Voxelizer(img_t* slice, double z)
+Voxelizer::Voxelizer(img_t* slice, double y)
 {
     mSlice = slice;
-    mLength = z;
-    mVoxelPlane = new std::vector<Voxel*>();
+    mLength = y;
+    mVoxelPlane = new std::vector<CVoxel*>();
 }
 
 void Voxelizer::voxelizeImageSlice() {
-    // Each plane's (0,0) should correspond to (0, 0, z) in world space
-    // The "z" value will vary to allow "stacking" of planes
+    // Each plane's (0,0) should correspond to (0, y, 0) in world space
+    // The "y" value will vary to allow "stacking" of planes
 
     int height = mSlice->h;
     int width = mSlice->w;
@@ -36,13 +36,13 @@ void Voxelizer::voxelizeImageSlice() {
                 // If the pixel isn't black, create a voxel
                 // Store this voxel in the mVoxelPlane vector
                 if(red + green + blue > 0) {
-                    Voxel* currVoxel = new Voxel();
-                    currVoxel->set2DAddress(row, col, count);
-                    currVoxel->setLengthAddress(mLength);
                     float red = (int)currPixel.r / 255.f;
                     float green = (int)currPixel.g / 255.f;
                     float blue = (int)currPixel.b / 255.f;
-                    currVoxel->setColor(glm::vec4(red, green, blue, 1));
+                   // glm::vec4 position = glm::vec4(row, mLength, col, 1);
+                    glm::vec4 position = glm::vec4(row, 0, col, 1);
+                    glm::vec4 color = glm::vec4(red, green, blue, 1);
+                    CVoxel* currVoxel = new CVoxel(position, color);
                     mVoxelPlane->push_back(currVoxel);
                 }
                 count++;
@@ -51,6 +51,7 @@ void Voxelizer::voxelizeImageSlice() {
     }
 }
 
-std::vector<Voxel*> *Voxelizer::getVoxelPlane(){
+std::vector<CVoxel *> *Voxelizer::getVoxelPlane(){
     return mVoxelPlane;
 }
+

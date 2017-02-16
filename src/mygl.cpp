@@ -13,7 +13,7 @@ using namespace glm;
 
 
 MyGL::MyGL(QWidget *parent)
-    : GLWidget277(parent)
+    : GLWidget277(parent), prog_lambert(this), prog_wire(this), camera(Camera())
 {
     setFocusPolicy(Qt::ClickFocus);
 
@@ -22,20 +22,10 @@ MyGL::MyGL(QWidget *parent)
 MyGL::~MyGL()
 {
     makeCurrent();
-
-    vao.destroy();
-    mesh.destroy();
-    voxel.destroy();
-}
-
-void MyGL::drawVoxels() {
-    ///TODO:
-    // Go through each voxel plane in the chain of voxel planes (i.e. traverse parent ->child until
-    // child is null)
-    // Then, go through each voxel in the vector of voxesl (the plane)
-    // Transform each voxel as appropriate and draw
+    glDeleteVertexArrays(1, &vao);
 
 }
+
 
 void MyGL::initializeGL()
 {
@@ -58,11 +48,7 @@ void MyGL::initializeGL()
     printGLErrorLog();
 
     // Create a Vertex Attribute Object
-    vao.create();
-
-
-    mesh.create();
-    voxel.create();
+    glGenVertexArrays(1, &vao);
 
 
     // Create and set up the diffuse shader
@@ -72,7 +58,7 @@ void MyGL::initializeGL()
 
     // We have to have a VAO bound in OpenGL 3.2 Core. But if we're not
     // using multiple VAOs, we can just bind one once.
-    vao.bind();
+    glBindVertexArray(vao);
 
     // Read in the test image
     mImageReader = CImageReader();
@@ -84,9 +70,11 @@ void MyGL::initializeGL()
     mVoxelizer = Voxelizer(img, 0);
     mVoxelizer.voxelizeImageSlice();
 
-    // The node is at (0, 0, 0) with no rotation, scale of 1
-    mVoxelNode = new CVoxelPlaneNode(0, 0, 0, 0, 0, 0, 1, 1, 1);
-    mVoxelNode->setVoxelPlane(mVoxelizer.getVoxelPlane());
+    createChunkVector();
+
+//    // The node is at (0, 0, 0) with no rotation, scale of 1
+//    mVoxelNode = new CVoxelPlaneNode(0, 0, 0, 0, 0, 0, 1, 1, 1);
+//    mVoxelNode->setVoxelPlane(mVoxelizer.getVoxelPlane());
 }
 
 void MyGL::resizeGL(int w, int h)
@@ -113,32 +101,78 @@ void MyGL::paintGL()
     prog_lambert.setViewProjMatrix(camera.getViewProj());
     prog_wire.setViewProjMatrix(camera.getViewProj());
 
-
-    mesh.destroy();
-    mesh.create();
-
-    voxel.destroy();
-    voxel.create();
-
     mat4 model = mat4(1.0f);
     prog_lambert.setModelMatrix(model);
-    prog_lambert.draw(*this, mesh);
 
-    std::vector<Voxel*> *voxelPlane = mVoxelNode->getVoxelPlane();
+    for(unsigned int i = 0; i < chunks.size(); i++) {
+        CChunk* currChunk = chunks[i];
+        prog_lambert.draw(*currChunk);
+    }
+//    prog_lambert.draw(*this, mesh);
+
+ /*   std::vector<Voxel*> *voxelPlane = mVoxelNode->getVoxelPlane();
     Voxel* vPrev = nullptr;
     int count = 0;
     for(Voxel* v : *voxelPlane) {
         //if(count != 0){
         mat4 trans = mVoxelNode->getTransformForVoxel(v, vPrev);
-        voxel.setColor(v->getColor());
-        prog_lambert.setModelMatrix(trans);
+        //voxel.setColor(v->getColor());
+        //prog_lambert.setModelMatrix(trans);
         //prog_lambert.draw(*this, *v);
 
-        prog_lambert.draw(*this, voxel);
+        //prog_lambert.draw(*this, voxel);
        // }
         vPrev = v;
         count++;
     }
+*/
+}
+
+void MyGL::createChunkVector()
+{
+    chunks = std::vector<CChunk*>();
+    std::vector<CVoxel*> *voxelPlane = mVoxelizer.getVoxelPlane();
+    float chunkLength = 512.0f;
+
+    CChunk* currChunk = new CChunk(this);
+    currChunk->setXMin(0);
+    currChunk->setXMax(512);
+    currChunk->setYMin(0);
+    currChunk->setYMax(1);
+    currChunk->setZMin(0);
+    currChunk->setZMax(512);
+
+    CVoxel* prevV = nullptr;
+    currChunk->setWorld(&mWorld);
+    // Eventually this will be modified to do every image?
+    // Right now: max height of 1 because only one image
+    // In future: make the y height = # of images, make it all be in one chunk
+    for(CVoxel* v : *voxelPlane) {
+
+        glm::vec4 voxPos = v->getPosition();
+        glm::vec4 voxCol = v->getColor();
+
+      //  mWorld.addVoxelAt(voxPos.x, voxPos.y, voxPos.z, CVoxel::TYPE);
+
+        if(prevV != nullptr)
+        {
+            glm::vec4 prevPos = prevV->getPosition();
+            mWorld.createChunkVoxelData(voxPos.x, prevPos.x,
+                                        voxPos.y, prevPos.y,
+                                        voxPos.z, prevPos.z);
+        } else {
+            mWorld.createChunkVoxelData(voxPos.x, 0,
+                                        voxPos.y, 0,
+                                        voxPos.z, 0);
+        }
+
+
+        prevV = v;
+
+    }
+
+    currChunk->create();
+    chunks.push_back(currChunk);
 
 }
 
@@ -169,77 +203,3 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     update();  // Calls paintGL, among other things
 }
 
-
-void MyGL::slot_importDICOMFile(){
-
-
-    //ASSSUMES WELL FORMED
-    //QString filename = QString("/Users/chloesnyder/Desktop/CIS277/hw06/objs/cube.obj");//QFileDialog::getOpenFileName(0, QString("Load OBJ"), QString("../"), QString("*.obj"));
-    QString filename = QFileDialog::getOpenFileName(0, QString("Load OBJ"), QString("../"), QString("*.obj"));
-    QFile* file = new QFile(filename);
-    file->open(QIODevice::ReadOnly);
-    QString line;
-
-    QList<Vertex*> vertices;
-
-    QMap<Face*, QList<int>> faces_and_verts;
-
-    if(file->exists()) {
-        QTextStream stream(file);
-        line = stream.readLine();
-        do {
-            if(line.startsWith("v ")) {
-                //split the line up, read in the vector positions, add to list
-                QStringList positions = line.split(" ");
-                vec4 v_pos = vec4(0,0,0,1);
-                //skip 0 because 0 will be "v"
-                v_pos.x = positions[1].toFloat();
-                v_pos.y = positions[2].toFloat();
-                v_pos.z = positions[3].toFloat();
-
-                //make new vertex
-                Vertex* v = new Vertex();
-                v->setPos(v_pos);
-                v->setID(++mesh.max_vert_id);
-                vertices.push_back(v);
-                mesh.v_list.push_back(v);
-
-            } else if (line.startsWith("f")) {
-                Face* f = new Face();
-                f->setID(++mesh.max_face_id);
-                float r1 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-                float r2 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-                float r3 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-                vec4 color = vec4(r1, r2, r3, 1);
-                f->setColor(color);
-                mesh.f_list.push_back(f);
-
-                //parse to get the first number of each word
-                //this is a vertex
-                QStringList info = line.split(" ");
-                QList<int> face_vert_info;
-                //get each vertex belonging to a single face
-                for(int i = 1; i < info.size(); i++) {
-                    //split each word up with the slash being the delimiter
-                    QStringList numbers = info[i].split("/");
-                    //the first char in the word is the vertex
-                    int vert = numbers[0].toInt() - 1;
-                    face_vert_info.append(vert);
-                }
-                //map the face to its list of vertex info
-                faces_and_verts.insert(f, face_vert_info);
-
-            }
-            line = stream.readLine();
-        } while (!line.isNull());
-    }
-
-    file->close();
-
-
-    mesh.createFromFile(vertices, faces_and_verts);
-    mesh.create();
-    mesh.selectedFace = NULL;
-
-    update();
-}

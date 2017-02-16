@@ -2,20 +2,20 @@
 #define VOXELIZER_H
 
 #include "cimagereader.h"
-#include "277files/scene/voxel.h"
+#include "cvoxel.h"
 
 class Voxelizer
 {
 public:
     Voxelizer();
-    Voxelizer(img_t *slice, double z);
+    Voxelizer(img_t *slice, double y);
 
     void voxelizeImageSlice();
-    std::vector<Voxel*> *getVoxelPlane();
+    std::vector<CVoxel*> *getVoxelPlane();
 
 private:
     img_t *mSlice;
-    std::vector<Voxel*> *mVoxelPlane; //this is an array that represents a plane of voxels constructed from an image slice
+    std::vector<CVoxel*> *mVoxelPlane; //this is an array that represents a plane of voxels constructed from an image slice
     double mLength; // this is the z value of the plane
 
 

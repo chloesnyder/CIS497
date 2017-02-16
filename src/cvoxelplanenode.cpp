@@ -4,7 +4,7 @@
 // and assigns the position info in world space
 // The (x,y,z) will be the position of the first voxel in the vector,
 // and all other voxels will be positioned in relation to this voxel
-
+/*
 CVoxelPlaneNode::CVoxelPlaneNode()
 {
 
@@ -80,3 +80,4 @@ glm::mat4 CVoxelPlaneNode::getTransformForVoxel(Voxel *v, Voxel* prevVoxel)
     v->setTransform(transform); //save this as the transformation for this voxel
     return transform;
 }
+*/
