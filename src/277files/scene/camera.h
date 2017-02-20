@@ -2,7 +2,7 @@
 
 #include <la.h>
 
-#define OLD_CAMERA
+//#define OLD_CAMERA
 
 class Camera
 {

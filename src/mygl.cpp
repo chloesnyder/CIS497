@@ -10,7 +10,7 @@
 
 using namespace glm;
 
-#define OLD_CAMERA;
+//#define OLD_CAMERA;
 
 MyGL::MyGL(QWidget *parent)
     : GLWidget277(parent), prog_lambert(this), prog_wire(this), camera(Camera())
@@ -64,7 +64,7 @@ void MyGL::initializeGL()
     mImageReader = CImageReader();
     /// TODO: In future, this needs to iterate over multiple file paths to get multiple images
     // For now, only 1 image array, with height 0
-    const char* filepath = "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/256x256.ppm";
+    const char* filepath = "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/colorseg.ppm";
     mImageReader.readPPM(filepath);
     img_t* img = mImageReader.getImageArray();
     mVoxelizer = Voxelizer(img, 0);
@@ -142,9 +142,9 @@ void MyGL::createChunkVector()
                                         voxPos.y, prevPos.y,
                                         voxPos.z, prevPos.z, voxCol);
         } else {
-            mWorld.createChunkVoxelData(voxPos.x, 0,
-                                        voxPos.y, 0,
-                                        voxPos.z, 0, voxCol);
+            mWorld.createChunkVoxelData(voxPos.x, voxPos.x,
+                                        voxPos.y, voxPos.y,
+                                        voxPos.z, voxPos.z, voxCol);
         }
 
         // TEST TO SEE IF GIT WORKS

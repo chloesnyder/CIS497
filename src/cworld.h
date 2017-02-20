@@ -32,7 +32,6 @@ public:
     glm::vec4 voxelAtIsColor(int x, int y, int z);
 
     bool addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 color); // return true if successful
-    bool addVoxelColorAt(int x, int y, int z, glm::vec4 color);
     bool destroyVoxelAt(int x, int y, int z);
 
     // add in data for new chunk

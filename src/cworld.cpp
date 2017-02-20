@@ -43,7 +43,6 @@ void CWorld::addVoxelLocationData(int x1, int x2, int y1, int y2, int z1, int z2
         for (int j = y1; j <= y2; j++) {
             for (int k = z1; k <= z2; k++) {
                 addVoxelAt(i, j, k, CVoxel::NONEMPTY, color);
-                //addVoxelColorAt(i, j, k, color);
             }
         }
     }
@@ -82,21 +81,6 @@ bool CWorld::addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 color
     } else {
         if(voxelAtIsType(x, y, z) == CVoxel::EMPTY) {
             currWorldView[coords(x,y,z)] = type;
-            voxColMap[coords(x,y,z)] = color;
-            return true;
-        }
-        return false;
-    }
-
-}
-
-bool CWorld::addVoxelColorAt(int x, int y, int z, glm::vec4 color)
-{
-    if(!hasVoxelAt(x, y, z)) {
-        voxColMap[coords(x,y,z)] = color;
-        return true;
-    } else {
-        if(voxelAtIsType(x, y, z) == CVoxel::EMPTY) {
             voxColMap[coords(x,y,z)] = color;
             return true;
         }
