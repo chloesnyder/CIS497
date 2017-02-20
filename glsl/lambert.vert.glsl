@@ -35,7 +35,7 @@ const vec4 lightPos = vec4(5, 5, 3, 1);  // The position of our virtual light, w
 
 void main()
 {
-    fs_Col = vs_Col;  //                          Pass the vertex color positions to the fragment shader
+   /* fs_Col = vs_Col;  //                          Pass the vertex color positions to the fragment shader
     fs_Nor = u_ModelInvTr * vs_Nor;  //           Transform the geometry's normals
 
     vec4 modelposition = u_Model * vs_Pos;  //    Temporarily store the transformed vertex positions for use below
@@ -44,4 +44,11 @@ void main()
 
     gl_Position = u_ViewProj * modelposition;  // gl_Position is a built-in variable of OpenGL which is used to render the final positions
                                              // of the geometry's vertices
+*/
+ fs_Col = vs_Col;
+ mat3 invTranspose = mat3(u_ModelInvTr);
+ fs_Nor = vec4(invTranspose * vec3(vs_Nor), 0);
+ vec4 modelposition = u_Model * vs_Pos;
+ fs_LightVec = lightPos;
+ gl_Position = u_ViewProj * modelposition;
 }

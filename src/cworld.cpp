@@ -20,7 +20,7 @@ void CWorld::addVoxelLocationData(int x1, int x2, int y1, int y2, int z1, int z2
 {
     // check order of given coordinates
     // make sure (xyz)_1 <= (xyz)_2
-    if (x1 > x2) {
+   if (x1 > x2) {
         int prev = x2;
         x2 = x1;
         x1 = prev;
@@ -37,7 +37,7 @@ void CWorld::addVoxelLocationData(int x1, int x2, int y1, int y2, int z1, int z2
     }
 
     for (int i = x1; i <= x2; i++) {
-        for (int j = 0; j <= 1; j++) {
+        for (int j = y1; j <= y2; j++) {
             for (int k = z1; k <= z2; k++) {
                 addVoxelAt(i, j, k, CVoxel::NONEMPTY);
             }

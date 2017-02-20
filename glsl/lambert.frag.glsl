@@ -19,7 +19,7 @@ uniform vec4 u_Color;
 out vec4 out_Col;  // This is the final output color that you will see on your screen for the pixel that is currently being processed.
 
 void main()
-{
+{ /*
     // Material base color (before shading)
     vec4 diffuseColor = u_Color;//fs_Col;
 
@@ -37,5 +37,14 @@ void main()
     // Compute final shaded color
     out_Col = vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a);
    // out_Col = vec4(diffuseColor.rgb, 1);
-    //out_Col = normalize(abs(fs_Nor));
+    //out_Col = normalize(abs(fs_Nor));*/
+
+    vec4 diffuseColor = fs_Col;
+    float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
+
+    diffuseTerm = clamp(diffuseTerm, 0, 1);
+
+    float ambientTerm = 0.2;
+    float lightIntensity = diffuseTerm + ambientTerm;
+    out_Col = vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a);
 }

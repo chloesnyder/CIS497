@@ -42,10 +42,10 @@ private:
     CWorld *mWorld;
     void checkFace(glm::vec4 *v000, glm::vec4 *v001, glm::vec4 *v010,
                    glm::vec4 *v100, glm::vec4 *v011, glm::vec4 *v101,
-                   glm::vec4 *v110, glm::vec4 *v111, int face, int x, int y, int z,
+                   glm::vec4 *v110, glm::vec4 *v111, int face, int x, int y, int z, glm::vec4 color,
                    std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
     void createVoxelBuffer(std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
-    void pushBackVertData(glm::vec4 *a, glm::vec4 *b, glm::vec4 *c, glm::vec4 *d, glm::vec4 normal, std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
+    void pushBackVertData(glm::vec4 *a, glm::vec4 *b, glm::vec4 *c, glm::vec4 *d, glm::vec4 normal, glm::vec4 color, std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
 
 };
 

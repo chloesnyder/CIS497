@@ -64,17 +64,13 @@ void MyGL::initializeGL()
     mImageReader = CImageReader();
     /// TODO: In future, this needs to iterate over multiple file paths to get multiple images
     // For now, only 1 image array, with height 0
-    const char* filepath = "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/testMore.ppm";
+    const char* filepath = "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/TestImageBlackWhite.ppm";
     mImageReader.readPPM(filepath);
     img_t* img = mImageReader.getImageArray();
     mVoxelizer = Voxelizer(img, 0);
     mVoxelizer.voxelizeImageSlice();
 
     createChunkVector();
-
-//    // The node is at (0, 0, 0) with no rotation, scale of 1
-//    mVoxelNode = new CVoxelPlaneNode(0, 0, 0, 0, 0, 0, 1, 1, 1);
-//    mVoxelNode->setVoxelPlane(mVoxelizer.getVoxelPlane());
 }
 
 void MyGL::resizeGL(int w, int h)
@@ -108,24 +104,6 @@ void MyGL::paintGL()
         CChunk* currChunk = chunks[i];
         prog_lambert.draw(*currChunk);
     }
-//    prog_lambert.draw(*this, mesh);
-
- /*   std::vector<Voxel*> *voxelPlane = mVoxelNode->getVoxelPlane();
-    Voxel* vPrev = nullptr;
-    int count = 0;
-    for(Voxel* v : *voxelPlane) {
-        //if(count != 0){
-        mat4 trans = mVoxelNode->getTransformForVoxel(v, vPrev);
-        //voxel.setColor(v->getColor());
-        //prog_lambert.setModelMatrix(trans);
-        //prog_lambert.draw(*this, *v);
-
-        //prog_lambert.draw(*this, voxel);
-       // }
-        vPrev = v;
-        count++;
-    }
-*/
 }
 
 void MyGL::createChunkVector()
@@ -154,6 +132,9 @@ void MyGL::createChunkVector()
 
       //  mWorld.addVoxelAt(voxPos.x, voxPos.y, voxPos.z, CVoxel::TYPE);
 
+        // To modify: pass in the voxCol to createChunkVoxelData
+        // modify this to take in a vec4?
+        // also get rid of the prev->to drawing? might be why I'm getting double square plane
         if(prevV != nullptr)
         {
             glm::vec4 prevPos = prevV->getPosition();
