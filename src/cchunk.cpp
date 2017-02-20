@@ -115,7 +115,7 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
                     if(mWorld->voxelAtIsType(i, j, k) == CVoxel::NONEMPTY)
                     {
 
-                        glm::vec4 color = glm::vec4(1, 1, 1, 1);
+                        glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
 
                         // define voxel vertices
                         glm::vec4 v000 = glm::vec4(i, j, k, 1);

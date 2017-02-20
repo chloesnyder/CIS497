@@ -19,7 +19,9 @@ private:
 
     std::tuple<int, int, int> coords(int x, int y, int z);
 
-    void addVoxelLocationData(int x1, int x2, int y1, int y2, int z1, int z2);
+    std::map<std::tuple<int, int, int>, glm::vec4> voxColMap = std::map<std::tuple<int, int, int>, glm::vec4>();
+
+    void addVoxelLocationData(int x1, int x2, int y1, int y2, int z1, int z2, glm::vec4 color);
 
 public:
     CWorld();
@@ -27,13 +29,15 @@ public:
     int viewWorld = 512; // height width length of view of world by num voxels
     bool hasVoxelAt(int x, int y, int z);
     CVoxel::VTYPE voxelAtIsType(int x, int y, int z);
+    glm::vec4 voxelAtIsColor(int x, int y, int z);
 
-    bool addVoxelAt(int x, int y, int z, CVoxel::VTYPE type); // return true if successful
+    bool addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 color); // return true if successful
+    bool addVoxelColorAt(int x, int y, int z, glm::vec4 color);
     bool destroyVoxelAt(int x, int y, int z);
 
     // add in data for new chunk
     // If data for a block is already there, then use old data
-    void createChunkVoxelData(int x1, int x2, int y1, int y2, int z1, int z2);
+    void createChunkVoxelData(int x1, int x2, int y1, int y2, int z1, int z2, glm::vec4 color);
 
 };
 

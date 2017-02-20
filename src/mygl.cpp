@@ -140,11 +140,11 @@ void MyGL::createChunkVector()
             glm::vec4 prevPos = prevV->getPosition();
             mWorld.createChunkVoxelData(voxPos.x, prevPos.x,
                                         voxPos.y, prevPos.y,
-                                        voxPos.z, prevPos.z);
+                                        voxPos.z, prevPos.z, voxCol);
         } else {
             mWorld.createChunkVoxelData(voxPos.x, 0,
                                         voxPos.y, 0,
-                                        voxPos.z, 0);
+                                        voxPos.z, 0, voxCol);
         }
 
         // TEST TO SEE IF GIT WORKS
