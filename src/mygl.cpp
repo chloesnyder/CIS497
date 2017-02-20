@@ -10,7 +10,7 @@
 
 using namespace glm;
 
-
+#define OLD_CAMERA;
 
 MyGL::MyGL(QWidget *parent)
     : GLWidget277(parent), prog_lambert(this), prog_wire(this), camera(Camera())
@@ -64,7 +64,7 @@ void MyGL::initializeGL()
     mImageReader = CImageReader();
     /// TODO: In future, this needs to iterate over multiple file paths to get multiple images
     // For now, only 1 image array, with height 0
-    const char* filepath = "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/TestImageBlackWhite.ppm";
+    const char* filepath = "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/256x256.ppm";
     mImageReader.readPPM(filepath);
     img_t* img = mImageReader.getImageArray();
     mVoxelizer = Voxelizer(img, 0);
@@ -162,6 +162,7 @@ void MyGL::createChunkVector()
 
 void MyGL::keyPressEvent(QKeyEvent *e)
 {
+#ifdef OLD_CAMERA
     // http://doc.qt.io/qt-5/qt.html#Key-enum
     if (e->key() == Qt::Key_Escape) {
         QApplication::quit();
@@ -183,6 +184,42 @@ void MyGL::keyPressEvent(QKeyEvent *e)
         camera.fovy -= 5.0f * DEG2RAD;
     }
     camera.RecomputeEye();
+    update();  // Calls paintGL, among other things*/
+#else
+    float amount = 2.0f;
+    if(e->modifiers() & Qt::ShiftModifier){
+        amount = 10.0f;
+    }
+    // http://doc.qt.io/qt-5/qt.html#Key-enum
+    if (e->key() == Qt::Key_Escape) {
+        QApplication::quit();
+    } else if (e->key() == Qt::Key_Right) {
+        camera.RotateAboutUp(-amount);
+    } else if (e->key() == Qt::Key_Left) {
+        camera.RotateAboutUp(amount);
+    } else if (e->key() == Qt::Key_Up) {
+        camera.RotateAboutRight(-amount);
+    } else if (e->key() == Qt::Key_Down) {
+        camera.RotateAboutRight(amount);
+    } else if (e->key() == Qt::Key_1) {
+        camera.fovy += amount;
+    } else if (e->key() == Qt::Key_2) {
+        camera.fovy -= amount;
+    } else if (e->key() == Qt::Key_W) {
+        camera.TranslateAlongLook(amount);
+    } else if (e->key() == Qt::Key_S) {
+        camera.TranslateAlongLook(-amount);
+    } else if (e->key() == Qt::Key_D) {
+        camera.TranslateAlongRight(amount);
+    } else if (e->key() == Qt::Key_A) {
+        camera.TranslateAlongRight(-amount);
+    } else if (e->key() == Qt::Key_Q) {
+        camera.TranslateAlongUp(-amount);
+    } else if (e->key() == Qt::Key_E) {
+        camera.TranslateAlongUp(amount);
+    }
+    camera.RecomputeAttributes();
     update();  // Calls paintGL, among other things
+ #endif
 }
 

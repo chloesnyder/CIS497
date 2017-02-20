@@ -1,20 +1,21 @@
 #include "cworld.h"
 
 CWorld::CWorld()
-{
+{/*
     for (int i = 0; i < 512; i++) {
         for(int j = 0; j <=1; j++) {
             for(int k = 0; k < 512; k++) {
                 addVoxelAt(i, j, k, CVoxel::EMPTY);
             }
         }
-    }
+    }*/
 }
 
 std::tuple<int, int, int> CWorld::coords(int x, int y, int z)
 {
     return std::tuple<int, int, int>(x, y, z);
 }
+
 
 void CWorld::addVoxelLocationData(int x1, int x2, int y1, int y2, int z1, int z2)
 {
@@ -93,5 +94,6 @@ bool CWorld::destroyVoxelAt(int x, int y, int z)
 void CWorld::createChunkVoxelData(int x1, int x2, int y1, int y2, int z1, int z2)
 {
     addVoxelLocationData(x1, x2, y1, y2, z1, z2);
+   // addVoxelAt(x1, y1, z1, CVoxel::NONEMPTY);
 }
 
