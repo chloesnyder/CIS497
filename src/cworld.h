@@ -36,7 +36,7 @@ public:
 
     // add in data for new chunk
     // If data for a block is already there, then use old data
-    void createChunkVoxelData(int x1, int x2, int y1, int y2, int z1, int z2, glm::vec4 color);
+    void createChunkVoxelData(glm::vec4 position, glm::vec4 color);
 
 };
 

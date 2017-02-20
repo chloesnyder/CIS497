@@ -64,7 +64,7 @@ void MyGL::initializeGL()
     mImageReader = CImageReader();
     /// TODO: In future, this needs to iterate over multiple file paths to get multiple images
     // For now, only 1 image array, with height 0
-    const char* filepath = "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/colorseg.ppm";
+    const char* filepath = "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/RabbitLayer1.ppm";
     mImageReader.readPPM(filepath);
     img_t* img = mImageReader.getImageArray();
     mVoxelizer = Voxelizer(img, 0);
@@ -130,28 +130,7 @@ void MyGL::createChunkVector()
         glm::vec4 voxPos = v->getPosition();
         glm::vec4 voxCol = v->getColor();
 
-      //  mWorld.addVoxelAt(voxPos.x, voxPos.y, voxPos.z, CVoxel::TYPE);
-
-        // To modify: pass in the voxCol to createChunkVoxelData
-        // modify this to take in a vec4?
-        // also get rid of the prev->to drawing? might be why I'm getting double square plane
-        if(prevV != nullptr)
-        {
-            glm::vec4 prevPos = prevV->getPosition();
-            mWorld.createChunkVoxelData(voxPos.x, prevPos.x,
-                                        voxPos.y, prevPos.y,
-                                        voxPos.z, prevPos.z, voxCol);
-        } else {
-            mWorld.createChunkVoxelData(voxPos.x, voxPos.x,
-                                        voxPos.y, voxPos.y,
-                                        voxPos.z, voxPos.z, voxCol);
-        }
-
-        // TEST TO SEE IF GIT WORKS
-
-
-        prevV = v;
-
+        mWorld.createChunkVoxelData(voxPos, voxCol);
     }
 
     currChunk->create();

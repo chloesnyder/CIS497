@@ -16,39 +16,6 @@ std::tuple<int, int, int> CWorld::coords(int x, int y, int z)
     return std::tuple<int, int, int>(x, y, z);
 }
 
-
-
-
-void CWorld::addVoxelLocationData(int x1, int x2, int y1, int y2, int z1, int z2, glm::vec4 color)
-{
-    // check order of given coordinates
-    // make sure (xyz)_1 <= (xyz)_2
-   if (x1 > x2) {
-        int prev = x2;
-        x2 = x1;
-        x1 = prev;
-    }
-    if (y1 > y2) {
-        int prev = y2;
-        y2 = y1;
-        y1 = prev;
-    }
-    if (z1 > z2) {
-        int prev = z2;
-        z2 = z1;
-        z1 = prev;
-    }
-
-    for (int i = x1; i <= x2; i++) {
-        for (int j = y1; j <= y2; j++) {
-            for (int k = z1; k <= z2; k++) {
-                addVoxelAt(i, j, k, CVoxel::NONEMPTY, color);
-            }
-        }
-    }
-}
-
-
 bool CWorld::hasVoxelAt(int x, int y, int z)
 {
    bool result =  currWorldView.find(coords(x, y, z)) != currWorldView.end();
@@ -103,8 +70,8 @@ bool CWorld::destroyVoxelAt(int x, int y, int z)
 
 // add in data for new chunk
 // If data for a block is already there, then use old data
-void CWorld::createChunkVoxelData(int x1, int x2, int y1, int y2, int z1, int z2, glm::vec4 color)
+void CWorld::createChunkVoxelData(glm::vec4 position, glm::vec4 color)
 {
-    addVoxelLocationData(x1, x2, y1, y2, z1, z2, color);
+    addVoxelAt(position.x, position.y, position.z, CVoxel::NONEMPTY, color);
 }
 
