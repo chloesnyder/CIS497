@@ -12,6 +12,7 @@ public:
 
     void voxelizeImageSlice();
     std::vector<CVoxel*> *getVoxelPlane();
+    double getLength() {return mLength;}
 
 private:
     img_t *mSlice;
