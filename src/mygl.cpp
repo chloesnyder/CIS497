@@ -7,10 +7,12 @@
 #include <iostream>
 #include <QApplication>
 #include <QKeyEvent>
+#include <boost/filesystem.hpp>
 
 using namespace glm;
 
 //#define OLD_CAMERA;
+//#define ONESLICE
 
 MyGL::MyGL(QWidget *parent)
     : GLWidget277(parent), prog_lambert(this), prog_wire(this), camera(Camera())
@@ -62,6 +64,14 @@ void MyGL::initializeGL()
 
     // Read in the test image
     mImageReader = CImageReader();
+
+    processFiles();
+    //createChunkVector();
+}
+
+void MyGL::processFiles() {
+
+#ifdef ONESLICE
     /// TODO: In future, this needs to iterate over multiple file paths to get multiple images
     // For now, only 1 image array, with height 0
     const char* filepath = "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/RabbitLayer1.ppm";
@@ -69,13 +79,27 @@ void MyGL::initializeGL()
     img_t* img = mImageReader.getImageArray();
     mVoxelizer = Voxelizer(img, 0);
     mVoxelizer.voxelizeImageSlice();
-
     createChunkVector();
+#else
+     std::vector<img_t*> slices;
+     // use image reader to get image array of each file, store in slices
+
+     // then, go through each slice, voxelize each slice, create chunk vector for each slice
+     for(int i = 0; i < slices.size(); i++)
+     {
+        img_t* img = slices.at(i);
+        mVoxelizer = Voxelizer(img, i);
+        mVoxelizer.voxelizeImageSlice();
+        createChunkVector();
+     }
+
+#endif
+
 }
 
 void MyGL::resizeGL(int w, int h)
 {
-    camera = Camera(w, h);
+    camera = Camera(w, h, glm::vec3(256, 100, 500), glm::vec3(256, 0, 256), glm::vec3(0, 1, 0));//Camera(w, h);
 
     glm::mat4 viewproj = camera.getViewProj();
 

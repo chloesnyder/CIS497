@@ -41,7 +41,7 @@ void Voxelizer::voxelizeImageSlice() {
                 // Store this voxel in the mVoxelPlane vector
                 if(red + green + blue > 0) {
                    // glm::vec4 position = glm::vec4(row, mLength, col, 1);
-                    glm::vec4 position = glm::vec4(row, 0, col, 1);
+                    glm::vec4 position = glm::vec4(row, mLength, col, 1);
                     glm::vec4 color = glm::vec4(red, green, blue, 1);
                     CVoxel* currVoxel = new CVoxel(position, color);
                     mVoxelPlane->push_back(currVoxel);

@@ -46,3 +46,10 @@ address_sanitizer {
     QMAKE_LFLAGS += -fsanitize=address
 }
 
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../../usr/local/Cellar/boost/1.63.0/lib/release/ -lboost_filesystem-mt -lboost_system
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../usr/local/Cellar/boost/1.63.0/lib/debug/ -lboost_filesystem-mt -lboost_system
+else:unix: LIBS += -L$$PWD/../../../../../../usr/local/Cellar/boost/1.63.0/lib/ -lboost_filesystem-mt -lboost_system
+
+INCLUDEPATH += $$PWD/../../../../../../usr/local/Cellar/boost/1.63.0/include
+DEPENDPATH += $$PWD/../../../../../../usr/local/Cellar/boost/1.63.0/include

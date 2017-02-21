@@ -38,10 +38,12 @@ private:
     std::vector<CChunk*> chunks;
 
 
-
     //bounds
     int boundNegX, boundNegZ, boundPosZ, boundPosX;
     int boundWorldX, boundWorldZ;
+
+    void createChunkVector();
+    void processFiles();
 
 
 public:
@@ -55,7 +57,6 @@ public:
 
    // void drawVoxels();
 
-    void createChunkVector();
 
 protected:
     void keyPressEvent(QKeyEvent *e);

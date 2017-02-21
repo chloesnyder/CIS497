@@ -11,7 +11,6 @@ SOURCES += \
     $$PWD/cimagereader.cpp \
     $$PWD/ppm.cpp \
     $$PWD/voxelizer.cpp \
-    $$PWD/cvoxelplanenode.cpp \
     $$PWD/cvoxel.cpp \
     $$PWD/drawable.cpp \
     $$PWD/cworld.cpp \
@@ -27,7 +26,6 @@ HEADERS += \
     $$PWD/cimagereader.h \
     $$PWD/ppm.h \
     $$PWD/voxelizer.h \
-    $$PWD/cvoxelplanenode.h \
     $$PWD/cvoxel.h \
     $$PWD/drawable.h \
     $$PWD/cworld.h \
