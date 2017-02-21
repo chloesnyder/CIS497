@@ -12,7 +12,6 @@
 #include <QKeyEvent>
 
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 
 using namespace glm;
 namespace fs = boost::filesystem;
@@ -91,23 +90,6 @@ void MyGL::processFiles() {
      // use image reader to get image array of each file, store in slices
      fs::path targetDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/RabbitPPM/");
      fs::directory_iterator end_itr;
-/*
-     BOOST_FOREACH(fs::path const &p, std::make_pair(it, eod))
-     {
-         if(fs::is_regular_file(p))
-         {
-             std::string currFile = it->path().string();
-             int pos = currFile.find_last_of(".");
-             std::string fileExtension = currFile.substr(pos);
-             // check that it's a .ppm file
-             if(fileExtension.compare(".ppm") == 0)
-             {
-                 mImageReader.readPPM(currFile.c_str());
-                 img_t* currImg = mImageReader.getImageArray();
-                 slices.push_back(currImg);
-             }
-         }
-     }*/
 
      for(fs::directory_iterator itr(targetDir); itr != end_itr; ++itr)
      {
@@ -124,6 +106,7 @@ void MyGL::processFiles() {
          }
      }
 
+
      // then, go through each slice, voxelize each slice, create chunk vector for each slice
      for(int i = 0; i < slices.size(); i++)
      {
@@ -132,6 +115,8 @@ void MyGL::processFiles() {
         mVoxelizer.voxelizeImageSlice();
         createChunkVector();
      }
+
+
 
 #endif
 
@@ -172,7 +157,7 @@ void MyGL::paintGL()
 
 void MyGL::createChunkVector()
 {
-    chunks = std::vector<CChunk*>();
+
     std::vector<CVoxel*> *voxelPlane = mVoxelizer.getVoxelPlane();
     double length = mVoxelizer.getLength();
     float chunkLength = 512.0f;
@@ -185,7 +170,6 @@ void MyGL::createChunkVector()
     currChunk->setZMin(0);
     currChunk->setZMax(512);
 
-    CVoxel* prevV = nullptr; // delete this
     currChunk->setWorld(&mWorld);
     // Eventually this will be modified to do every image?
     // Right now: max height of 1 because only one image

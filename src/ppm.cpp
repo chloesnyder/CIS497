@@ -5,41 +5,6 @@ PPM::PPM()
 
 }
 
-/*int main(int argc, char **argv) {
-  // read in the input image
-  printf("Reading, %s!\n", argv[1]);
-  ARRIVED_HERE;
-  img_t *img = read_ppm(argv[1]);
-  ARRIVED_HERE;
-
-  // set all red and blue pixel values to 0
-  int size = img->w * img->h; // img->w is identical to (*img).w, i.e. the w field of whatever img points to
-  for (int i = 0; i < size; i++) {
-    img->data[i].r = img->data[i].b = 0;
-  }
-
-  // this loop just repeats what the previous loop
-  // did to illustrate how to iterate over an array
-  // using a pointer
-  for (pixel_t *p = img->data; // initialize the loop coutner to the beginning of the array
-       p < img->data + size;   // p should not contain a memory address past img.img + (size * sizeof(pixel_t)) bytes
-                              // C knows you mean (size * sizeof(pixel_t)) bytes because img.img is of type (pixel_t *)
-       p++) {                 // add sizeof(pixel_t) bytes to p so it points to the next element in the array
-    p->r = p->b = 0;          // p->r is identical to (*p).r, i.e. the r field of whatever p points to
-  }
-
-  // now write the image
-  printf("Writing %s\n", argv[2]);
-  write_ppm(img, argv[2]);
-
-  // free up memory
-  destroy_img(&img); // &img is the address in memory where the img variable is stored
-                     // Since img is of type (img *), &img is of type (img **)
-
-  return 0;
-}*/
-
-
 /* Since img_t doesn't contain a constructor, destructor/finalize, or any other methods,
  * we need to build up a library of functions to create, destroy and manipulate images.
  */

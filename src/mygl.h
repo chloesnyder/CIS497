@@ -35,7 +35,7 @@ private:
     Voxelizer mVoxelizer;
     CWorld mWorld;
 
-    std::vector<CChunk*> chunks;
+    std::vector<CChunk*> chunks = std::vector<CChunk*>();
 
 
     //bounds
