@@ -32,6 +32,9 @@ public:
 
     void setColor(glm::vec4 col) { mColor = col; }
     glm::vec4 getColor() { return mColor; }
+
+    void recomputeAttributes() {this->create();}
+    void setCameraForward(glm::vec4 look) { mCameraForward = look; }
 private:
     // coords to define the absolute min and max coordinates of chunk's volume
     float m_Xmin, m_Xmax, m_Ymin, m_Ymax, m_Zmin, m_Zmax;
@@ -47,6 +50,7 @@ private:
     void createVoxelBuffer(std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
     void pushBackVertData(glm::vec4 *a, glm::vec4 *b, glm::vec4 *c, glm::vec4 *d, glm::vec4 normal, glm::vec4 color, std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
 
+    glm::vec4 mCameraForward;
 };
 
 #endif // CCHUNK_H

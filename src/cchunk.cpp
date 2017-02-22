@@ -65,39 +65,51 @@ void CChunk::checkFace(glm::vec4 *v000, glm::vec4 *v001, glm::vec4 *v010,
 
 
     if(face == 0) {
-        if(!mWorld->hasVoxelAt(x, y, z + 1) || mWorld->voxelAtIsType(x, y, z + 1) == CVoxel::EMPTY)
+        if(!mWorld->hasVoxelAt(x, y, z + 1))
         {
-            pushBackVertData(v111, v101, v001, v011, posZNor, color, vertices, indices);
+          //  if(glm::dot(posZNor, mCameraForward) > 0) {
+                pushBackVertData(v111, v101, v001, v011, posZNor, color, vertices, indices);
+          //  }
         }
 
     } else if (face == 1) {
-        if(!mWorld->hasVoxelAt(x + 1, y, z)|| mWorld->voxelAtIsType(x + 1, y, z) == CVoxel::EMPTY)
+        if(!mWorld->hasVoxelAt(x + 1, y, z))
         {
-            pushBackVertData(v110, v100, v101, v111, posXNor, color, vertices, indices);
+          //  if(glm::dot(posXNor, mCameraForward) > 0) {
+                pushBackVertData(v110, v100, v101, v111, posXNor, color, vertices, indices);
+           // }
         }
 
     } else if (face == 2) {
-        if(!mWorld->hasVoxelAt(x - 1, y, z) || mWorld->voxelAtIsType(x - 1, y, z) == CVoxel::EMPTY)
+        if(!mWorld->hasVoxelAt(x - 1, y, z))
         {
-            pushBackVertData(v011, v001, v000, v010, negXNor, color, vertices, indices);
+           // if(glm::dot(negXNor, mCameraForward) > 0) {
+                pushBackVertData(v011, v001, v000, v010, negXNor, color, vertices, indices);
+           // }
         }
 
     } else if (face == 3) {
-        if(!mWorld->hasVoxelAt(x, y, z - 1) || mWorld->voxelAtIsType(x, y, z - 1) == CVoxel::EMPTY)
+        if(!mWorld->hasVoxelAt(x, y, z - 1))
         {
-            pushBackVertData(v010, v000, v100, v110, negZNor, color, vertices, indices);
+           // if(glm::dot(negZNor, mCameraForward) > 0) {
+                pushBackVertData(v010, v000, v100, v110, negZNor, color, vertices, indices);
+           // }
         }
 
     } else if (face == 4) {
-        if(!mWorld->hasVoxelAt(x, y + 1, z) || mWorld->voxelAtIsType(x, y + 1, z) == CVoxel::EMPTY)
+        if(!mWorld->hasVoxelAt(x, y + 1, z))
         {
-            pushBackVertData(v110, v111, v011, v010, posYNor, color, vertices, indices);
+           // if(glm::dot(posYNor, mCameraForward) > 0) {
+                pushBackVertData(v110, v111, v011, v010, posYNor, color, vertices, indices);
+           // }
         }
 
     } else if (face == 5) {
-        if(!mWorld->hasVoxelAt(x, y - 1, z) || mWorld->voxelAtIsType(x, y - 1, z) == CVoxel::EMPTY)
+        if(!mWorld->hasVoxelAt(x, y - 1, z))
         {
-            pushBackVertData(v101, v100, v000, v001, negYNor, color, vertices, indices);
+            //if(glm::dot(negYNor, mCameraForward) > 0) {
+                pushBackVertData(v101, v100, v000, v001, negYNor, color, vertices, indices);
+           // }
         }
     }
 }

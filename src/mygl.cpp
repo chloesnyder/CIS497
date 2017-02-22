@@ -11,6 +11,10 @@
 #include <QApplication>
 #include <QKeyEvent>
 
+#include <QDir>
+#include <QDirIterator>
+#include <QStringList>
+
 #include <boost/filesystem.hpp>
 
 using namespace glm;
@@ -87,6 +91,7 @@ void MyGL::processFiles() {
     createChunkVector();
 #else
     std::vector<img_t*> slices;
+    /*
     // use image reader to get image array of each file, store in slices
 
     //fs::path targetDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/RabbitTIFF/Rabbit 29/Unnamed__5454/PPM");
@@ -111,8 +116,24 @@ void MyGL::processFiles() {
     mVoxelizer = Voxelizer(&slices);
     mVoxelizer.voxelizeAllImages();
     createChunkVector();
+    */
 
+    QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
+    //targetDir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
+    QStringList qsl; qsl.append("*.ppm");
+    targetDir.setNameFilters(qsl);
 
+    QDirIterator it(targetDir, QDirIterator::Subdirectories);
+    while(it.hasNext()) {
+        const char* currFile = it.next().toStdString().c_str();
+        mImageReader.readPPM(currFile);
+        img_t* currImg = mImageReader.getImageArray();
+        slices.push_back(currImg);
+    }
+
+    mVoxelizer = Voxelizer(&slices);
+    mVoxelizer.voxelizeAllImages();
+    createChunkVector();
 
 #endif
 
@@ -120,7 +141,7 @@ void MyGL::processFiles() {
 
 void MyGL::resizeGL(int w, int h)
 {
-    camera = Camera(w, h, glm::vec3(256, 100, 500), glm::vec3(256, 0, 256), glm::vec3(0, 1, 0));//Camera(w, h);
+    camera = Camera(w, h, glm::vec3(256, 100, 1000), glm::vec3(256, 0, 256), glm::vec3(0, 1, 0));//Camera(w, h);
 
     glm::mat4 viewproj = camera.getViewProj();
 
@@ -147,6 +168,8 @@ void MyGL::paintGL()
 
     for(unsigned int i = 0; i < chunks.size(); i++) {
         CChunk* currChunk = chunks[i];
+       // currChunk->setCameraForward(glm::vec4(camera.look, 0));
+       // currChunk->recomputeAttributes();
         prog_lambert.draw(*currChunk);
     }
 }
@@ -181,7 +204,8 @@ void MyGL::createChunkVector()
         }
     }
 
-    allLayerChunk ->create();
+  //  allLayerChunk->setCameraForward(glm::vec4(camera.look, 0));
+    allLayerChunk->create();
     chunks.push_back(allLayerChunk);
 
 }
