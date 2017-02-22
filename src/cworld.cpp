@@ -1,14 +1,14 @@
 #include "cworld.h"
 
 CWorld::CWorld()
-{
+{/*
     for (int i = 0; i < 512; i++) {
         for(int j = 0; j <=10; j++) {
             for(int k = 0; k < 512; k++) {
                 addVoxelAt(i, j, k, CVoxel::EMPTY, glm::vec4());
             }
         }
-    }
+    }*/
 }
 
 std::tuple<int, int, int> CWorld::coords(int x, int y, int z)

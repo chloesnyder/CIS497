@@ -165,8 +165,8 @@ void MyGL::createChunkVector()
     CChunk* currChunk = new CChunk(this);
     currChunk->setXMin(0);
     currChunk->setXMax(512);
-    currChunk->setYMin(length); // may need to make get mLength from mVoxelizer, make this be mLength - 1 and max be mLength
-    currChunk->setYMax(length+1);
+    currChunk->setYMin(length-10); // may need to make get mLength from mVoxelizer, make this be mLength - 1 and max be mLength
+    currChunk->setYMax(length+10);
     currChunk->setZMin(0);
     currChunk->setZMax(512);
 

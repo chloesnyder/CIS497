@@ -9,6 +9,7 @@ class Voxelizer
 public:
     Voxelizer();
     Voxelizer(img_t *slice, double y);
+    //Voxelizer(std::vector<img_t*> slices);
 
     void voxelizeImageSlice();
     std::vector<CVoxel*> *getVoxelPlane();
