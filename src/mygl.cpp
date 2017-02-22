@@ -88,7 +88,9 @@ void MyGL::processFiles() {
 #else
     std::vector<img_t*> slices;
     // use image reader to get image array of each file, store in slices
-    fs::path targetDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/RabbitPPM/");
+
+    //fs::path targetDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/RabbitTIFF/Rabbit 29/Unnamed__5454/PPM");
+    fs::path targetDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
     fs::directory_iterator end_itr;
 
     for(fs::directory_iterator itr(targetDir); itr != end_itr; ++itr)
@@ -97,7 +99,7 @@ void MyGL::processFiles() {
         {
             std::string currFile = itr->path().string();
             std::string fileExtension = currFile.substr(currFile.find_last_of("."));
-            if(fileExtension.compare(".ppm") == 0)
+            if(fileExtension.compare(".ppm") == 0 || fileExtension.compare(".pbm") == 0)
             {
                 mImageReader.readPPM(currFile.c_str());
                 img_t* currImg = mImageReader.getImageArray();
@@ -105,17 +107,6 @@ void MyGL::processFiles() {
             }
         }
     }
-
-
-    // then, go through each slice, voxelize each slice, create chunk vector for each slice
-    /*   for(int i = 0; i < slices.size(); i++)
-     {
-        img_t* img = slices.at(i);
-        mVoxelizer = Voxelizer(img, i);
-        mVoxelizer.voxelizeImageSlice();
-        createChunkVector();
-     }
-     */
 
     mVoxelizer = Voxelizer(&slices);
     mVoxelizer.voxelizeAllImages();

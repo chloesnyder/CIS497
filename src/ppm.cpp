@@ -85,7 +85,12 @@ img_t *PPM::read_ppm(const char *fname) {
   FILE *f = fopen(fname, "rb"); // open the ppm for reading in binary mode
   assert(f != NULL); // crash if the file didn't open
 
+ //  fscanf(f, "P6 # CREATOR: GIMP PNM Filter Version 1.1 %d %d 255%*c", &w, &h); // read in the header and image width and height
   fscanf(f, "P6 %d %d 255%*c", &w, &h); // read in the header and image width and height
+
+  //  fscanf(f, "P5 # 8-bit pgm gray %d %d 255%*c", &w, &h); // read in the header and image width and height
+
+
 
   img_t *img = new_img(w, h); // create an empty image of the correct size
 

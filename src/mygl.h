@@ -55,8 +55,6 @@ public:
     void resizeGL(int w, int h);
     void paintGL();
 
-   // void drawVoxels();
-
 
 protected:
     void keyPressEvent(QKeyEvent *e);
