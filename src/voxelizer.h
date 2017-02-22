@@ -8,17 +8,17 @@ class Voxelizer
 {
 public:
     Voxelizer();
-    Voxelizer(img_t *slice, double y);
-    //Voxelizer(std::vector<img_t*> slices);
+    Voxelizer(std::vector<img_t *> *slices);
 
-    void voxelizeImageSlice();
-    std::vector<CVoxel*> *getVoxelPlane();
-    double getLength() {return mLength;}
+    void voxelizeAllImages();
+
+    std::vector<std::vector<CVoxel*>*> *getAllLayers() { return mAllLayers; }
 
 private:
-    img_t *mSlice;
-    std::vector<CVoxel*> *mVoxelPlane; //this is an array that represents a plane of voxels constructed from an image slice
-    double mLength; // this is the z value of the plane
+
+
+    std::vector<img_t*> *mSlices;
+    std::vector<std::vector<CVoxel*>*> *mAllLayers = new std::vector<std::vector<CVoxel*>*>(); // vector of every voxel plane
 
 
 

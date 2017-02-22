@@ -86,35 +86,40 @@ void MyGL::processFiles() {
     mVoxelizer.voxelizeImageSlice();
     createChunkVector();
 #else
-     std::vector<img_t*> slices;
-     // use image reader to get image array of each file, store in slices
-     fs::path targetDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/RabbitPPM/");
-     fs::directory_iterator end_itr;
+    std::vector<img_t*> slices;
+    // use image reader to get image array of each file, store in slices
+    fs::path targetDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/RabbitPPM/");
+    fs::directory_iterator end_itr;
 
-     for(fs::directory_iterator itr(targetDir); itr != end_itr; ++itr)
-     {
-         if(is_regular_file(itr->path()))
-         {
-             std::string currFile = itr->path().string();
-             std::string fileExtension = currFile.substr(currFile.find_last_of("."));
-             if(fileExtension.compare(".ppm") == 0)
-             {
-                 mImageReader.readPPM(currFile.c_str());
-                 img_t* currImg = mImageReader.getImageArray();
-                 slices.push_back(currImg);
-             }
-         }
-     }
+    for(fs::directory_iterator itr(targetDir); itr != end_itr; ++itr)
+    {
+        if(is_regular_file(itr->path()))
+        {
+            std::string currFile = itr->path().string();
+            std::string fileExtension = currFile.substr(currFile.find_last_of("."));
+            if(fileExtension.compare(".ppm") == 0)
+            {
+                mImageReader.readPPM(currFile.c_str());
+                img_t* currImg = mImageReader.getImageArray();
+                slices.push_back(currImg);
+            }
+        }
+    }
 
 
-     // then, go through each slice, voxelize each slice, create chunk vector for each slice
-     for(int i = 0; i < slices.size(); i++)
+    // then, go through each slice, voxelize each slice, create chunk vector for each slice
+    /*   for(int i = 0; i < slices.size(); i++)
      {
         img_t* img = slices.at(i);
         mVoxelizer = Voxelizer(img, i);
         mVoxelizer.voxelizeImageSlice();
         createChunkVector();
      }
+     */
+
+    mVoxelizer = Voxelizer(&slices);
+    mVoxelizer.voxelizeAllImages();
+    createChunkVector();
 
 
 
@@ -158,32 +163,35 @@ void MyGL::paintGL()
 void MyGL::createChunkVector()
 {
 
-    std::vector<CVoxel*> *voxelPlane = mVoxelizer.getVoxelPlane();
-    double length = mVoxelizer.getLength();
-    float chunkLength = 512.0f;
+    //  std::vector<CVoxel*> *voxelPlane = mVoxelizer.getVoxelPlane();
+    // double length = mVoxelizer.getLength();
 
-    CChunk* currChunk = new CChunk(this);
-    currChunk->setXMin(0);
-    currChunk->setXMax(512);
-    currChunk->setYMin(length-10); // may need to make get mLength from mVoxelizer, make this be mLength - 1 and max be mLength
-    currChunk->setYMax(length+10);
-    currChunk->setZMin(0);
-    currChunk->setZMax(512);
+    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
+    CChunk* allLayerChunk = new CChunk(this);
+    allLayerChunk ->setXMin(0);
+    allLayerChunk ->setXMax(512);
+    allLayerChunk ->setYMin(0);
+    allLayerChunk ->setYMax(allLayers->size());
+    allLayerChunk ->setZMin(0);
+    allLayerChunk ->setZMax(512);
 
-    currChunk->setWorld(&mWorld);
-    // Eventually this will be modified to do every image?
-    // Right now: max height of 1 because only one image
-    // In future: make the y height = # of images, make it all be in one chunk
-    for(CVoxel* v : *voxelPlane) {
+    // go through each layer, and voxelize that layer's voxel plane
+    for(int i = 0; i < allLayers->size(); i++) {
 
-        glm::vec4 voxPos = v->getPosition();
-        glm::vec4 voxCol = v->getColor();
+        std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
+        allLayerChunk ->setWorld(&mWorld);
 
-        mWorld.createChunkVoxelData(voxPos, voxCol);
+        for(CVoxel* v : *currVoxelPlane) {
+
+            glm::vec4 voxPos = v->getPosition();
+            glm::vec4 voxCol = v->getColor();
+
+            mWorld.createChunkVoxelData(voxPos, voxCol);
+        }
     }
 
-    currChunk->create();
-    chunks.push_back(currChunk);
+    allLayerChunk ->create();
+    chunks.push_back(allLayerChunk);
 
 }
 
@@ -248,6 +256,6 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     }
     camera.RecomputeAttributes();
     update();  // Calls paintGL, among other things
- #endif
+#endif
 }
 
