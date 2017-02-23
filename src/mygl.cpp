@@ -15,11 +15,6 @@
 #include <QDirIterator>
 #include <QStringList>
 
-#include <boost/filesystem.hpp>
-
-using namespace glm;
-namespace fs = boost::filesystem;
-
 //#define OLD_CAMERA;
 //#define ONESLICE
 
@@ -47,9 +42,12 @@ void MyGL::initializeGL()
 
     // Set a few settings/modes in OpenGL rendering
     glEnable(GL_DEPTH_TEST);
+    ///TRIANGLE LINES
    // glEnable(GL_LINE_SMOOTH);
    // glEnable(GL_POLYGON_SMOOTH);
 
+
+    // PLAY WITH BLEND FUNC? GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -59,8 +57,12 @@ void MyGL::initializeGL()
     glCullFace(GL_FRONT);
     glEnable(GL_DEPTH_TEST);*/
 
+
+    /// TRIANGLE LINES
    // glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
   //  glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
+
     // Set the size with which points should be rendered
     glPointSize(5);
     // Set the color with which the screen is filled at the start of each render call.
@@ -85,7 +87,6 @@ void MyGL::initializeGL()
     mImageReader = CImageReader();
 
     processFiles();
-    //createChunkVector();
 }
 
 void MyGL::processFiles() {
@@ -101,32 +102,6 @@ void MyGL::processFiles() {
     createChunkVector();
 #else
     std::vector<img_t*> slices;
-    /*
-    // use image reader to get image array of each file, store in slices
-
-    //fs::path targetDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/RabbitTIFF/Rabbit 29/Unnamed__5454/PPM");
-    fs::path targetDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
-    fs::directory_iterator end_itr;
-
-    for(fs::directory_iterator itr(targetDir); itr != end_itr; ++itr)
-    {
-        if(is_regular_file(itr->path()))
-        {
-            std::string currFile = itr->path().string();
-            std::string fileExtension = currFile.substr(currFile.find_last_of("."));
-            if(fileExtension.compare(".ppm") == 0 || fileExtension.compare(".pbm") == 0)
-            {
-                mImageReader.readPPM(currFile.c_str());
-                img_t* currImg = mImageReader.getImageArray();
-                slices.push_back(currImg);
-            }
-        }
-    }
-
-    mVoxelizer = Voxelizer(&slices);
-    mVoxelizer.voxelizeAllImages();
-    createChunkVector();
-    */
 
     QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
    // QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/one");
@@ -173,7 +148,7 @@ void MyGL::paintGL()
     prog_lambert.setViewProjMatrix(camera.getViewProj());
     prog_wire.setViewProjMatrix(camera.getViewProj());
 
-    mat4 model = mat4(1.0f);
+    glm::mat4 model = glm::mat4(1.0f);
     prog_lambert.setModelMatrix(model);
 
     for(unsigned int i = 0; i < chunks.size(); i++) {
