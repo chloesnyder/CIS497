@@ -47,14 +47,24 @@ void MyGL::initializeGL()
 
     // Set a few settings/modes in OpenGL rendering
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_POLYGON_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+   // glEnable(GL_LINE_SMOOTH);
+   // glEnable(GL_POLYGON_SMOOTH);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // DO I WANT THIS?
+   /* glDisable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glEnable(GL_DEPTH_TEST);*/
+
+   // glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  //  glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
     // Set the size with which points should be rendered
     glPointSize(5);
     // Set the color with which the screen is filled at the start of each render call.
-    glClearColor(0.5, 0.5, 0.5, 1);
+    glClearColor(.5, .5, .5, 1);
 
     printGLErrorLog();
 
@@ -119,7 +129,7 @@ void MyGL::processFiles() {
     */
 
     QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
-    //targetDir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
+   // QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/one");
     QStringList qsl; qsl.append("*.ppm");
     targetDir.setNameFilters(qsl);
 

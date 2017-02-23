@@ -28,20 +28,20 @@ void Voxelizer::voxelizeAllImages() {
                 if(count < size) {
                     pixel_t currPixel = slice->data[count];
 
-
+                    // give value 0-1
                     float red = currPixel.r / 255.f;
                     float green = currPixel.g / 255.f;
                     float blue = currPixel.b / 255.f;
 
-                    //float alpha =
+                    float alpha = (red + green + blue) / 3;
 
 
                     // Black pixels represent empty space
                     // If the pixel isn't black, create a voxel
                     // Store this voxel in the mVoxelPlane vector
-                    if(red + green + blue > .75) {
+                    if(alpha > .25) {
                         glm::vec4 position = glm::vec4(row, i, col, 1);
-                        glm::vec4 color = glm::vec4(red, green, blue, 1);
+                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
                         CVoxel* currVoxel = new CVoxel(position, color);
                         voxelPlane->push_back(currVoxel);
                     }
