@@ -118,6 +118,7 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
                                std::vector<GLuint> *indices)
 {
 
+    int totalNumVoxels = 0;
     // iterate over all the existing blocks in the environment
     for(int i = m_Xmin; i < m_Xmax; i++) {
         for(int j = m_Ymin; j < m_Ymax; j++) {
@@ -144,6 +145,7 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
                         {
                             checkFace(&v000, &v001, &v010, &v100, &v011, &v101, &v110, &v111, f, i, j, k, color, vertices, indices);
                         }
+                        totalNumVoxels++;
 
                     }
                 }
@@ -151,6 +153,7 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
             }
         }
     }
+    std::cout << "Total number of voxels: " + totalNumVoxels << std::endl;
 
 }
 
@@ -161,6 +164,7 @@ void CChunk::create()
 
     //populates the vertices and indices buffers
     createVoxelBuffer(&vertices, &indices);
+
 
     count = indices.size();
     generateIdx();

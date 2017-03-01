@@ -103,8 +103,8 @@ void MyGL::processFiles() {
 #else
     std::vector<img_t*> slices;
 
-    QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
-   // QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/one");
+    //QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
+    QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/one");
     QStringList qsl; qsl.append("*.ppm");
     targetDir.setNameFilters(qsl);
 
@@ -162,8 +162,6 @@ void MyGL::paintGL()
 void MyGL::createChunkVector()
 {
 
-    //  std::vector<CVoxel*> *voxelPlane = mVoxelizer.getVoxelPlane();
-    // double length = mVoxelizer.getLength();
 
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
     CChunk* allLayerChunk = new CChunk(this);
@@ -189,7 +187,6 @@ void MyGL::createChunkVector()
         }
     }
 
-  //  allLayerChunk->setCameraForward(glm::vec4(camera.look, 0));
     allLayerChunk->create();
     chunks.push_back(allLayerChunk);
 
