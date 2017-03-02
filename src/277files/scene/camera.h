@@ -2,13 +2,11 @@
 
 #include <la.h>
 
-//#define OLD_CAMERA
 
 class Camera
 {
 public:
 
-#ifndef OLD_CAMERA
     Camera();
     Camera(unsigned int w, unsigned int h);
     Camera(unsigned int w, unsigned int h, const glm::vec3 &e, const glm::vec3 &r, const glm::vec3 &worldUp);
@@ -41,22 +39,6 @@ public:
     void TranslateAlongLook(float amt);
     void TranslateAlongRight(float amt);
     void TranslateAlongUp(float amt);
-#else
-    Camera();
-    Camera(int w, int h);
 
-    float phi, theta;  // Rotation about the X and Y axes
-    float zoom;  // Translation on the Z axis away from the model
-    float fovy;
-    float width, height;  // Screen dimensions
-    float near_clip;  // Near clip plane distance
-    float far_clip;  // Far clip plane distance
-
-    glm::vec4 eye, ref, up;
-
-    glm::mat4 getViewProj();
-
-    void RecomputeEye();
-#endif
 };
 

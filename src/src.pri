@@ -14,7 +14,8 @@ SOURCES += \
     $$PWD/cvoxel.cpp \
     $$PWD/drawable.cpp \
     $$PWD/cworld.cpp \
-    $$PWD/cchunk.cpp
+    $$PWD/cchunk.cpp \
+    $$PWD/cvoxelizeanimageslicetask.cpp
 
 HEADERS += \
     $$PWD/mainwindow.h \
@@ -29,4 +30,5 @@ HEADERS += \
     $$PWD/cvoxel.h \
     $$PWD/drawable.h \
     $$PWD/cworld.h \
-    $$PWD/cchunk.h
+    $$PWD/cchunk.h \
+    $$PWD/cvoxelizeanimageslicetask.h

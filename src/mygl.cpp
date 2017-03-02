@@ -15,8 +15,8 @@
 #include <QDirIterator>
 #include <QStringList>
 
-//#define OLD_CAMERA;
-//#define ONESLICE
+#include <QThread>
+
 
 MyGL::MyGL(QWidget *parent)
     : GLWidget277(parent), prog_lambert(this), prog_wire(this), camera(Camera())
@@ -84,44 +84,16 @@ void MyGL::initializeGL()
     glBindVertexArray(vao);
 
     // Read in the test image
-    mImageReader = CImageReader();
+    //mImageReader = CImageReader();
 
     processFiles();
 }
 
 void MyGL::processFiles() {
 
-#ifdef ONESLICE
-    /// TODO: In future, this needs to iterate over multiple file paths to get multiple images
-    // For now, only 1 image array, with height 0
-    const char* filepath = "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/RabbitLayer1.ppm";
-    mImageReader.readPPM(filepath);
-    img_t* img = mImageReader.getImageArray();
-    mVoxelizer = Voxelizer(img, 0);
-    mVoxelizer.voxelizeImageSlice();
+    mVoxelizer = CVoxelizer();
+    mVoxelizer.processFiles();
     createChunkVector();
-#else
-    std::vector<img_t*> slices;
-
-    //QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
-    QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/one");
-    QStringList qsl; qsl.append("*.ppm");
-    targetDir.setNameFilters(qsl);
-
-    QDirIterator it(targetDir, QDirIterator::Subdirectories);
-    while(it.hasNext()) {
-        const char* currFile = it.next().toStdString().c_str();
-        mImageReader.readPPM(currFile);
-        img_t* currImg = mImageReader.getImageArray();
-        slices.push_back(currImg);
-    }
-
-    mVoxelizer = Voxelizer(&slices);
-    mVoxelizer.voxelizeAllImages();
-    createChunkVector();
-
-#endif
-
 }
 
 void MyGL::resizeGL(int w, int h)
@@ -195,30 +167,6 @@ void MyGL::createChunkVector()
 
 void MyGL::keyPressEvent(QKeyEvent *e)
 {
-#ifdef OLD_CAMERA
-    // http://doc.qt.io/qt-5/qt.html#Key-enum
-    if (e->key() == Qt::Key_Escape) {
-        QApplication::quit();
-    } else if (e->key() == Qt::Key_Right) {
-        camera.theta += 5.0f * DEG2RAD;
-    } else if (e->key() == Qt::Key_Left) {
-        camera.theta -= 5.0f * DEG2RAD;
-    } else if (e->key() == Qt::Key_Up) {
-        camera.phi -= 5.0f * DEG2RAD;
-    } else if (e->key() == Qt::Key_Down) {
-        camera.phi += 5.0f * DEG2RAD;
-    } else if (e->key() == Qt::Key_I) {
-        camera.zoom -= 0.5f;
-    } else if (e->key() == Qt::Key_O) {
-        camera.zoom += 0.5f;
-    } else if (e->key() == Qt::Key_1) {
-        camera.fovy += 5.0f * DEG2RAD;
-    } else if (e->key() == Qt::Key_2) {
-        camera.fovy -= 5.0f * DEG2RAD;
-    }
-    camera.RecomputeEye();
-    update();  // Calls paintGL, among other things*/
-#else
     float amount = 2.0f;
     if(e->modifiers() & Qt::ShiftModifier){
         amount = 10.0f;
@@ -253,6 +201,5 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     }
     camera.RecomputeAttributes();
     update();  // Calls paintGL, among other things
-#endif
 }
 

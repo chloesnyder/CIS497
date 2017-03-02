@@ -10,7 +10,7 @@
 
 
 #include "cchunk.h"
-#include "cimagereader.h"
+//#include "cimagereader.h"
 #include "cworld.h"
 #include "cvoxel.h"
 #include "voxelizer.h"
@@ -31,8 +31,8 @@ private:
 
     Camera camera;
 
-    CImageReader mImageReader;
-    Voxelizer mVoxelizer;
+   // CImageReader mImageReader;
+    CVoxelizer mVoxelizer;
     CWorld mWorld;
 
     std::vector<CChunk*> chunks = std::vector<CChunk*>();
