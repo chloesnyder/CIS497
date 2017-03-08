@@ -48,7 +48,7 @@ void CVoxelizeAnImageSliceTask::run()
                 if(alpha > .25) {
                     glm::vec4 position = glm::vec4(row, mLength, col, 1);
                     glm::vec4 color = glm::vec4(red, green, blue, alpha);
-                    CVoxel* currVoxel = new CVoxel(position, color);
+                    CVoxel* currVoxel = new CVoxel(position, color, count);
                     voxelPlane->push_back(currVoxel);
                 }
                 count++;

@@ -23,6 +23,12 @@ private:
 
     void addVoxelLocationData(int x1, int x2, int y1, int y2, int z1, int z2, glm::vec4 color);
 
+    // Declare array of pairs of voxel address with voxel type, or voxel color
+    // Each array index corresponds to voxel ID
+    // Start with max voxels possible (801 * 512 * 512, may update this later)
+    std::pair<std::tuple<int, int, int>, CVoxel::VTYPE>* currWorldArr = new std::pair<std::tuple<int, int, int>, CVoxel::VTYPE>[801*512*512];
+    std::pair<std::tuple<int, int, int>, glm::vec4>* voxColArr = new std::pair<std::tuple<int, int, int>, glm::vec4>[801*512*512];
+
 public:
     CWorld();
 
@@ -31,12 +37,12 @@ public:
     CVoxel::VTYPE voxelAtIsType(int x, int y, int z);
     glm::vec4 voxelAtIsColor(int x, int y, int z);
 
-    bool addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 color); // return true if successful
+    bool addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 color, int id); // return true if successful
     bool destroyVoxelAt(int x, int y, int z);
 
     // add in data for new chunk
     // If data for a block is already there, then use old data
-    void createChunkVoxelData(glm::vec4 position, glm::vec4 color);
+    void createChunkVoxelData(glm::vec4 position, glm::vec4 color, int id);
 
 };
 

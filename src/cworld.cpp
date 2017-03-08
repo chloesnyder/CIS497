@@ -32,7 +32,7 @@ glm::vec4 CWorld::voxelAtIsColor(int x, int y, int z) {
     }
 }
 
-bool CWorld::addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 color)
+bool CWorld::addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 color, int id)
 {
     if(!hasVoxelAt(x, y, z)) {
         currWorldView[coords(x,y,z)] = type;
@@ -63,8 +63,8 @@ bool CWorld::destroyVoxelAt(int x, int y, int z)
 
 // add in data for new chunk
 // If data for a block is already there, then use old data
-void CWorld::createChunkVoxelData(glm::vec4 position, glm::vec4 color)
+void CWorld::createChunkVoxelData(glm::vec4 position, glm::vec4 color, int id)
 {
-    addVoxelAt(position.x, position.y, position.z, CVoxel::NONEMPTY, color);
+    addVoxelAt(position.x, position.y, position.z, CVoxel::NONEMPTY, color, id);
 }
 

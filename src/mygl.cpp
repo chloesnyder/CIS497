@@ -11,12 +11,6 @@
 #include <QApplication>
 #include <QKeyEvent>
 
-#include <QDir>
-#include <QDirIterator>
-#include <QStringList>
-
-#include <QThread>
-
 
 MyGL::MyGL(QWidget *parent)
     : GLWidget277(parent), prog_lambert(this), prog_wire(this), camera(Camera())
@@ -154,8 +148,9 @@ void MyGL::createChunkVector()
 
             glm::vec4 voxPos = v->getPosition();
             glm::vec4 voxCol = v->getColor();
+            int voxID = v->getID();
 
-            mWorld.createChunkVoxelData(voxPos, voxCol);
+            mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
         }
     }
 
