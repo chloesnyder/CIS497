@@ -4,6 +4,15 @@
 #include "cvoxel.h"
 #include "cworld.h"
 
+typedef struct {
+    glm::vec4 p[3]; // XYZ
+} TRIANGLE;
+
+typedef struct {
+    glm::vec4 p[8]; // 8 points in a cube
+    double val[8];
+} GRIDCELL;
+
 class CChunk : public Drawable
 {
 public:
@@ -35,6 +44,9 @@ public:
 
     void recomputeAttributes() {this->create();}
     void setCameraForward(glm::vec4 look) { mCameraForward = look; }
+
+    int Polygonise(GRIDCELL grid, double isolevel, TRIANGLE *triangles);
+    glm::vec4 VertexInterp(double isolevel, glm::vec4 p1, glm::vec4 p2, double valp1, double valp2);
 private:
     // coords to define the absolute min and max coordinates of chunk's volume
     float m_Xmin, m_Xmax, m_Ymin, m_Ymax, m_Zmin, m_Zmax;
@@ -49,6 +61,9 @@ private:
                    std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
     void createVoxelBuffer(std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
     void pushBackVertData(glm::vec4 *a, glm::vec4 *b, glm::vec4 *c, glm::vec4 *d, glm::vec4 normal, glm::vec4 color, std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
+
+    double calculateDensity(glm::vec4 vertex, int x, int y, int z, double density);
+    glm::vec4 calculateNormal(glm::vec4 vertex, double density);
 
     glm::vec4 mCameraForward;
 };

@@ -18,7 +18,7 @@ bool CWorld::hasVoxelAt(int x, int y, int z)
 CVoxel::VTYPE CWorld::voxelAtIsType(int x, int y, int z)
 {
     if(!hasVoxelAt(x, y, z)) {
-        std::cout << "No block at " << x << ", " << y << ", " << z << std::endl;
+        //std::cout << "No block at " << x << ", " << y << ", " << z << std::endl;
     } else {
         return currWorldView[coords(x, y, z)];
     }
@@ -26,7 +26,8 @@ CVoxel::VTYPE CWorld::voxelAtIsType(int x, int y, int z)
 
 glm::vec4 CWorld::voxelAtIsColor(int x, int y, int z) {
     if(!hasVoxelAt(x, y, z)) {
-        std::cout << "Can't get color, no voxel at " << x << ", " << y << ", " << z << std::endl;
+        return glm::vec4(0, 0, 0, 0);
+        //std::cout << "Can't get color, no voxel at " << x << ", " << y << ", " << z << std::endl;
     } else {
         return voxColMap[coords(x, y, z)];
     }

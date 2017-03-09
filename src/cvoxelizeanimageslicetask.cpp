@@ -32,6 +32,7 @@ void CVoxelizeAnImageSliceTask::run()
     for(int row = 0; row < height; row++) {
         for(int col = 0; col < width; col++) {
             if(count < size) {
+
                 pixel_t currPixel = mSlice->data[count];
 
                 // give value 0-1

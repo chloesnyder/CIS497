@@ -53,3 +53,10 @@ else:unix: LIBS += -L$$PWD/../../../../../../usr/local/Cellar/boost/1.63.0/lib/ 
 
 INCLUDEPATH += $$PWD/../../../../../../usr/local/Cellar/boost/1.63.0/include
 DEPENDPATH += $$PWD/../../../../../../usr/local/Cellar/boost/1.63.0/include
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/7.1.0_5/lib/release/ -lvtkalglib-7.1.1
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/7.1.0_5/lib/debug/ -lvtkalglib-7.1.1
+else:unix: LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/7.1.0_5/lib/ -lvtkalglib-7.1.1
+
+INCLUDEPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/7.1.0_5/include
+DEPENDPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/7.1.0_5/include

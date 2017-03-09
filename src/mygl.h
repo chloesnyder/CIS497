@@ -31,7 +31,6 @@ private:
 
     Camera camera;
 
-   // CImageReader mImageReader;
     CVoxelizer mVoxelizer;
     CWorld mWorld;
 
@@ -44,6 +43,8 @@ private:
 
     void createChunkVector();
     void processFiles();
+
+    bool initTextures3d();
 
 
 public:

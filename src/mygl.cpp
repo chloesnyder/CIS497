@@ -45,6 +45,7 @@ void MyGL::initializeGL()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
     // DO I WANT THIS?
    /* glDisable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -196,5 +197,9 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     }
     camera.RecomputeAttributes();
     update();  // Calls paintGL, among other things
+}
+
+bool MyGL::initTextures3d(){
+
 }
 

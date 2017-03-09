@@ -31,4 +31,5 @@ HEADERS += \
     $$PWD/drawable.h \
     $$PWD/cworld.h \
     $$PWD/cchunk.h \
-    $$PWD/cvoxelizeanimageslicetask.h
+    $$PWD/cvoxelizeanimageslicetask.h \
+    $$PWD/marching_cubes_data.h
