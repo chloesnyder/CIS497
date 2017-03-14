@@ -36,14 +36,16 @@ void MyGL::initializeGL()
 
     // Set a few settings/modes in OpenGL rendering
     glEnable(GL_DEPTH_TEST);
+
+
     ///TRIANGLE LINES
    // glEnable(GL_LINE_SMOOTH);
    // glEnable(GL_POLYGON_SMOOTH);
 
 
     // PLAY WITH BLEND FUNC? GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   // glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
     // DO I WANT THIS?
@@ -54,8 +56,8 @@ void MyGL::initializeGL()
 
 
     /// TRIANGLE LINES
-   // glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-  //  glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
 
     // Set the size with which points should be rendered
@@ -93,7 +95,7 @@ void MyGL::processFiles() {
 
 void MyGL::resizeGL(int w, int h)
 {
-    camera = Camera(w, h, glm::vec3(256, 100, 1000), glm::vec3(256, 0, 256), glm::vec3(0, 1, 0));//Camera(w, h);
+    camera = Camera(w, h, glm::vec3(256, 10, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
 
     glm::mat4 viewproj = camera.getViewProj();
 
@@ -163,7 +165,7 @@ void MyGL::createChunkVector()
 
 void MyGL::keyPressEvent(QKeyEvent *e)
 {
-    float amount = 2.0f;
+    float amount = 10.0f;
     if(e->modifiers() & Qt::ShiftModifier){
         amount = 10.0f;
     }

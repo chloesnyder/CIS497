@@ -45,7 +45,7 @@ public:
     void recomputeAttributes() {this->create();}
     void setCameraForward(glm::vec4 look) { mCameraForward = look; }
 
-    int Polygonise(GRIDCELL grid, double isolevel, TRIANGLE *triangles);
+    int Polygonise(GRIDCELL grid, double isolevel, std::vector<TRIANGLE> &triangles);
     glm::vec4 VertexInterp(double isolevel, glm::vec4 p1, glm::vec4 p2, double valp1, double valp2);
 private:
     // coords to define the absolute min and max coordinates of chunk's volume
@@ -62,8 +62,8 @@ private:
     void createVoxelBuffer(std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
     void pushBackVertData(glm::vec4 *a, glm::vec4 *b, glm::vec4 *c, glm::vec4 *d, glm::vec4 normal, glm::vec4 color, std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
 
-    double calculateDensity(glm::vec4 vertex, int x, int y, int z, double density);
-    glm::vec4 calculateNormal(glm::vec4 vertex, double density);
+    double calculateDensity(glm::vec4 vertex);
+    glm::vec4 calculateNormal(glm::vec4 vertex);
 
     glm::vec4 mCameraForward;
 };

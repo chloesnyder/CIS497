@@ -256,8 +256,7 @@ void ShaderProgram::draw(Drawable &d)
         context->glVertexAttribPointer(attrCol, 4, GL_FLOAT, false, 0, NULL);
     }
 
-    // THIS IS DEFINITELY WRONG BUT I'M NOTO SURE HOW TO FIX IT
-    // for vertex data: context->glVertexAttribPointer(attrCol, 3, GL_FLOAT, false, 9, something?);
+
     if (d.bindVertData()) {
         context->glEnableVertexAttribArray(attrPos);
         context->glVertexAttribPointer(attrPos, 4, GL_FLOAT, false, 3*sizeof(glm::vec4), 0);

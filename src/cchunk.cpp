@@ -14,7 +14,7 @@ int offset = 0;
    of totally below the isolevel.
 */
 
-int CChunk::Polygonise(GRIDCELL grid, double isolevel, TRIANGLE *triangles)
+int CChunk::Polygonise(GRIDCELL grid, double isolevel, std::vector<TRIANGLE> &triangles)
 {
     int i, ntriang;
     int cubeindex;
@@ -330,6 +330,8 @@ int CChunk::Polygonise(GRIDCELL grid, double isolevel, TRIANGLE *triangles)
     if (edgeTable[cubeindex] == 0)
         return(0);
 
+    int edge = edgeTable[cubeindex];
+
     /* Find the vertices where the surface intersects the cube */
     if (edgeTable[cubeindex] & 1)
         vertlist[0] =
@@ -371,9 +373,16 @@ int CChunk::Polygonise(GRIDCELL grid, double isolevel, TRIANGLE *triangles)
     /* Create the triangle */
     ntriang = 0;
     for (i=0;triTable[cubeindex][i]!=-1;i+=3) {
-        triangles[ntriang].p[0] = vertlist[triTable[cubeindex][i  ]];
-        triangles[ntriang].p[1] = vertlist[triTable[cubeindex][i+1]];
-        triangles[ntriang].p[2] = vertlist[triTable[cubeindex][i+2]];
+        TRIANGLE t;
+
+        int triT = triTable[cubeindex][i];
+        int triT2 = triTable[cubeindex][i+1];
+        int triT3 = triTable[cubeindex][i+2];
+
+        t.p[0] = vertlist[triTable[cubeindex][i  ]];
+        t.p[1] = vertlist[triTable[cubeindex][i+1]];
+        t.p[2] = vertlist[triTable[cubeindex][i+2]];
+        triangles.push_back(t);
         ntriang++;
     }
 
@@ -516,15 +525,7 @@ void CChunk::checkFace(glm::vec4 *v000, glm::vec4 *v001, glm::vec4 *v010,
     }
 }
 
-/*glm::vec4 lerp(glm::vec4 v0, glm::vec4 v1, double t)
-{
-    return (1 - t) * v0 + t * v1;
-}*/
 
-double dlerp(double v0, double v1, double t)
-{
-    return (1 - t) * v0 + t * v1;
-}
 
 /*
  * The normal can be computed easily, by taking the gradient of the density function
@@ -536,79 +537,78 @@ double dlerp(double v0, double v1, double t)
  * The three results are put together in a vec4, and then normalized, producing a very
  * high quality surface normal that can later be used for lighting.
  * */
-
-
-glm::vec4 CChunk::calculateNormal(glm::vec4 vertex, double density)
+glm::vec4 CChunk::calculateNormal(glm::vec4 vertex)
 {
+
     glm::vec4 grad;
 
     //float d = 1.0/(float)voxels_per_block -> so for me 1/(512*512)? thats so close to 0...
     float d = 1.0/512.0;
 
-    grad.x = calculateDensity(vertex, d, 0, 0, density) -
-            calculateDensity(vertex, -d, 0, 0, density);
-    grad.y = calculateDensity(vertex, 0, d, 0, density) -
-            calculateDensity(vertex, 0, -d, 0, density);
-    grad.z = calculateDensity(vertex, 0, 0, d, density) -
-            calculateDensity(vertex, 0, 0, -d, density);
+    //// figure out which ijk im at, then look at all the corners of the ijk
+    /// lerp function should solve ratio
+    ///
+
+    grad.x = calculateDensity(vertex + glm::vec4(d, 0, 0, 0)) -
+            calculateDensity(vertex + glm::vec4(-d, 0, 0, 0));
+    grad.y = calculateDensity(vertex + glm::vec4(0, d, 0, 0)) -
+            calculateDensity(vertex + glm::vec4(0, -d, 0, 0));
+    grad.z = calculateDensity(vertex + glm::vec4(0, 0, d, 0)) -
+            calculateDensity(vertex + glm::vec4(0, 0, -d, 0));
     grad.w = 0;
 
     return -glm::normalize(grad);
+
+
 }
 
-double CChunk::calculateDensity(glm::vec4 vertex, int x, int y, int z, double density)
+
+double CChunk::calculateDensity(glm::vec4 vertex)
 {
-    double ldensity;
-    double d[] = {0, 0, 0, 0, 0, 0};
+    // Use trilinear interpolation to determine the density at this vertex
+    // fix the x value from the point you sample from
+    // 4 times along x (so from each of the 8 corners, lerp along 4 pairs of corners x1->x2 x3->x4 x5->x6 x7->x8)
+    // 2 times along y
+    // 1 time along z
 
-    glm::vec4 lerped;
+    // let xd, yd, and zd be the differences between each of the x,y,z, and the
+    // smaller coordinate related, where x0 indicates the lattice point below x,
+    // and x1 indicates the lattice point above x. similarly for y0,y1,z0,z1
+    float x0 = vertex.x - 1; float x1 = vertex.x + 1;
+    float y0 = vertex.y - 1; float y1 = vertex.y + 1;
+    float z0 = vertex.z - 1; float z1 = vertex.z + 1;
 
-    // Calculate the density by getting the alpha value of each of the neighboring voxels
-    // Then, lerp these values to get final density
+    float xd = (vertex.x - x0)/(x1 - x0);
+    float yd = (vertex.y - y0)/(y1 - y0);
+    float zd = (vertex.z - z0)/(z1 - z0);
 
-    if(mWorld->hasVoxelAt(x, y, z + 1))
-    {
-        d[0] = mWorld->voxelAtIsColor(x, y, z+1).a;
-    }
-
-
-    if(mWorld->hasVoxelAt(x + 1, y, z))
-    {
-        d[1] = mWorld->voxelAtIsColor(x+1, y, z).a;
-    }
-
-
-    if(mWorld->hasVoxelAt(x - 1, y, z))
-    {
-        d[2] = mWorld->voxelAtIsColor(x-1, y, z).a;
-    }
+    // convert the floats to the nearest int
+    int ix0 = (int) std::round(x0); int iy0 = (int) std::round(y0); int iz0 = (int) std::round(z0);
+    int ix1 = (int) std::round(x1); int iy1 = (int) std::round(y1); int iz1 = (int) std::round(z1);
+    int ix = (int) std::round(vertex.x); int iy = (int) std::round(vertex.y); int iz = (int) std::round(vertex.z);
 
 
-    if(mWorld->hasVoxelAt(x, y, z - 1))
-    {
-        d[3] = mWorld->voxelAtIsColor(x, y, z-1).a;
-    }
+    float Vx0y0z0 = mWorld->voxelAtIsColor(ix0, iy0, iz0).a;
+    float Vx1y0z0 = mWorld->voxelAtIsColor(ix1, iy0, iz0).a;
+    float Vx0y0z1 = mWorld->voxelAtIsColor(ix0, iy0, iz1).a;
+    float Vx1y0z1 = mWorld->voxelAtIsColor(ix1, iy0, iz1).a;
+    float Vx0y1z0 = mWorld->voxelAtIsColor(ix0, iy1, iz0).a;
+    float Vx1y1z0 = mWorld->voxelAtIsColor(ix1, iy1, iz0).a;
+    float Vx0y1z1 = mWorld->voxelAtIsColor(ix0, iy1, iz1).a;
+    float Vx1y1z1 = mWorld->voxelAtIsColor(ix1, iy1, iz1).a;
 
+    float c00 = Vx0y0z0*(1 - xd) + Vx1y0z0*xd;
+    float c01 = Vx0y0z1*(1 - xd) + Vx1y0z1*xd;
+    float c10 = Vx0y1z0*(1 - xd) + Vx1y1z0*xd;
+    float c11 = Vx0y1z1*(1 - xd) + Vx1y1z1*xd;
 
-    if(mWorld->hasVoxelAt(x, y + 1, z))
-    {
-        d[4] = mWorld->voxelAtIsColor(x, y+1, z).a;
-    }
+    float c0 = c00*(1 - yd) + c10*yd;
+    float c1 = c01*(1 - yd) + c11*yd;
 
+    float c = c0*(1 - zd) + c1*zd;
 
-    if(mWorld->hasVoxelAt(x, y - 1, z))
-    {
-        d[5] = mWorld->voxelAtIsColor(x, y-1, z).a;
-    }
+    return c;
 
-    ldensity = dlerp(density, d[0], (1.f/6.f));
-    ldensity = dlerp(ldensity, d[1], (1.f/6.f));
-    ldensity = dlerp(ldensity, d[2], (1.f/6.f));
-    ldensity = dlerp(ldensity, d[3], (1.f/6.f));
-    ldensity = dlerp(ldensity, d[4], (1.f/6.f));
-    ldensity = dlerp(ldensity, d[5], (1.f/6.f));
-
-    return ldensity * 10;
 }
 
 void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
@@ -621,106 +621,87 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
         for(int j = m_Ymin; j < m_Ymax; j++) {
             for(int k = m_Zmin; k < m_Zmax; k++) {
 
-                if(mWorld->hasVoxelAt(i, j, k)) {
-                    if(mWorld->voxelAtIsType(i, j, k) == CVoxel::NONEMPTY)
+                //if(mWorld->hasVoxelAt(i, j, k)) {
+                //   if(mWorld->voxelAtIsType(i, j, k) == CVoxel::NONEMPTY)
+                //   {
+
+                glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
+
+                // For each voxel, polygonise it
+                // define voxel vertices
+                glm::vec4 v000 = glm::vec4(i, j, k, 1);
+                glm::vec4 v001 = glm::vec4(i, j, k+1, 1);
+                glm::vec4 v010 = glm::vec4(i, j+1, k, 1);
+                glm::vec4 v100 = glm::vec4(i+1, j, k, 1);
+                glm::vec4 v011 = glm::vec4(i, j+1, k+1, 1);
+                glm::vec4 v101 = glm::vec4(i+1, j, k+1, 1);
+                glm::vec4 v110 = glm::vec4(i+1, j+1, k, 1);
+                glm::vec4 v111 = glm::vec4(i+1, j+1, k+1, 1);
+
+                // assign vertices to the 8 corners of this grid cell
+                GRIDCELL currCell = GRIDCELL();
+                currCell.p[0] = v000; currCell.p[1] = v001; currCell.p[2] = v010; currCell.p[3] = v100;
+                currCell.p[4] = v011; currCell.p[5] = v101; currCell.p[6] = v110; currCell.p[7] = v111;
+
+
+                bool hasDensity = false;
+                // define densities at each vertex as the alpha value of the voxel at that vertex location
+                for(int corner = 0; corner < 8; corner++) {
+                    // sample the corners as a lerped value between neighboring voxels
+                    int x = currCell.p[corner].x; int y = currCell.p[corner].y; int z = currCell.p[corner].z;
+
+                    if(mWorld->hasVoxelAt(x,y,z)) {
+                        currCell.val[corner] = mWorld->voxelAtIsColor(x,y,z).a;
+                        hasDensity = true;
+                    } else {
+                        currCell.val[corner] = 0;
+                    }
+                }
+
+                if(hasDensity){
+
+                    std::vector<TRIANGLE> currTriangles = std::vector<TRIANGLE>();
+                    double currIsolevel = .01; // TODO: PLAY WITH THIS!!! what's a good value for my isolevel?
+
+                    int totalTris = Polygonise(currCell, currIsolevel, currTriangles);
+
+                    unsigned int indexCount = offset;
+
+                    // push back vertex and index data
+                    for(int u = 0; u < totalTris; u++)
                     {
 
-                        glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
+                        for(int v = 0; v < 3; v++) {
 
-                        /*  // define voxel vertices
-                        glm::vec4 v000 = glm::vec4(i, j, k, 1);
-                        glm::vec4 v001 = glm::vec4(i, j, k+1, 1);
-                        glm::vec4 v010 = glm::vec4(i, j+1, k, 1);
-                        glm::vec4 v100 = glm::vec4(i+1, j, k, 1);
-                        glm::vec4 v011 = glm::vec4(i, j+1, k+1, 1);
-                        glm::vec4 v101 = glm::vec4(i+1, j, k+1, 1);
-                        glm::vec4 v110 = glm::vec4(i+1, j+1, k, 1);
-                        glm::vec4 v111 = glm::vec4(i+1, j+1, k+1, 1);
+                            // calculate the normal for this vertex based on xyz gradient
+                            glm::vec4 normal = calculateNormal(currTriangles[u].p[v]);
 
-                        // check if each face should be drawn
-                        for(int f = 0; f < 6; f++)
-                        {
-                            checkFace(&v000, &v001, &v010, &v100, &v011, &v101, &v110, &v111, f, i, j, k, color, vertices, indices);
-                        }*/
+                            vertices->push_back(currTriangles.at(u).p[v]); // push back first vertex of this triangle
+                            vertices->push_back(color); // then the color
+                            vertices->push_back(normal); // then the normal
 
-
-                        // I want my density to be equal to my alpha value, or my opacity. Density = opacity = alpha
-                        double density = color.a;
-
-                        // For each voxel, polygonise it
-                        // define voxel vertices
-                        glm::vec4 v000 = glm::vec4(i, j, k, 1);
-                        glm::vec4 v001 = glm::vec4(i, j, k+1, 1);
-                        glm::vec4 v010 = glm::vec4(i, j+1, k, 1);
-                        glm::vec4 v100 = glm::vec4(i+1, j, k, 1);
-                        glm::vec4 v011 = glm::vec4(i, j+1, k+1, 1);
-                        glm::vec4 v101 = glm::vec4(i+1, j, k+1, 1);
-                        glm::vec4 v110 = glm::vec4(i+1, j+1, k, 1);
-                        glm::vec4 v111 = glm::vec4(i+1, j+1, k+1, 1);
-
-                        // assign vertices to the 8 corners of this grid cell
-                        GRIDCELL currCell = GRIDCELL();
-                        currCell.p[0] = v000; currCell.p[1] = v001; currCell.p[2] = v010; currCell.p[3] = v100;
-                        currCell.p[4] = v011; currCell.p[5] = v101; currCell.p[6] = v110; currCell.p[7] = v111;
-
-                        ///////////
-
-                        /*
-                         *  Need to determine density for each of the 8 vertices
-                         * do this by sampling the corners as a lerped value between neighboring voxels
-                         * do this by getting the alpha value of each voxel that shares this vertex
-                         * */
-
-                        // define densities at each vertex
-                        for(int i = 0; i < 8; i++) {
-
-                            // sample the corners as a lerped value between neighboring voxels
-                            currCell.val[i] = calculateDensity(currCell.p[i], i, j, k, density);
-
+                            indices->push_back(indexCount);
+                            indexCount++;
                         }
+                        offset += 3;
 
-                        //////////
-
-                        TRIANGLE *currTriangles;
-                        double currIsolevel = .5; // TODO: PLAY WITH THIS!!! what's a good value for my isolevel?
-
-                        int totalTris = Polygonise(currCell, currIsolevel, currTriangles);
-
-                        // push back vertex and index data
-                        for(int i = 0; i < totalTris; i++)
-                        {
-                            // calculate the normal for this triangle
-                           // glm::vec4 normal;
-                            // glm::vec4 edge1 = currTriangles[i].p[1] - currTriangles[i].p[0];
-                            // glm::vec4 edge2 = currTriangles[i].p[2] - currTriangles[i].p[0];
-                            // normal = glm::vec4(glm::cross(glm::vec3(edge1), glm::vec3(edge2)),0);
-
-                            for(int j = 0; j < 3; j++) {
-
-                                // calculate the normal for this vertex based on xyz gradient
-                                glm::vec4 normal = calculateNormal(currTriangles[i].p[j], density);
-
-                                vertices->push_back(currTriangles[i].p[j]); // push back first vertex of this triangle
-                                vertices->push_back(color); // then the color
-                                vertices->push_back(normal); // then the normal
-                            }
-
-                            // index data
-                            indices->push_back(offset);
-                            indices->push_back(offset + 1);
-                            indices->push_back(offset + 2);
-                            indices->push_back(offset);
-                            indices->push_back(offset + 2);
-                            indices->push_back(offset + 3);
-                            offset += 4;
-                        }
-
+                        // index data
+                       /* indices->push_back(offset);
+                        indices->push_back(offset + 1);
+                        indices->push_back(offset + 2);
+                        indices->push_back(offset);
+                        indices->push_back(offset + 2);
+                        indices->push_back(offset + 3);
+                        offset += 4;*/
                     }
-                    totalNumVoxels++;
+
                 }
-           }
+                totalNumVoxels++;
+            }
         }
     }
+    // }
+    // }
     std::cout << "Total number of voxels: " + totalNumVoxels << std::endl;
 }
 
