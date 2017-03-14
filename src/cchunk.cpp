@@ -545,10 +545,6 @@ glm::vec4 CChunk::calculateNormal(glm::vec4 vertex)
     //float d = 1.0/(float)voxels_per_block -> so for me 1/(512*512)? thats so close to 0...
     float d = 1.0/512.0;
 
-    //// figure out which ijk im at, then look at all the corners of the ijk
-    /// lerp function should solve ratio
-    ///
-
     grad.x = calculateDensity(vertex + glm::vec4(d, 0, 0, 0)) -
             calculateDensity(vertex + glm::vec4(-d, 0, 0, 0));
     grad.y = calculateDensity(vertex + glm::vec4(0, d, 0, 0)) -
@@ -630,13 +626,13 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
                 // For each voxel, polygonise it
                 // define voxel vertices
                 glm::vec4 v000 = glm::vec4(i, j, k, 1);
-                glm::vec4 v001 = glm::vec4(i, j, k+1, 1);
-                glm::vec4 v010 = glm::vec4(i, j+1, k, 1);
-                glm::vec4 v100 = glm::vec4(i+1, j, k, 1);
-                glm::vec4 v011 = glm::vec4(i, j+1, k+1, 1);
-                glm::vec4 v101 = glm::vec4(i+1, j, k+1, 1);
-                glm::vec4 v110 = glm::vec4(i+1, j+1, k, 1);
-                glm::vec4 v111 = glm::vec4(i+1, j+1, k+1, 1);
+                glm::vec4 v001 = glm::vec4(i+1, j, k, 1);
+                glm::vec4 v010 = glm::vec4(i+1, j, k+1, 1);
+                glm::vec4 v100 = glm::vec4(i, j, k+1, 1);
+                glm::vec4 v011 = glm::vec4(i, j+1, k, 1);
+                glm::vec4 v101 = glm::vec4(i+1, j+1, k, 1);
+                glm::vec4 v110 = glm::vec4(i+1, j+1, k+1, 1);
+                glm::vec4 v111 = glm::vec4(i, j+1, k+1, 1);
 
                 // assign vertices to the 8 corners of this grid cell
                 GRIDCELL currCell = GRIDCELL();
@@ -674,7 +670,11 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
                         for(int v = 0; v < 3; v++) {
 
                             // calculate the normal for this vertex based on xyz gradient
-                            glm::vec4 normal = calculateNormal(currTriangles[u].p[v]);
+                            glm::vec4 v1 = currTriangles[u].p[1] - currTriangles[u].p[2];
+                            glm::vec4 v2 = currTriangles[u].p[0] - currTriangles[u].p[2];
+
+
+                            glm::vec4 normal = glm::vec4(glm::cross(glm::vec3(v1), glm::vec3(v2)),0);//calculateNormal(currTriangles[u].p[v]);
 
                             vertices->push_back(currTriangles.at(u).p[v]); // push back first vertex of this triangle
                             vertices->push_back(color); // then the color

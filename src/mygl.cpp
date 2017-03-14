@@ -39,13 +39,13 @@ void MyGL::initializeGL()
 
 
     ///TRIANGLE LINES
-   // glEnable(GL_LINE_SMOOTH);
-   // glEnable(GL_POLYGON_SMOOTH);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POLYGON_SMOOTH);
 
 
     // PLAY WITH BLEND FUNC? GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
-   // glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
     // DO I WANT THIS?
@@ -95,7 +95,7 @@ void MyGL::processFiles() {
 
 void MyGL::resizeGL(int w, int h)
 {
-    camera = Camera(w, h, glm::vec3(256, 10, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
+    camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
 
     glm::mat4 viewproj = camera.getViewProj();
 

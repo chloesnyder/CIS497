@@ -19,7 +19,7 @@ Camera::Camera(unsigned int w, unsigned int h, const glm::vec3 &e, const glm::ve
     width(w),
     height(h),
     near_clip(0.1f),
-    far_clip(1000),
+    far_clip(10000),
     eye(e),
     ref(r),
     world_up(worldUp)
