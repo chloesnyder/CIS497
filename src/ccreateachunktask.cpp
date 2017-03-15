@@ -5,7 +5,7 @@ CCreateAChunkTask::CCreateAChunkTask()
 
 }
 
-CCreateAChunkTask::CCreateAChunkTask(std::vector<std::vector<CVoxel *> *> *layers, std::vector<CChunk *> *chunks, CWorld &world, int ymin,
+CCreateAChunkTask::CCreateAChunkTask(std::vector<std::vector<CVoxel *> *> *layers, std::vector<CChunk *> *chunks, CWorld world, int ymin,
                                      int ymax, GLWidget277* context)
     : mLayers(layers), mChunks(chunks), mWorld(world), ymin(ymin), ymax(ymax), mContext(context)
 {
@@ -28,7 +28,7 @@ void CCreateAChunkTask::run() {
     for(int i = ymin; i < ymax; i++) {
 
         std::vector<CVoxel*> *currVoxelPlane = mLayers->at(i);
-        currChunk ->setWorld(&mWorld);
+        currChunk->setWorld(&mWorld);
 
         for(CVoxel* v : *currVoxelPlane) {
 
@@ -40,7 +40,6 @@ void CCreateAChunkTask::run() {
         }
     }
 
-    //currChunk->create();
     currChunk->populateVoxelBuffer();
     mChunks->push_back(currChunk);
 

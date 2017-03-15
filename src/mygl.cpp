@@ -12,7 +12,7 @@
 #include <QKeyEvent>
 
 
-//#define MULTITHREADING
+#define MULTITHREADING
 
 MyGL::MyGL(QWidget *parent)
     : GLWidget277(parent), prog_lambert(this), prog_wire(this), camera(Camera())
@@ -97,7 +97,10 @@ void MyGL::processFiles() {
 
 void MyGL::resizeGL(int w, int h)
 {
-    camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
+   // camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
+    camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));
+    //Camera()
+
 
     glm::mat4 viewproj = camera.getViewProj();
 
@@ -124,8 +127,6 @@ void MyGL::paintGL()
 
     for(unsigned int i = 0; i < chunks.size(); i++) {
         CChunk* currChunk = chunks[i];
-       // currChunk->setCameraForward(glm::vec4(camera.look, 0));
-       // currChunk->recomputeAttributes();
         prog_lambert.draw(*currChunk);
     }
 }
@@ -157,7 +158,6 @@ void MyGL::createChunkVector()
         if (ymax > totalLayers) ymax = totalLayers;
         CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, mWorld, ymin, ymax, this);
         currChunkTask->start();
-        // nothing is getting pushed back... why? do thread check first?
         chunkTasks->push_back(currChunkTask);
         numThreads++;
     }
@@ -167,10 +167,9 @@ void MyGL::createChunkVector()
     // call create on every chunk
     for(int i = 0; i < chunks.size(); i++)
     {
+        //chunks.at(i)->populateVoxelBuffer();
         chunks.at(i)->create();
     }
-
-   // threadCheck(chunkTasks);
 #else
 
      std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
@@ -202,6 +201,7 @@ void MyGL::createChunkVector()
         }
     }
 
+    allLayerChunk->populateVoxelBuffer();
     allLayerChunk->create();
     chunks.push_back(allLayerChunk);
 #endif

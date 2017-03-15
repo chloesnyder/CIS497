@@ -13,7 +13,7 @@ class CCreateAChunkTask : public QThread
 public:
     CCreateAChunkTask();
     CCreateAChunkTask(std::vector<std::vector<CVoxel*>*>* layers,
-                      std::vector<CChunk*> *chunks, CWorld &world, int ymin, int ymax, GLWidget277 *context);
+                      std::vector<CChunk*> *chunks, CWorld world, int ymin, int ymax, GLWidget277 *context);
     void run();
 private:
     std::vector<std::vector<CVoxel*>*>* mLayers;

@@ -617,10 +617,6 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
         for(int j = m_Ymin; j < m_Ymax; j++) {
             for(int k = m_Zmin; k < m_Zmax; k++) {
 
-                //if(mWorld->hasVoxelAt(i, j, k)) {
-                //   if(mWorld->voxelAtIsType(i, j, k) == CVoxel::NONEMPTY)
-                //   {
-
                 glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
 
                 // For each voxel, polygonise it
@@ -657,7 +653,7 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
                 if(hasDensity){
 
                     std::vector<TRIANGLE> currTriangles = std::vector<TRIANGLE>();
-                    double currIsolevel = .01; // TODO: PLAY WITH THIS!!! what's a good value for my isolevel?
+                    double currIsolevel = .25; //.01; // TODO: PLAY WITH THIS!!! what's a good value for my isolevel?
 
                     int totalTris = Polygonise(currCell, currIsolevel, currTriangles);
 
