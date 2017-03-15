@@ -19,13 +19,13 @@ void CCreateAChunkTask::run() {
     currChunk ->setXMin(0);
     currChunk ->setXMax(512);
     currChunk ->setYMin(ymin);
-    currChunk ->setYMax(ymax);
+    currChunk ->setYMax(ymax+1);
     currChunk ->setZMin(0);
     currChunk ->setZMax(512);
 
 
     // go through each layer, and voxelize that layer's voxel plane
-    for(int i = ymin; i < ymax; i++) {
+    for(int i = ymin; i <= ymax; i++) {
 
         std::vector<CVoxel*> *currVoxelPlane = mLayers->at(i);
         currChunk->setWorld(&mWorld);

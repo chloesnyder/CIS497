@@ -154,7 +154,7 @@ void MyGL::createChunkVector()
     {
 
         ymin = layer;
-        ymax = layer + incr - 1;
+        ymax = layer + incr;
         if (ymax > totalLayers) ymax = totalLayers;
         CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, mWorld, ymin, ymax, this);
         currChunkTask->start();
