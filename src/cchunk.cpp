@@ -684,15 +684,6 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
                             indexCount++;
                         }
                         offset += 3;
-
-                        // index data
-                       /* indices->push_back(offset);
-                        indices->push_back(offset + 1);
-                        indices->push_back(offset + 2);
-                        indices->push_back(offset);
-                        indices->push_back(offset + 2);
-                        indices->push_back(offset + 3);
-                        offset += 4;*/
                     }
 
                 }
@@ -700,32 +691,31 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
             }
         }
     }
-    // }
-    // }
-    std::cout << "Total number of voxels: " + totalNumVoxels << std::endl;
+
+    //std::cout << "Total number of voxels: " + totalNumVoxels << std::endl;
 }
 
+
+void CChunk::populateVoxelBuffer()
+{
+    //populates the vertices and indices buffers
+    createVoxelBuffer(&mVertices, &mIndices);
+}
 
 
 void CChunk::create()
 {
-    std::vector<glm::vec4> vertices;
-    std::vector<GLuint> indices;
 
-    //populates the vertices and indices buffers
-    createVoxelBuffer(&vertices, &indices);
-
-
-    count = indices.size();
+    count = mIndices.size();
     generateIdx();
     context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIdx);
-    context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() *
-                          sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+    context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() *
+                          sizeof(GLuint), mIndices.data(), GL_STATIC_DRAW);
 
     generateVertData();
     context->glBindBuffer(GL_ARRAY_BUFFER, bufVertData);
-    context->glBufferData(GL_ARRAY_BUFFER, vertices.size() *
-                          sizeof(glm::vec4), vertices.data(), GL_STATIC_DRAW);
+    context->glBufferData(GL_ARRAY_BUFFER, mVertices.size() *
+                          sizeof(glm::vec4), mVertices.data(), GL_STATIC_DRAW);
 
 
 }

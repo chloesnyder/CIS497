@@ -14,6 +14,7 @@
 #include "cworld.h"
 #include "cvoxel.h"
 #include "voxelizer.h"
+#include "ccreateachunktask.h"
 
 #include <QListWidget>
 
@@ -45,6 +46,8 @@ private:
     void processFiles();
 
     bool initTextures3d();
+
+    void threadCheck(std::vector<CCreateAChunkTask*> *chunkTasks);
 
 
 public:

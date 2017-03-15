@@ -47,9 +47,15 @@ public:
 
     int Polygonise(GRIDCELL grid, double isolevel, std::vector<TRIANGLE> &triangles);
     glm::vec4 VertexInterp(double isolevel, glm::vec4 p1, glm::vec4 p2, double valp1, double valp2);
+
+    void populateVoxelBuffer();
+
 private:
     // coords to define the absolute min and max coordinates of chunk's volume
     float m_Xmin, m_Xmax, m_Ymin, m_Ymax, m_Zmin, m_Zmax;
+
+    std::vector<glm::vec4> mVertices;
+    std::vector<GLuint> mIndices;
 
     glm::vec4 mColor;
 
