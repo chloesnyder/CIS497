@@ -537,20 +537,31 @@ void CChunk::checkFace(glm::vec4 *v000, glm::vec4 *v001, glm::vec4 *v010,
  * The three results are put together in a vec4, and then normalized, producing a very
  * high quality surface normal that can later be used for lighting.
  * */
-glm::vec4 CChunk::calculateNormal(glm::vec4 vertex)
+glm::vec4 CChunk::calculateNormal(glm::vec4 vertex, int totalTris)
 {
+
+    /*Essentially, the normal of the vertex would be the average of the adjacent faces' (triangles) normals.
+
+In pseudocode:
+
+for each face adjacent to vertex[n]
+    sum = sum + face.normal
+normal[n] = NORMALIZE(sum / COUNT(adjacent faces))
+Repeat for each vertex.
+
+*/
 
     glm::vec4 grad;
 
     //float d = 1.0/(float)voxels_per_block -> so for me 1/(512*512)? thats so close to 0...
-    float d = 1.0/512.0;
+    float d = 1.0;//totalTris;
 
-    grad.x = calculateDensity(vertex + glm::vec4(d, 0, 0, 0)) -
-            calculateDensity(vertex + glm::vec4(-d, 0, 0, 0));
-    grad.y = calculateDensity(vertex + glm::vec4(0, d, 0, 0)) -
-            calculateDensity(vertex + glm::vec4(0, -d, 0, 0));
-    grad.z = calculateDensity(vertex + glm::vec4(0, 0, d, 0)) -
-            calculateDensity(vertex + glm::vec4(0, 0, -d, 0));
+    grad.x = calculateDensity(vertex + glm::vec4(d, 0, 0, 1)) -
+            calculateDensity(vertex + glm::vec4(-d, 0, 0, 1));
+    grad.y = calculateDensity(vertex + glm::vec4(0, d, 0, 1)) -
+            calculateDensity(vertex + glm::vec4(0, -d, 0, 1));
+    grad.z = calculateDensity(vertex + glm::vec4(0, 0, d, 1)) -
+            calculateDensity(vertex + glm::vec4(0, 0, -d, 1));
     grad.w = 0;
 
     return -glm::normalize(grad);
@@ -670,7 +681,7 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
                             glm::vec4 v2 = currTriangles[u].p[0] - currTriangles[u].p[2];
 
 
-                            glm::vec4 normal = glm::vec4(glm::cross(glm::vec3(v1), glm::vec3(v2)),0);//calculateNormal(currTriangles[u].p[v]);
+                            glm::vec4 normal = /*glm::vec4(glm::cross(glm::vec3(v1), glm::vec3(v2)),0) + */calculateNormal(currTriangles[u].p[v], totalTris);
 
                             vertices->push_back(currTriangles.at(u).p[v]); // push back first vertex of this triangle
                             vertices->push_back(color); // then the color

@@ -40,7 +40,8 @@ void CCreateAChunkTask::run() {
         }
     }
 
-    currChunk->populateVoxelBuffer();
+    //currChunk->populateVoxelBuffer();
+   // currChunk->create();
     mChunks->push_back(currChunk);
 
 }

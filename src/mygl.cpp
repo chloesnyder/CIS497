@@ -145,8 +145,7 @@ void MyGL::createChunkVector()
 {
 //#ifdef MULTITHREADING
 
-    // new idea: have one thread populate the entire world and have multithreading do the
-    // chunk population. This should work because
+    // new idea: have one thread populate the entire world and have multithreading do the chunk VBO population?
 
 #ifdef OLD_MULTITHREADING
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
@@ -169,10 +168,17 @@ void MyGL::createChunkVector()
         ymax = layer + incr;
         if (ymax > totalLayers) ymax = totalLayers;
         CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, mWorld, ymin, ymax, this);
-        currChunkTask->start();
-        currChunkTask->wait();
+        currChunkTask->start();       
+        //currChunkTask->wait();
         chunkTasks->push_back(currChunkTask);
         numThreads++;
+    }
+
+    for(int thread = 0; thread < numThreads; thread++)
+    {
+        chunkTasks->at(thread)->wait();
+        chunks.at(thread)->populateVoxelBuffer();
+        chunks.at(thread)->create();
     }
 
     threadCheck(chunkTasks);
@@ -181,7 +187,7 @@ void MyGL::createChunkVector()
     for(int i = 0; i < chunks.size(); i++)
     {
        // chunks.at(i)->populateVoxelBuffer();
-        chunks.at(i)->create();
+      //  chunks.at(i)->create();
     }
 #else
 
