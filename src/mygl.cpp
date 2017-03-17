@@ -12,6 +12,7 @@
 #include <QKeyEvent>
 
 
+#define OLD_MULTITHREADING
 #define MULTITHREADING
 
 MyGL::MyGL(QWidget *parent)
@@ -93,6 +94,13 @@ void MyGL::processFiles() {
     mVoxelizer = CVoxelizer();
     mVoxelizer.processFiles();
     createChunkVector();
+
+    // call create on every chunk
+   /* for(int i = 0; i < chunks.size(); i++)
+    {
+        chunks.at(i)->populateVoxelBuffer();
+        chunks.at(i)->create();
+    }*/
 }
 
 void MyGL::resizeGL(int w, int h)
@@ -135,13 +143,17 @@ void MyGL::paintGL()
 //update to do multithreading
 void MyGL::createChunkVector()
 {
+//#ifdef MULTITHREADING
 
-#ifdef MULTITHREADING
+    // new idea: have one thread populate the entire world and have multithreading do the
+    // chunk population. This should work because
+
+#ifdef OLD_MULTITHREADING
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
     std::vector<CCreateAChunkTask*> *chunkTasks = new std::vector<CCreateAChunkTask*>();
     int numThreads = 0;
 
-    int totalLayers = 20;//allLayers->size();
+    int totalLayers = 100;//allLayers->size();
     int incr = totalLayers / 10;
     int layer;
     int ymin;
@@ -150,7 +162,7 @@ void MyGL::createChunkVector()
 
     // Each thread populates the vertex and index buffers for a chunk
     // a chunk is a subset of the overall structure, from layer ymin to layer ymax
-    for(layer = 0; layer <= totalLayers; layer += incr)
+    for(layer = 0; layer < totalLayers; layer += incr)
     {
 
         ymin = layer;
@@ -158,16 +170,17 @@ void MyGL::createChunkVector()
         if (ymax > totalLayers) ymax = totalLayers;
         CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, mWorld, ymin, ymax, this);
         currChunkTask->start();
+        currChunkTask->wait();
         chunkTasks->push_back(currChunkTask);
         numThreads++;
     }
 
     threadCheck(chunkTasks);
 
-    // call create on every chunk
+   // call create on every chunk
     for(int i = 0; i < chunks.size(); i++)
     {
-        //chunks.at(i)->populateVoxelBuffer();
+       // chunks.at(i)->populateVoxelBuffer();
         chunks.at(i)->create();
     }
 #else

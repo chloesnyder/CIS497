@@ -614,7 +614,7 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
     int totalNumVoxels = 0;
     // iterate over all the existing blocks in the environment
     for(int i = m_Xmin; i < m_Xmax; i++) {
-        for(int j = m_Ymin; j < m_Ymax; j++) {
+        for(int j = m_Ymin; j <= m_Ymax; j++) {
             for(int k = m_Zmin; k < m_Zmax; k++) {
 
                 glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
