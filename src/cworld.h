@@ -1,4 +1,4 @@
-/*#ifndef CWORLD_H
+#ifndef CWORLD_H
 #define CWORLD_H
 
 #include "cvoxel.h"
@@ -44,4 +44,4 @@ public:
 
 };
 
-#endif // CWORLD_H*/
+#endif // CWORLD_H

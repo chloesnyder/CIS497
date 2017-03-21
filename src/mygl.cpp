@@ -13,7 +13,7 @@
 #include <QThreadPool>
 
 
-//#define OLD_MULTITHREADING
+//#define NEW_ALGORITHM
 #define MULTITHREADING
 
 MyGL::MyGL(QWidget *parent)
@@ -136,8 +136,13 @@ void MyGL::paintGL()
 
     for(unsigned int i = 0; i < chunks.size(); i++) {
         //CChunk* currChunk = chunks[i];
-        CChunkArr* currChunk = chunks[i];
+ #ifdef NEW_ALGORITHM
+        CChunkArr* currChunk = chunksArr[i];
         prog_lambert.draw(*currChunk);
+#else
+        CChunk* currChunk = chunks[i];
+        prog_lambert.draw(*currChunk);
+#endif
     }
 }
 
@@ -148,7 +153,7 @@ void MyGL::createChunkVector()
 
     /// NEW WITH ARRAYS INSTEAD
 
-
+#ifdef NEW_ALGORITHM
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
     std::vector<CCreateAChunkTask*> *chunkTasks = new std::vector<CCreateAChunkTask*>();
 
@@ -181,7 +186,41 @@ void MyGL::createChunkVector()
 
    allLayerChunk->populateVoxelBuffer();
    allLayerChunk->create();
+   chunksArr.push_back(allLayerChunk);
+#else
+    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
+
+   CChunk* allLayerChunk = new CChunk(this);
+   allLayerChunk ->setXMin(0);
+   allLayerChunk ->setXMax(512);
+   allLayerChunk ->setYMin(0);
+   allLayerChunk ->setYMax(allLayers->size());
+   //allLayerChunk ->setYMax(20);
+   allLayerChunk ->setZMin(0);
+   allLayerChunk ->setZMax(512);
+
+   // turn this part into the multithreading, to have multiple chunks, push back, render later
+
+   // go through each layer, and voxelize that layer's voxel plane
+   for(int i = 0; i < allLayers->size(); i++) {
+
+       std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
+       allLayerChunk ->setWorld(&mWorld);
+
+       for(CVoxel* v : *currVoxelPlane) {
+
+           glm::vec4 voxPos = v->getPosition();
+           glm::vec4 voxCol = v->getColor();
+           int voxID = v->getID();
+
+           mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
+       }
+   }
+
+   allLayerChunk->populateVoxelBuffer();
+   allLayerChunk->create();
    chunks.push_back(allLayerChunk);
+#endif
 
   /*  // threading
     int totalLayers = 50;//allLayers->size();
@@ -283,36 +322,6 @@ void MyGL::createChunkVector()
     allLayerChunk->create();
     chunks.push_back(allLayerChunk);
 #endif*/
-}
-
-void MyGL::threadCheck(std::vector<CCreateAChunkTask*> *chunkTasks)
-{
-//    int numThreads = chunkTasks->size();
-
-//    // Check if still running
-//    bool still_running;
-//    do
-//    {
-//        still_running = false;
-//        for(unsigned int J = 0; J < numThreads; J++) {
-//            if(chunkTasks->at(J)->isRunning())
-//            {
-//                still_running = true;
-//                break;
-//            }
-//        }
-//        if(still_running)
-//        {
-//            QThread::yieldCurrentThread();
-//        }
-//    } while(still_running);
-
-//    // clean up image thread objects
-//    for(unsigned int K = 0; K < numThreads; K++)
-//    {
-//        delete chunkTasks->at(K);
-//    }
-//    delete chunkTasks;
 }
 
 

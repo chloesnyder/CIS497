@@ -38,4 +38,5 @@ HEADERS += \
     $$PWD/marching_cubes_data.h \
     $$PWD/ccreateachunktask.h \
     $$PWD/cchunkarr.h \
-    $$PWD/cworldarr.h
+    $$PWD/cworldarr.h \
+    $$PWD/structs.h

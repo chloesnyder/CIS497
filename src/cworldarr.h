@@ -1,15 +1,11 @@
-#ifndef CWORLD_H
-#define CWORLD_H
+#ifndef CWORLDARR_H
+#define CWORLDARR_H
 
 #include "cvoxel.h"
 #include <la.h>
 #include <iostream>
 #include <math.h>
 
-
-typedef struct {
-    float r, g, b, a;
-} COLOR;
 
 // Class that stores the positions and locations of each block in the world
 // Initializes a 512x512xN environment, where N is the number of image slices that have been read in
@@ -38,4 +34,4 @@ public:
 
 };
 
-#endif // CWORLD_H
+#endif // CWORLDARR_H

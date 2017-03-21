@@ -1,17 +1,10 @@
-/*#ifndef CCHUNK_H
+#ifndef CCHUNK_H
 #define CCHUNK_H
 #include <drawable.h>
 #include "cvoxel.h"
 #include "cworld.h"
 
-typedef struct {
-    glm::vec4 p[3]; // XYZ
-} TRIANGLE;
-
-typedef struct {
-    glm::vec4 p[8]; // 8 points in a cube
-    double val[8];
-} GRIDCELL;
+#include "structs.h"
 
 class CChunk : public Drawable
 {
@@ -74,4 +67,4 @@ private:
     glm::vec4 mCameraForward;
 };
 
-#endif // CCHUNK_H*/
+#endif // CCHUNK_H

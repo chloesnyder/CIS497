@@ -5,14 +5,7 @@
 #include "cvoxel.h"
 #include "cworldarr.h"
 
-typedef struct {
-    glm::vec4 p[3]; // XYZ
-} TRIANGLE;
-
-typedef struct {
-    glm::vec4 p[8]; // 8 points in a cube
-    double val[8];
-} GRIDCELL;
+#include "structs.h"
 
 class CChunkArr : public Drawable
 {
