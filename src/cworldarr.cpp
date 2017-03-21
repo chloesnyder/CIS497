@@ -24,8 +24,8 @@ glm::vec4 CWorldArr::voxelAtIsColor(int x, int y, int z)
     if(hasVoxelAt(x, y, z))
     {
 
-    glm::vec4 color = voxColArr[address];
-    return color;
+        glm::vec4 color = voxColArr[address];
+        return color;
     } else {
         return glm::vec4(0);
     }
@@ -47,5 +47,5 @@ void CWorldArr::addVoxelAt(int x, int y, int z, glm::vec4 color)
 
 bool CWorldArr::destroyVoxelAt(int x, int y, int z)
 {
- //TODO
+    //TODO
 }

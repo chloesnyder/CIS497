@@ -18,7 +18,8 @@ SOURCES += \
     $$PWD/cvoxelizeanimageslicetask.cpp \
     $$PWD/ccreateachunktask.cpp \
     $$PWD/cchunkarr.cpp \
-    $$PWD/cworldarr.cpp
+    $$PWD/cworldarr.cpp \
+    $$PWD/cchunkconstructor.cpp
 
 HEADERS += \
     $$PWD/mainwindow.h \
@@ -39,4 +40,5 @@ HEADERS += \
     $$PWD/ccreateachunktask.h \
     $$PWD/cchunkarr.h \
     $$PWD/cworldarr.h \
-    $$PWD/structs.h
+    $$PWD/structs.h \
+    $$PWD/cchunkconstructor.h

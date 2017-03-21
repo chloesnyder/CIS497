@@ -20,8 +20,15 @@ CCreateAChunkTask::CCreateAChunkTask(std::vector<std::vector<CVoxel *> *> *layer
 
 }
 
-void CCreateAChunkTask::run() {
+CCreateAChunkTask::CCreateAChunkTask(std::vector<std::vector<CVoxel *> *> *layers,
+                                     std::vector<CChunk*> *chunks, CWorld world, int ymin, int ymax,  GLWidget277 *context)
+    : mLayers(layers), mChunks(chunks), mWorld(world), ymin(ymin), ymax(ymax), mContext(context)
+{
 
+}
+
+void CCreateAChunkTask::run() {
+/*
     CChunkArr* currChunk = new CChunkArr(mContext);
     currChunk ->setXMin(0);
     currChunk ->setXMax(512);
@@ -33,16 +40,17 @@ void CCreateAChunkTask::run() {
 
     currChunk->populateVoxelBuffer();
     mChunkArrs->push_back(currChunk);
+    */
 
-/*
-//    CChunk* currChunk = new CChunk(mContext);
-//    currChunk ->setXMin(0);
-//    currChunk ->setXMax(512);
-//    currChunk ->setYMin(ymin);
-//    currChunk ->setYMax(ymax);
-//    currChunk ->setZMin(0);
-//    currChunk ->setZMax(512);
-//    currChunk->setWorld(&mWorld);
+
+    CChunk* currChunk = new CChunk(mContext);
+    currChunk ->setXMin(0);
+    currChunk ->setXMax(512);
+    currChunk ->setYMin(ymin);
+    currChunk ->setYMax(ymax);
+    currChunk ->setZMin(0);
+    currChunk ->setZMax(512);
+    currChunk->setWorld(&mWorld);
 
 
 //   /* // go through each layer, and voxelize that layer's voxel plane
@@ -59,11 +67,11 @@ void CCreateAChunkTask::run() {
 
 //            mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
 //        }
-//    }*/
+//
 
-//    currChunk->populateVoxelBuffer();
+    currChunk->populateVoxelBuffer();
 //   // currChunk->create();
-//    mChunks->push_back(currChunk);
+    mChunks->push_back(currChunk);
 
 
 }

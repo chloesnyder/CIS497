@@ -46,12 +46,12 @@ void CVoxelizeAnImageSliceTask::run()
                 // Black pixels represent empty space
                 // If the pixel isn't black, create a voxel
                 // Store this voxel in the mVoxelPlane vector
-                if(alpha > .25) {
+                //if(alpha > .25) {
                     glm::vec4 position = glm::vec4(row, mLength, col, 1);
                     glm::vec4 color = glm::vec4(red, green, blue, alpha);
                     CVoxel* currVoxel = new CVoxel(position, color, count);
                     voxelPlane->push_back(currVoxel);
-                }
+               // }
                 count++;
             }
         }

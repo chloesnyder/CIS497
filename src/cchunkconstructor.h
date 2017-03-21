@@ -1,78 +1,61 @@
-#include "cchunkarr.h"
-
-// USED CODE FROM HERE: http://paulbourke.net/geometry/polygonise/, credit to Trung Le for showing me!
-
-/*
-   Given a grid cell and an isolevel, calculate the triangular
-   facets required to represent the isosurface through the cell.
-   Return the number of triangular facets, the array "triangles"
-   will be loaded up with the vertices at most 5 triangular facets.
-    0 will be returned if the grid cell is either totally above
-   of totally below the isolevel.
-*/
+#ifndef CCHUNKCONSTRUCTOR_H
+#define CCHUNKCONSTRUCTOR_H
+#pragma once
 
 
-CChunkArr::CChunkArr(GLWidget277* context)
-    : Drawable(context), mWorld(nullptr), m_Xmin(0), m_Xmax(0), m_Ymin(0), m_Ymax(0), m_Zmin(0), m_Zmax(0)
+#include <drawable.h>
+#include "cvoxel.h"
+#include "structs.h"
+
+class CChunkConstructor : public Drawable
 {
+public:
+    CChunkConstructor(GLWidget277* context, std::vector<std::vector<CVoxel*>*> *mAllLayers);
 
-}
+    virtual void create();
 
-CChunkArr::CChunkArr(GLWidget277* context, float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
-    : Drawable(context), mWorld(nullptr), m_Xmin(xmin), m_Xmax(xmax), m_Ymin(ymin), m_Ymax(ymax), m_Zmin(zmin), m_Zmax(zmax)
+    int Polygonise(GRIDCELL grid, double isolevel, std::vector<TRIANGLE> &triangles);
+    glm::vec4 VertexInterp(double isolevel, glm::vec4 p1, glm::vec4 p2, double valp1, double valp2);
 
-{
+    void populateVoxelBuffer();
 
-}
+    float getXMin() { return m_Xmin;}
+    float getXMax() { return m_Xmax;}
+    float getYMin() { return m_Ymin;}
+    float getYMax() { return m_Ymax;}
+    float getZMin() { return m_Zmin;}
+    float getZMax() { return m_Zmax;}
 
-CChunkArr::CChunkArr(GLWidget277* context, CWorldArr* w, float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
-    : Drawable(context), mWorld(w), m_Xmin(xmin), m_Xmax(xmax), m_Ymin(ymin), m_Ymax(ymax), m_Zmin(zmin), m_Zmax(zmax)
+    void setXMin(float x) { m_Xmin = x;}
+    void setXMax(float x) { m_Xmax = x;}
+    void setYMin(float y) { m_Ymin = y;}
+    void setYMax(float y) { m_Ymax = y;}
+    void setZMin(float z) { m_Zmin = z;}
+    void setZMax(float z) { m_Zmax = z;}
 
-{
+private:
 
-}
+    // this is a vector of every voxel plane
+    // a pixel at [row][column] -> vector(width * row + col)
+    // so for us, vector(512 * row + col)
+    std::vector<std::vector<CVoxel*>*> *mAllLayers;
 
 
+    // coords to define the absolute min and max coordinates of chunk's volume
+    float m_Xmin, m_Xmax, m_Ymin, m_Ymax, m_Zmin, m_Zmax;
 
-int CChunkArr::Polygonise(GRIDCELL grid, double isolevel, std::vector<TRIANGLE> &triangles)
-{
-    int i, ntriang;
-    int cubeindex;
-    glm::vec4 vertlist[12];
+    std::vector<glm::vec4> mVertices;
+    std::vector<GLuint> mIndices;
 
-    int edgeTable[256]={
-        0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
-        0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
-        0x190, 0x99 , 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c,
-        0x99c, 0x895, 0xb9f, 0xa96, 0xd9a, 0xc93, 0xf99, 0xe90,
-        0x230, 0x339, 0x33 , 0x13a, 0x636, 0x73f, 0x435, 0x53c,
-        0xa3c, 0xb35, 0x83f, 0x936, 0xe3a, 0xf33, 0xc39, 0xd30,
-        0x3a0, 0x2a9, 0x1a3, 0xaa , 0x7a6, 0x6af, 0x5a5, 0x4ac,
-        0xbac, 0xaa5, 0x9af, 0x8a6, 0xfaa, 0xea3, 0xda9, 0xca0,
-        0x460, 0x569, 0x663, 0x76a, 0x66 , 0x16f, 0x265, 0x36c,
-        0xc6c, 0xd65, 0xe6f, 0xf66, 0x86a, 0x963, 0xa69, 0xb60,
-        0x5f0, 0x4f9, 0x7f3, 0x6fa, 0x1f6, 0xff , 0x3f5, 0x2fc,
-        0xdfc, 0xcf5, 0xfff, 0xef6, 0x9fa, 0x8f3, 0xbf9, 0xaf0,
-        0x650, 0x759, 0x453, 0x55a, 0x256, 0x35f, 0x55 , 0x15c,
-        0xe5c, 0xf55, 0xc5f, 0xd56, 0xa5a, 0xb53, 0x859, 0x950,
-        0x7c0, 0x6c9, 0x5c3, 0x4ca, 0x3c6, 0x2cf, 0x1c5, 0xcc ,
-        0xfcc, 0xec5, 0xdcf, 0xcc6, 0xbca, 0xac3, 0x9c9, 0x8c0,
-        0x8c0, 0x9c9, 0xac3, 0xbca, 0xcc6, 0xdcf, 0xec5, 0xfcc,
-        0xcc , 0x1c5, 0x2cf, 0x3c6, 0x4ca, 0x5c3, 0x6c9, 0x7c0,
-        0x950, 0x859, 0xb53, 0xa5a, 0xd56, 0xc5f, 0xf55, 0xe5c,
-        0x15c, 0x55 , 0x35f, 0x256, 0x55a, 0x453, 0x759, 0x650,
-        0xaf0, 0xbf9, 0x8f3, 0x9fa, 0xef6, 0xfff, 0xcf5, 0xdfc,
-        0x2fc, 0x3f5, 0xff , 0x1f6, 0x6fa, 0x7f3, 0x4f9, 0x5f0,
-        0xb60, 0xa69, 0x963, 0x86a, 0xf66, 0xe6f, 0xd65, 0xc6c,
-        0x36c, 0x265, 0x16f, 0x66 , 0x76a, 0x663, 0x569, 0x460,
-        0xca0, 0xda9, 0xea3, 0xfaa, 0x8a6, 0x9af, 0xaa5, 0xbac,
-        0x4ac, 0x5a5, 0x6af, 0x7a6, 0xaa , 0x1a3, 0x2a9, 0x3a0,
-        0xd30, 0xc39, 0xf33, 0xe3a, 0x936, 0x83f, 0xb35, 0xa3c,
-        0x53c, 0x435, 0x73f, 0x636, 0x13a, 0x33 , 0x339, 0x230,
-        0xe90, 0xf99, 0xc93, 0xd9a, 0xa96, 0xb9f, 0x895, 0x99c,
-        0x69c, 0x795, 0x49f, 0x596, 0x29a, 0x393, 0x99 , 0x190,
-        0xf00, 0xe09, 0xd03, 0xc0a, 0xb06, 0xa0f, 0x905, 0x80c,
-        0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0   };
+    void createVoxelBuffer(std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
+
+    double calculateDensity(glm::vec4 vertex);
+    glm::vec4 calculateNormal(glm::vec4 vertex, int totalTris);
+    float getAlphaAtVoxel(int x, int z, std::vector<CVoxel*>* voxelLayer);
+
+    int offset = 0;
+
+
     int triTable[256][16] =
     {{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
      {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -331,283 +314,40 @@ int CChunkArr::Polygonise(GRIDCELL grid, double isolevel, std::vector<TRIANGLE> 
      {0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
      {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
 
+    int edgeTable[256]={
+        0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
+        0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
+        0x190, 0x99 , 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c,
+        0x99c, 0x895, 0xb9f, 0xa96, 0xd9a, 0xc93, 0xf99, 0xe90,
+        0x230, 0x339, 0x33 , 0x13a, 0x636, 0x73f, 0x435, 0x53c,
+        0xa3c, 0xb35, 0x83f, 0x936, 0xe3a, 0xf33, 0xc39, 0xd30,
+        0x3a0, 0x2a9, 0x1a3, 0xaa , 0x7a6, 0x6af, 0x5a5, 0x4ac,
+        0xbac, 0xaa5, 0x9af, 0x8a6, 0xfaa, 0xea3, 0xda9, 0xca0,
+        0x460, 0x569, 0x663, 0x76a, 0x66 , 0x16f, 0x265, 0x36c,
+        0xc6c, 0xd65, 0xe6f, 0xf66, 0x86a, 0x963, 0xa69, 0xb60,
+        0x5f0, 0x4f9, 0x7f3, 0x6fa, 0x1f6, 0xff , 0x3f5, 0x2fc,
+        0xdfc, 0xcf5, 0xfff, 0xef6, 0x9fa, 0x8f3, 0xbf9, 0xaf0,
+        0x650, 0x759, 0x453, 0x55a, 0x256, 0x35f, 0x55 , 0x15c,
+        0xe5c, 0xf55, 0xc5f, 0xd56, 0xa5a, 0xb53, 0x859, 0x950,
+        0x7c0, 0x6c9, 0x5c3, 0x4ca, 0x3c6, 0x2cf, 0x1c5, 0xcc ,
+        0xfcc, 0xec5, 0xdcf, 0xcc6, 0xbca, 0xac3, 0x9c9, 0x8c0,
+        0x8c0, 0x9c9, 0xac3, 0xbca, 0xcc6, 0xdcf, 0xec5, 0xfcc,
+        0xcc , 0x1c5, 0x2cf, 0x3c6, 0x4ca, 0x5c3, 0x6c9, 0x7c0,
+        0x950, 0x859, 0xb53, 0xa5a, 0xd56, 0xc5f, 0xf55, 0xe5c,
+        0x15c, 0x55 , 0x35f, 0x256, 0x55a, 0x453, 0x759, 0x650,
+        0xaf0, 0xbf9, 0x8f3, 0x9fa, 0xef6, 0xfff, 0xcf5, 0xdfc,
+        0x2fc, 0x3f5, 0xff , 0x1f6, 0x6fa, 0x7f3, 0x4f9, 0x5f0,
+        0xb60, 0xa69, 0x963, 0x86a, 0xf66, 0xe6f, 0xd65, 0xc6c,
+        0x36c, 0x265, 0x16f, 0x66 , 0x76a, 0x663, 0x569, 0x460,
+        0xca0, 0xda9, 0xea3, 0xfaa, 0x8a6, 0x9af, 0xaa5, 0xbac,
+        0x4ac, 0x5a5, 0x6af, 0x7a6, 0xaa , 0x1a3, 0x2a9, 0x3a0,
+        0xd30, 0xc39, 0xf33, 0xe3a, 0x936, 0x83f, 0xb35, 0xa3c,
+        0x53c, 0x435, 0x73f, 0x636, 0x13a, 0x33 , 0x339, 0x230,
+        0xe90, 0xf99, 0xc93, 0xd9a, 0xa96, 0xb9f, 0x895, 0x99c,
+        0x69c, 0x795, 0x49f, 0x596, 0x29a, 0x393, 0x99 , 0x190,
+        0xf00, 0xe09, 0xd03, 0xc0a, 0xb06, 0xa0f, 0x905, 0x80c,
+        0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0   };
 
-    /*
-         Determine the index into the edge table which
-         tells us which vertices are inside of the surface
-      */
-    cubeindex = 0;
-    if (grid.val[0] < isolevel) cubeindex |= 1;
-    if (grid.val[1] < isolevel) cubeindex |= 2;
-    if (grid.val[2] < isolevel) cubeindex |= 4;
-    if (grid.val[3] < isolevel) cubeindex |= 8;
-    if (grid.val[4] < isolevel) cubeindex |= 16;
-    if (grid.val[5] < isolevel) cubeindex |= 32;
-    if (grid.val[6] < isolevel) cubeindex |= 64;
-    if (grid.val[7] < isolevel) cubeindex |= 128;
+};
 
-    /* Cube is entirely in/out of the surface */
-    if (edgeTable[cubeindex] == 0)
-        return(0);
-
-    int edge = edgeTable[cubeindex];
-
-    /* Find the vertices where the surface intersects the cube */
-    if (edgeTable[cubeindex] & 1)
-        vertlist[0] =
-                VertexInterp(isolevel,grid.p[0],grid.p[1],grid.val[0],grid.val[1]);
-    if (edgeTable[cubeindex] & 2)
-        vertlist[1] =
-                VertexInterp(isolevel,grid.p[1],grid.p[2],grid.val[1],grid.val[2]);
-    if (edgeTable[cubeindex] & 4)
-        vertlist[2] =
-                VertexInterp(isolevel,grid.p[2],grid.p[3],grid.val[2],grid.val[3]);
-    if (edgeTable[cubeindex] & 8)
-        vertlist[3] =
-                VertexInterp(isolevel,grid.p[3],grid.p[0],grid.val[3],grid.val[0]);
-    if (edgeTable[cubeindex] & 16)
-        vertlist[4] =
-                VertexInterp(isolevel,grid.p[4],grid.p[5],grid.val[4],grid.val[5]);
-    if (edgeTable[cubeindex] & 32)
-        vertlist[5] =
-                VertexInterp(isolevel,grid.p[5],grid.p[6],grid.val[5],grid.val[6]);
-    if (edgeTable[cubeindex] & 64)
-        vertlist[6] =
-                VertexInterp(isolevel,grid.p[6],grid.p[7],grid.val[6],grid.val[7]);
-    if (edgeTable[cubeindex] & 128)
-        vertlist[7] =
-                VertexInterp(isolevel,grid.p[7],grid.p[4],grid.val[7],grid.val[4]);
-    if (edgeTable[cubeindex] & 256)
-        vertlist[8] =
-                VertexInterp(isolevel,grid.p[0],grid.p[4],grid.val[0],grid.val[4]);
-    if (edgeTable[cubeindex] & 512)
-        vertlist[9] =
-                VertexInterp(isolevel,grid.p[1],grid.p[5],grid.val[1],grid.val[5]);
-    if (edgeTable[cubeindex] & 1024)
-        vertlist[10] =
-                VertexInterp(isolevel,grid.p[2],grid.p[6],grid.val[2],grid.val[6]);
-    if (edgeTable[cubeindex] & 2048)
-        vertlist[11] =
-                VertexInterp(isolevel,grid.p[3],grid.p[7],grid.val[3],grid.val[7]);
-
-    /* Create the triangle */
-    ntriang = 0;
-    for (i=0;triTable[cubeindex][i]!=-1;i+=3) {
-        TRIANGLE t;
-
-        int triT = triTable[cubeindex][i];
-        int triT2 = triTable[cubeindex][i+1];
-        int triT3 = triTable[cubeindex][i+2];
-
-        t.p[0] = vertlist[triTable[cubeindex][i  ]];
-        t.p[1] = vertlist[triTable[cubeindex][i+1]];
-        t.p[2] = vertlist[triTable[cubeindex][i+2]];
-        triangles.push_back(t);
-        ntriang++;
-    }
-
-    return(ntriang);
-}
-
-glm::vec4 CChunkArr::VertexInterp(double isolevel, glm::vec4 p1, glm::vec4 p2, double valp1, double valp2)
-{
-    double mu;
-    glm::vec4 p;
-
-    if (std::fabs(isolevel-valp1) < 0.00001)
-        return(p1);
-    if (std::fabs(isolevel-valp2) < 0.00001)
-        return(p2);
-    if (std::fabs(valp1-valp2) < 0.00001)
-        return(p1);
-    mu = (isolevel - valp1) / (valp2 - valp1);
-    p.x = p1.x + mu * (p2.x - p1.x);
-    p.y = p1.y + mu * (p2.y - p1.y);
-    p.z = p1.z + mu * (p2.z - p1.z);
-    p.a = 1;
-
-    return(p);
-}
-
-void CChunkArr::populateVoxelBuffer()
-{
-    //populates the vertices and indices buffers
-    createVoxelBuffer(&mVertices, &mIndices);
-}
-
-
-void CChunkArr::createVoxelBuffer(std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices)
-{
-
-    int totalNumVoxels = 0;
-    // iterate over all the existing blocks in the environment
-    for(int i = m_Xmin; i < m_Xmax; i++) {
-        // <= or <?
-        for(int j = m_Ymin; j < m_Ymax; j++) {
-            for(int k = m_Zmin; k < m_Zmax; k++) {
-
-                if(mWorld->hasVoxelAt(i, j, k) == 1)
-                {
-                    glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
-
-                    // For each voxel, polygonise it
-                    // define voxel vertices
-                    glm::vec4 v000 = glm::vec4(i, j, k, 1);
-                    glm::vec4 v001 = glm::vec4(i+1, j, k, 1);
-                    glm::vec4 v010 = glm::vec4(i+1, j, k+1, 1);
-                    glm::vec4 v100 = glm::vec4(i, j, k+1, 1);
-                    glm::vec4 v011 = glm::vec4(i, j+1, k, 1);
-                    glm::vec4 v101 = glm::vec4(i+1, j+1, k, 1);
-                    glm::vec4 v110 = glm::vec4(i+1, j+1, k+1, 1);
-                    glm::vec4 v111 = glm::vec4(i, j+1, k+1, 1);
-
-                    // assign vertices to the 8 corners of this grid cell
-                    GRIDCELL currCell = GRIDCELL();
-                    currCell.p[0] = v000; currCell.p[1] = v001; currCell.p[2] = v010; currCell.p[3] = v100;
-                    currCell.p[4] = v011; currCell.p[5] = v101; currCell.p[6] = v110; currCell.p[7] = v111;
-
-                    int hasDensity = false;
-
-                    // define densities at each vertex as the alpha value of the voxel at that vertex location
-                    for(int corner = 0; corner < 8; corner++) {
-                        // sample the corners as a lerped value between neighboring voxels
-                        int x = currCell.p[corner].x; int y = currCell.p[corner].y; int z = currCell.p[corner].z;
-
-                        if(mWorld->hasVoxelAt(x,y,z) == 1) {
-                            float density = mWorld->voxelAtIsColor(x,y,z).a;
-                            currCell.val[corner] = density;
-                            if(density > 0)
-                            {
-                                hasDensity = true;
-                            }
-                        }
-                    }
-
-                    if(hasDensity){
-
-                        std::vector<TRIANGLE> currTriangles = std::vector<TRIANGLE>();
-                        double currIsolevel = .01; //.01; // TODO: PLAY WITH THIS!!! what's a good value for my isolevel?
-
-                        int totalTris = Polygonise(currCell, currIsolevel, currTriangles);
-
-                        unsigned int indexCount = offset;
-
-                        // push back vertex and index data
-                        for(int u = 0; u < totalTris; u++)
-                        {
-
-                            for(int v = 0; v < 3; v++) {
-
-                                glm::vec4 normal = calculateNormal(currTriangles[u].p[v], totalTris);
-
-                                vertices->push_back(currTriangles.at(u).p[v]); // push back first vertex of this triangle
-                                vertices->push_back(color); // then the color
-                                vertices->push_back(normal); // then the normal
-
-                                indices->push_back(indexCount);
-                                indexCount++;
-                            }
-                            offset += 3;
-                        }
-
-                    }
-                    totalNumVoxels++;
-                }
-            }
-        }
-    }
-}
-
-void CChunkArr::create()
-{
-    count = mIndices.size();
-    generateIdx();
-    context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIdx);
-    context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() *
-                          sizeof(GLuint), mIndices.data(), GL_STATIC_DRAW);
-
-    generateVertData();
-    context->glBindBuffer(GL_ARRAY_BUFFER, bufVertData);
-    context->glBufferData(GL_ARRAY_BUFFER, mVertices.size() *
-                          sizeof(glm::vec4), mVertices.data(), GL_STATIC_DRAW);
-
-}
-
-
-double CChunkArr::calculateDensity(glm::vec4 vertex)
-{
-    // Use trilinear interpolation to determine the density at this vertex
-    // fix the x value from the point you sample from
-    // 4 times along x (so from each of the 8 corners, lerp along 4 pairs of corners x1->x2 x3->x4 x5->x6 x7->x8)
-    // 2 times along y
-    // 1 time along z
-
-    // let xd, yd, and zd be the differences between each of the x,y,z, and the
-    // smaller coordinate related, where x0 indicates the lattice point below x,
-    // and x1 indicates the lattice point above x. similarly for y0,y1,z0,z1
-    float x0 = vertex.x - 1; float x1 = vertex.x + 1;
-    float y0 = vertex.y - 1; float y1 = vertex.y + 1;
-    float z0 = vertex.z - 1; float z1 = vertex.z + 1;
-
-    float xd = (vertex.x - x0)/(x1 - x0);
-    float yd = (vertex.y - y0)/(y1 - y0);
-    float zd = (vertex.z - z0)/(z1 - z0);
-
-    // convert the floats to the nearest int
-    int ix0 = (int) std::round(x0); int iy0 = (int) std::round(y0); int iz0 = (int) std::round(z0);
-    int ix1 = (int) std::round(x1); int iy1 = (int) std::round(y1); int iz1 = (int) std::round(z1);
-    int ix = (int) std::round(vertex.x); int iy = (int) std::round(vertex.y); int iz = (int) std::round(vertex.z);
-
-
-    float Vx0y0z0 = mWorld->voxelAtIsColor(ix0, iy0, iz0).a;
-    float Vx1y0z0 = mWorld->voxelAtIsColor(ix1, iy0, iz0).a;
-    float Vx0y0z1 = mWorld->voxelAtIsColor(ix0, iy0, iz1).a;
-    float Vx1y0z1 = mWorld->voxelAtIsColor(ix1, iy0, iz1).a;
-    float Vx0y1z0 = mWorld->voxelAtIsColor(ix0, iy1, iz0).a;
-    float Vx1y1z0 = mWorld->voxelAtIsColor(ix1, iy1, iz0).a;
-    float Vx0y1z1 = mWorld->voxelAtIsColor(ix0, iy1, iz1).a;
-    float Vx1y1z1 = mWorld->voxelAtIsColor(ix1, iy1, iz1).a;
-
-    float c00 = Vx0y0z0*(1 - xd) + Vx1y0z0*xd;
-    float c01 = Vx0y0z1*(1 - xd) + Vx1y0z1*xd;
-    float c10 = Vx0y1z0*(1 - xd) + Vx1y1z0*xd;
-    float c11 = Vx0y1z1*(1 - xd) + Vx1y1z1*xd;
-
-    float c0 = c00*(1 - yd) + c10*yd;
-    float c1 = c01*(1 - yd) + c11*yd;
-
-    float c = c0*(1 - zd) + c1*zd;
-
-    return c;
-}
-
-
-/*
- * The normal can be computed easily, by taking the gradient of the density function
- * (the partial derivative, or independent rate of change, in the x, y, and z directions)
- * and then normalizing the resulting vector. This is easily accomplished by sampling the density volume six times.
- * To determine the rate of change in x, we sample the density volume at the next texel in the +x direction,
- * then again at the next texel in the -x direction, and take the difference; this is the rate of change in x.
- *  We repeat this calculation in the y and z directions, for a total of six samples.
- * The three results are put together in a vec4, and then normalized, producing a very
- * high quality surface normal that can later be used for lighting.
- * */
-glm::vec4 CChunkArr::calculateNormal(glm::vec4 vertex, int totalTris)
-{
-    glm::vec4 grad;
-
-    //float d = 1.0/(float)voxels_per_block -> so for me 1/(512*512)? thats so close to 0...
-    float d = 1.0;//totalTris;
-
-    //   d = 1/totalTris;
-
-    grad.x = calculateDensity(vertex + glm::vec4(d, 0, 0, 1)) -
-            calculateDensity(vertex + glm::vec4(-d, 0, 0, 1));
-    grad.y = calculateDensity(vertex + glm::vec4(0, d, 0, 1)) -
-            calculateDensity(vertex + glm::vec4(0, -d, 0, 1));
-    grad.z = calculateDensity(vertex + glm::vec4(0, 0, d, 1)) -
-            calculateDensity(vertex + glm::vec4(0, 0, -d, 1));
-    grad.w = 0;
-
-    return -glm::normalize(grad);
-}
+#endif // CCHUNKCONSTRUCTOR_H

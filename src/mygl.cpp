@@ -140,7 +140,8 @@ void MyGL::paintGL()
         CChunkArr* currChunk = chunksArr[i];
         prog_lambert.draw(*currChunk);
 #else
-        CChunk* currChunk = chunks[i];
+        //CChunk* currChunk = chunks[i];
+        CChunkConstructor* currChunk = chunks[i];
         prog_lambert.draw(*currChunk);
 #endif
     }
@@ -160,7 +161,7 @@ void MyGL::createChunkVector()
     // Init world array and populate with color data
     // A voxel at (x, y, z) has a color
     // This color stored in the world array at address = x + max_x*y + max_x*max_y*z
-    mWorldArr = new CWorldArr(513, allLayers->size(), 513);
+    mWorldArr = new CWorldArr(512, allLayers->size(), 512);
 
     for(int i = 0; i < allLayers->size(); i++) {
 
@@ -188,6 +189,20 @@ void MyGL::createChunkVector()
    allLayerChunk->create();
    chunksArr.push_back(allLayerChunk);
 #else
+
+    CChunkConstructor* allLayerChunk = new CChunkConstructor(this, mVoxelizer.getAllLayers());
+    allLayerChunk ->setXMin(0);
+    allLayerChunk ->setXMax(512);
+    allLayerChunk ->setYMin(0);
+    allLayerChunk ->setYMax(mVoxelizer.getAllLayers()->size());
+    allLayerChunk ->setZMin(0);
+    allLayerChunk ->setZMax(512);
+
+    allLayerChunk->populateVoxelBuffer();
+    allLayerChunk->create();
+    chunks.push_back(allLayerChunk);
+
+    /*
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
 
    CChunk* allLayerChunk = new CChunk(this);
@@ -220,15 +235,31 @@ void MyGL::createChunkVector()
    allLayerChunk->populateVoxelBuffer();
    allLayerChunk->create();
    chunks.push_back(allLayerChunk);
-#endif
+*/
 
-  /*  // threading
-    int totalLayers = 50;//allLayers->size();
+  /* // threading
+    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
+    int totalLayers = 20;//allLayers->size();
     int incr = totalLayers / 10;
     int layer;
     int ymin;
     int ymax;
     int numThreads = 0;
+
+    // go through each layer, and voxelize that layer's voxel plane
+    for(int i = 0; i < totalLayers; i++) {
+
+        std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
+
+        for(CVoxel* v : *currVoxelPlane) {
+
+            glm::vec4 voxPos = v->getPosition();
+            glm::vec4 voxCol = v->getColor();
+            int voxID = v->getID();
+
+            mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
+        }
+    }
 
     for(layer = 0; layer < totalLayers; layer += incr)
     {
@@ -236,7 +267,7 @@ void MyGL::createChunkVector()
         ymax = layer + incr;
         if(ymax > totalLayers) ymax = totalLayers;
 
-        CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, mWorldArr, ymin, ymax, this);
+        CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, mWorld, ymin, ymax, this);
         QThreadPool::globalInstance()->start(currChunkTask);
         numThreads++;
     }
@@ -251,7 +282,7 @@ void MyGL::createChunkVector()
 
 */
 
-
+#endif
     /*#ifdef OLD_MULTITHREADING
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
     std::vector<CCreateAChunkTask*> *chunkTasks = new std::vector<CCreateAChunkTask*>();
@@ -361,9 +392,5 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     }
     camera.RecomputeAttributes();
     update();  // Calls paintGL, among other things
-}
-
-bool MyGL::initTextures3d(){
-
 }
 

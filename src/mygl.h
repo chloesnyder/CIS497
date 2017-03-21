@@ -17,6 +17,9 @@
 #include "voxelizer.h"
 #include "ccreateachunktask.h"
 
+
+#include "cchunkconstructor.h"
+
 #include <QListWidget>
 
 
@@ -39,8 +42,10 @@ private:
     CWorldArr* mWorldArr;
 
 
-    std::vector<CChunk*> chunks = std::vector<CChunk*>();
-    std::vector<CChunkArr*> chunksArr = std::vector<CChunkArr*>();
+    //std::vector<CChunk*> chunks = std::vector<CChunk*>();
+   // std::vector<CChunkArr*> chunksArr = std::vector<CChunkArr*>();
+
+    std::vector<CChunkConstructor*> chunks = std::vector<CChunkConstructor*>();
 
 
 
@@ -50,8 +55,6 @@ private:
 
     void createChunkVector();
     void processFiles();
-
-    bool initTextures3d();
 
     void threadCheck(std::vector<CCreateAChunkTask*> *chunkTasks);
 
