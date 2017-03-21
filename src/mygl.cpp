@@ -3,6 +3,7 @@
 #include<QFileDialog>
 #include<QFile>
 #include<QStringList>
+#include<QThreadPool>
 
 #include <iostream>
 #include <stdlib.h>
@@ -141,12 +142,76 @@ void MyGL::createChunkVector()
     int numThreads = 0;
 
     int totalLayers = 20;//allLayers->size();
-    int incr = totalLayers / 10;
+    int incr = totalLayers / 2;
     int layer;
     int ymin;
     int ymax;
 
+    for(int i = 0; i < totalLayers; i++) {
 
+        std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
+
+        for(CVoxel* v : *currVoxelPlane) {
+
+            glm::vec4 voxPos = v->getPosition();
+            glm::vec4 voxCol = v->getColor();
+            int voxID = v->getID();
+
+            mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
+        }
+    }
+
+    QThreadPool::globalInstance()->setMaxThreadCount(1);
+
+    for(layer = 0; layer < totalLayers; layer += incr)
+    {
+        ymin = layer;
+        ymax = layer + incr;
+        if(ymax > totalLayers) ymax = totalLayers;
+
+        CChunk* currChunk = new CChunk(this);
+        currChunk ->setXMin(0);
+        currChunk ->setXMax(512);
+        currChunk ->setYMin(ymin);
+        currChunk ->setYMax(ymax);
+        currChunk ->setZMin(0);
+        currChunk ->setZMax(512);
+        currChunk ->setWorld(&mWorld);
+
+        //CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, &mWorld, ymin, ymax, this);
+    //    CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(currChunk);
+
+     //   QThreadPool::globalInstance()->start(currChunkTask);
+
+        chunks.push_back(currChunk);
+
+
+    }
+    for (CChunk* chunk : chunks) {
+        CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(chunk);
+        numThreads++;
+        QThreadPool::globalInstance()->start(currChunkTask);
+
+    }
+//    for(int chunk = 0; chunk < chunks.size(); chunk += 1)
+//    {
+//        CCH
+//    }
+
+    if(QThreadPool::globalInstance()->waitForDone())
+    {
+       /*for(int thread = 0; thread < numThreads; thread++)
+        {
+            chunks.at(thread)->create();
+        }*/
+        for (CChunk* chunk : chunks) {
+            chunk->create();
+        }
+
+    }
+
+
+/*
     // Each thread populates the vertex and index buffers for a chunk
     // a chunk is a subset of the overall structure, from layer ymin to layer ymax
     for(layer = 0; layer <= totalLayers; layer += incr)
@@ -170,7 +235,7 @@ void MyGL::createChunkVector()
         chunks.at(i)->create();
     }
 
-   // threadCheck(chunkTasks);
+   // threadCheck(chunkTasks);*/
 #else
 
      std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
@@ -180,17 +245,17 @@ void MyGL::createChunkVector()
     allLayerChunk ->setXMax(512);
     allLayerChunk ->setYMin(0);
    // allLayerChunk ->setYMax(allLayers->size());
-    allLayerChunk ->setYMax(20);
+    allLayerChunk ->setYMax(10);
     allLayerChunk ->setZMin(0);
     allLayerChunk ->setZMax(512);
+    allLayerChunk ->setWorld(&mWorld);
 
     // turn this part into the multithreading, to have multiple chunks, push back, render later
 
     // go through each layer, and voxelize that layer's voxel plane
-    for(int i = 0; i < allLayers->size(); i++) {
+    for(int i = 0; i < 10; i++) {
 
         std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
-        allLayerChunk ->setWorld(&mWorld);
 
         for(CVoxel* v : *currVoxelPlane) {
 
@@ -202,6 +267,7 @@ void MyGL::createChunkVector()
         }
     }
 
+    allLayerChunk->populateVoxelBuffer();
     allLayerChunk->create();
     chunks.push_back(allLayerChunk);
 #endif
@@ -209,7 +275,7 @@ void MyGL::createChunkVector()
 
 void MyGL::threadCheck(std::vector<CCreateAChunkTask*> *chunkTasks)
 {
-    int numThreads = chunkTasks->size();
+/*    int numThreads = chunkTasks->size();
 
     // Check if still running
     bool still_running;
@@ -234,7 +300,7 @@ void MyGL::threadCheck(std::vector<CCreateAChunkTask*> *chunkTasks)
     {
         delete chunkTasks->at(K);
     }
-    delete chunkTasks;
+    delete chunkTasks;*/
 }
 
 

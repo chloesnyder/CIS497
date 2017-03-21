@@ -36,13 +36,18 @@ glm::vec4 CWorld::voxelAtIsColor(int x, int y, int z) {
 bool CWorld::addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 color, int id)
 {
     if(!hasVoxelAt(x, y, z)) {
-        currWorldView[coords(x,y,z)] = type;
-        voxColMap[coords(x,y,z)] = color;
+        std::map<std::tuple<int, int, int>, CVoxel::VTYPE>::iterator it = currWorldView.begin();
+        std::map<std::tuple<int, int, int>, glm::vec4>::iterator itCol = voxColMap.begin();
+        currWorldView.insert(it, std::pair<std::tuple<int, int, int>, CVoxel::VTYPE>(coords(x,y,z),type));
+        voxColMap.insert(itCol, std::pair<std::tuple<int, int, int>, glm::vec4>(coords(x,y,z),color));
+
         return true;
     } else {
         if(voxelAtIsType(x, y, z) == CVoxel::EMPTY) {
-            currWorldView[coords(x,y,z)] = type;
-            voxColMap[coords(x,y,z)] = color;
+            std::map<std::tuple<int, int, int>, CVoxel::VTYPE>::iterator it = currWorldView.begin();
+            std::map<std::tuple<int, int, int>, glm::vec4>::iterator itCol = voxColMap.begin();
+            currWorldView.insert(it, std::pair<std::tuple<int, int, int>, CVoxel::VTYPE>(coords(x,y,z),type));
+            voxColMap.insert(itCol, std::pair<std::tuple<int, int, int>, glm::vec4>(coords(x,y,z),color));
             return true;
         }
         return false;
