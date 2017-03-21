@@ -7,28 +7,37 @@ CWorldArr::CWorldArr()
 
 CWorldArr::CWorldArr(int max_x, int max_y, int max_z)
 {
-    int size = max_x + max_y*max_x + max_z*max_x*max_y;
+    this->max_x = max_x;
+    this->max_y = max_y;
+    this->max_z = max_z;
+    size = max_x + max_y*max_x + max_z*max_x*max_y;
 
     voxColArr = new glm::vec4[size];
     voxelExistsAt = new int[size];
 }
 
 
-glm::vec4 CWorldArr::voxelAtIsColor(int x, int y, int z, int max_x, int max_y)
+glm::vec4 CWorldArr::voxelAtIsColor(int x, int y, int z)
 {
     int address = x + y*max_x + z*max_x*max_y;
 
+    if(hasVoxelAt(x, y, z))
+    {
+
     glm::vec4 color = voxColArr[address];
     return color;
+    } else {
+        return glm::vec4(0);
+    }
 }
 
-int CWorldArr::hasVoxelAt(int x, int y, int z, int max_x, int max_y)
+int CWorldArr::hasVoxelAt(int x, int y, int z)
 {
     int address = x + y*max_x + z*max_x*max_y;
     return voxelExistsAt[address];
 }
 
-void CWorldArr::addVoxelAt(int x, int y, int z, int max_x, int max_y, glm::vec4 color)
+void CWorldArr::addVoxelAt(int x, int y, int z, glm::vec4 color)
 {
     int address = x + y*max_x + z*max_x*max_y;
     voxelExistsAt[address] = 1;
@@ -36,7 +45,7 @@ void CWorldArr::addVoxelAt(int x, int y, int z, int max_x, int max_y, glm::vec4 
 
 }
 
-bool CWorldArr::destroyVoxelAt(int x, int y, int z, int max_x, int max_y)
+bool CWorldArr::destroyVoxelAt(int x, int y, int z)
 {
  //TODO
 }

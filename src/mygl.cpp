@@ -155,7 +155,7 @@ void MyGL::createChunkVector()
     // Init world array and populate with color data
     // A voxel at (x, y, z) has a color
     // This color stored in the world array at address = x + max_x*y + max_x*max_y*z
-    mWorldArr = new CWorldArr(512, allLayers->size(), 512);
+    mWorldArr = new CWorldArr(513, allLayers->size(), 513);
 
     for(int i = 0; i < allLayers->size(); i++) {
 
@@ -165,7 +165,7 @@ void MyGL::createChunkVector()
             glm::vec4 voxPos = v->getPosition();
             glm::vec4 voxCol = v->getColor();
 
-            mWorldArr->addVoxelAt(voxPos.x, voxPos.y, voxPos.z, 512, allLayers->size(), voxCol);
+            mWorldArr->addVoxelAt(voxPos.x, voxPos.y, voxPos.z, voxCol);
         }
     }
 

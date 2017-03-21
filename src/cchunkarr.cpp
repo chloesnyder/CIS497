@@ -445,9 +445,9 @@ void CChunkArr::createVoxelBuffer(std::vector<glm::vec4> *vertices, std::vector<
         for(int j = m_Ymin; j <= m_Ymax; j++) {
             for(int k = m_Zmin; k < m_Zmax; k++) {
 
-                if(mWorld->hasVoxelAt(i, j, k, m_Xmax, m_Ymax) == 1)
+                if(mWorld->hasVoxelAt(i, j, k) == 1)
                 {
-                    glm::vec4 color = mWorld->voxelAtIsColor(i, j, k, m_Xmax, m_Ymax);
+                    glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
 
                     // For each voxel, polygonise it
                     // define voxel vertices
@@ -472,8 +472,8 @@ void CChunkArr::createVoxelBuffer(std::vector<glm::vec4> *vertices, std::vector<
                         // sample the corners as a lerped value between neighboring voxels
                         int x = currCell.p[corner].x; int y = currCell.p[corner].y; int z = currCell.p[corner].z;
 
-                        if(mWorld->hasVoxelAt(x,y,z, m_Xmax, m_Ymax) == 1) {
-                            float density = mWorld->voxelAtIsColor(x,y,z, m_Xmax, m_Ymax).a;
+                        if(mWorld->hasVoxelAt(x,y,z) == 1) {
+                            float density = mWorld->voxelAtIsColor(x,y,z).a;
                             currCell.val[corner] = density;
                             if(density > 0)
                             {
@@ -558,14 +558,14 @@ double CChunkArr::calculateDensity(glm::vec4 vertex)
     int ix = (int) std::round(vertex.x); int iy = (int) std::round(vertex.y); int iz = (int) std::round(vertex.z);
 
 
-    float Vx0y0z0 = mWorld->voxelAtIsColor(ix0, iy0, iz0, m_Xmax, m_Ymax).a;
-    float Vx1y0z0 = mWorld->voxelAtIsColor(ix1, iy0, iz0, m_Xmax, m_Ymax).a;
-    float Vx0y0z1 = mWorld->voxelAtIsColor(ix0, iy0, iz1, m_Xmax, m_Ymax).a;
-    float Vx1y0z1 = mWorld->voxelAtIsColor(ix1, iy0, iz1, m_Xmax, m_Ymax).a;
-    float Vx0y1z0 = mWorld->voxelAtIsColor(ix0, iy1, iz0, m_Xmax, m_Ymax).a;
-    float Vx1y1z0 = mWorld->voxelAtIsColor(ix1, iy1, iz0, m_Xmax, m_Ymax).a;
-    float Vx0y1z1 = mWorld->voxelAtIsColor(ix0, iy1, iz1, m_Xmax, m_Ymax).a;
-    float Vx1y1z1 = mWorld->voxelAtIsColor(ix1, iy1, iz1, m_Xmax, m_Ymax).a;
+    float Vx0y0z0 = mWorld->voxelAtIsColor(ix0, iy0, iz0).a;
+    float Vx1y0z0 = mWorld->voxelAtIsColor(ix1, iy0, iz0).a;
+    float Vx0y0z1 = mWorld->voxelAtIsColor(ix0, iy0, iz1).a;
+    float Vx1y0z1 = mWorld->voxelAtIsColor(ix1, iy0, iz1).a;
+    float Vx0y1z0 = mWorld->voxelAtIsColor(ix0, iy1, iz0).a;
+    float Vx1y1z0 = mWorld->voxelAtIsColor(ix1, iy1, iz0).a;
+    float Vx0y1z1 = mWorld->voxelAtIsColor(ix0, iy1, iz1).a;
+    float Vx1y1z1 = mWorld->voxelAtIsColor(ix1, iy1, iz1).a;
 
     float c00 = Vx0y0z0*(1 - xd) + Vx1y0z0*xd;
     float c01 = Vx0y0z1*(1 - xd) + Vx1y0z1*xd;

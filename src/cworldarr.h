@@ -21,6 +21,7 @@ class CWorldArr
 {
 private:
 
+    int max_x, max_y, max_z, size;
     glm::vec4 *voxColArr; // an array of the colors stored at a given voxel position, where index = x + max_x*y + max_x*max_y*z
     int *voxelExistsAt; // an array of 0 and 1. 0 means that there is no voxel here, 1 means that there is
 
@@ -28,12 +29,12 @@ public:
     CWorldArr();
     CWorldArr(int max_x, int max_y, int max_z);
 
-    glm::vec4 voxelAtIsColor(int x, int y, int z, int max_x, int max_y);
+    glm::vec4 voxelAtIsColor(int x, int y, int z);
 
-    void addVoxelAt(int x, int y, int z, int max_x, int max_y, glm::vec4 color); // return true if successful
-    bool destroyVoxelAt(int x, int y, int z, int max_x, int max_y);
+    void addVoxelAt(int x, int y, int z, glm::vec4 color); // return true if successful
+    bool destroyVoxelAt(int x, int y, int z);
 
-    int hasVoxelAt(int x, int y, int z, int max_x, int max_y);
+    int hasVoxelAt(int x, int y, int z);
 
 };
 
