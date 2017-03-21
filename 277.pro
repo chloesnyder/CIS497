@@ -60,3 +60,7 @@ else:unix: LIBS += -L$$PWD/../../../../../../usr/local/Cellar/vtk/7.1.0_5/lib/ -
 
 INCLUDEPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/7.1.0_5/include
 DEPENDPATH += $$PWD/../../../../../../usr/local/Cellar/vtk/7.1.0_5/include
+
+HEADERS +=
+
+SOURCES +=

@@ -1,4 +1,4 @@
-#ifndef CWORLD_H
+/*#ifndef CWORLD_H
 #define CWORLD_H
 
 #include "cvoxel.h"
@@ -20,8 +20,6 @@ private:
     std::tuple<int, int, int> coords(int x, int y, int z);
 
     std::map<std::tuple<int, int, int>, glm::vec4> voxColMap = std::map<std::tuple<int, int, int>, glm::vec4>();
-
-    void addVoxelLocationData(int x1, int x2, int y1, int y2, int z1, int z2, glm::vec4 color);
 
     // Declare array of pairs of voxel address with voxel type, or voxel color
     // Each array index corresponds to voxel ID
@@ -46,4 +44,4 @@ public:
 
 };
 
-#endif // CWORLD_H
+#endif // CWORLD_H*/

@@ -1,4 +1,4 @@
-#include "cworld.h"
+/*#include "cworld.h"
 
 CWorld::CWorld()
 {
@@ -77,5 +77,5 @@ bool CWorld::destroyVoxelAt(int x, int y, int z)
 void CWorld::createChunkVoxelData(glm::vec4 position, glm::vec4 color, int id)
 {
     addVoxelAt(position.x, position.y, position.z, CVoxel::NONEMPTY, color, id);
-}
+}*/
 

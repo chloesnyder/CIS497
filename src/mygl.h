@@ -12,6 +12,7 @@
 #include "cchunk.h"
 //#include "cimagereader.h"
 #include "cworld.h"
+#include "cworldarr.h"
 #include "cvoxel.h"
 #include "voxelizer.h"
 #include "ccreateachunktask.h"
@@ -33,9 +34,14 @@ private:
     Camera camera;
 
     CVoxelizer mVoxelizer;
-    CWorld mWorld;
+    //CWorld mWorld;
 
-    std::vector<CChunk*> chunks = std::vector<CChunk*>();
+    CWorldArr* mWorldArr;
+
+
+    //std::vector<CChunk*> chunks = std::vector<CChunk*>();
+    std::vector<CChunkArr*> chunks = std::vector<CChunkArr*>();
+
 
 
     //bounds

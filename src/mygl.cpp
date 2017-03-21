@@ -10,9 +10,10 @@
 #include <cstring>
 #include <QApplication>
 #include <QKeyEvent>
+#include <QThreadPool>
 
 
-#define OLD_MULTITHREADING
+//#define OLD_MULTITHREADING
 #define MULTITHREADING
 
 MyGL::MyGL(QWidget *parent)
@@ -47,12 +48,12 @@ void MyGL::initializeGL()
 
 
     // PLAY WITH BLEND FUNC? GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
-   // glEnable(GL_BLEND);
-   // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
     // DO I WANT THIS?
-   /* glDisable(GL_DEPTH_TEST);
+    /* glDisable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
     glEnable(GL_DEPTH_TEST);*/
@@ -96,7 +97,7 @@ void MyGL::processFiles() {
     createChunkVector();
 
     // call create on every chunk
-   /* for(int i = 0; i < chunks.size(); i++)
+    /* for(int i = 0; i < chunks.size(); i++)
     {
         chunks.at(i)->populateVoxelBuffer();
         chunks.at(i)->create();
@@ -105,7 +106,7 @@ void MyGL::processFiles() {
 
 void MyGL::resizeGL(int w, int h)
 {
-   // camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
+    // camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
     camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));
     //Camera()
 
@@ -134,7 +135,8 @@ void MyGL::paintGL()
     prog_lambert.setModelMatrix(model);
 
     for(unsigned int i = 0; i < chunks.size(); i++) {
-        CChunk* currChunk = chunks[i];
+        //CChunk* currChunk = chunks[i];
+        CChunkArr* currChunk = chunks[i];
         prog_lambert.draw(*currChunk);
     }
 }
@@ -143,16 +145,80 @@ void MyGL::paintGL()
 //update to do multithreading
 void MyGL::createChunkVector()
 {
-//#ifdef MULTITHREADING
 
-    // new idea: have one thread populate the entire world and have multithreading do the chunk VBO population?
+    /// NEW WITH ARRAYS INSTEAD
 
-#ifdef OLD_MULTITHREADING
+
+    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
+    std::vector<CCreateAChunkTask*> *chunkTasks = new std::vector<CCreateAChunkTask*>();
+
+    // Init world array and populate with color data
+    // A voxel at (x, y, z) has a color
+    // This color stored in the world array at address = x + max_x*y + max_x*max_y*z
+    mWorldArr = new CWorldArr(512, allLayers->size(), 512);
+
+    for(int i = 0; i < allLayers->size(); i++) {
+
+        std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
+        for(CVoxel* v : *currVoxelPlane) {
+
+            glm::vec4 voxPos = v->getPosition();
+            glm::vec4 voxCol = v->getColor();
+
+            mWorldArr->addVoxelAt(voxPos.x, voxPos.y, voxPos.z, 512, allLayers->size(), voxCol);
+        }
+    }
+
+   CChunkArr* allLayerChunk = new CChunkArr(this);
+   allLayerChunk ->setXMin(0);
+   allLayerChunk ->setXMax(512);
+   allLayerChunk ->setYMin(0);
+   allLayerChunk ->setYMax(allLayers->size());
+   allLayerChunk ->setZMin(0);
+   allLayerChunk ->setZMax(512);
+   allLayerChunk ->setWorld(mWorldArr);
+
+
+   allLayerChunk->populateVoxelBuffer();
+   allLayerChunk->create();
+   chunks.push_back(allLayerChunk);
+
+  /*  // threading
+    int totalLayers = 50;//allLayers->size();
+    int incr = totalLayers / 10;
+    int layer;
+    int ymin;
+    int ymax;
+    int numThreads = 0;
+
+    for(layer = 0; layer < totalLayers; layer += incr)
+    {
+        ymin = layer;
+        ymax = layer + incr;
+        if(ymax > totalLayers) ymax = totalLayers;
+
+        CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, mWorldArr, ymin, ymax, this);
+        QThreadPool::globalInstance()->start(currChunkTask);
+        numThreads++;
+    }
+
+    if(QThreadPool::globalInstance()->waitForDone())
+    {
+       for(int thread = 0; thread < numThreads; thread++)
+        {
+            chunks.at(thread)->create();
+        }
+    }
+
+*/
+
+
+    /*#ifdef OLD_MULTITHREADING
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
     std::vector<CCreateAChunkTask*> *chunkTasks = new std::vector<CCreateAChunkTask*>();
     int numThreads = 0;
 
-    int totalLayers = 100;//allLayers->size();
+    int totalLayers = 20;//allLayers->size();
     int incr = totalLayers / 10;
     int layer;
     int ymin;
@@ -168,8 +234,7 @@ void MyGL::createChunkVector()
         ymax = layer + incr;
         if (ymax > totalLayers) ymax = totalLayers;
         CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, mWorld, ymin, ymax, this);
-        currChunkTask->start();       
-        //currChunkTask->wait();
+        currChunkTask->start();
         chunkTasks->push_back(currChunkTask);
         numThreads++;
     }
@@ -183,13 +248,7 @@ void MyGL::createChunkVector()
 
     threadCheck(chunkTasks);
 
-   // call create on every chunk
-    for(int i = 0; i < chunks.size(); i++)
-    {
-       // chunks.at(i)->populateVoxelBuffer();
-      //  chunks.at(i)->create();
-    }
-#else
+#elif
 
      std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
 
@@ -197,8 +256,8 @@ void MyGL::createChunkVector()
     allLayerChunk ->setXMin(0);
     allLayerChunk ->setXMax(512);
     allLayerChunk ->setYMin(0);
-   // allLayerChunk ->setYMax(allLayers->size());
-    allLayerChunk ->setYMax(20);
+    allLayerChunk ->setYMax(allLayers->size());
+    //allLayerChunk ->setYMax(20);
     allLayerChunk ->setZMin(0);
     allLayerChunk ->setZMax(512);
 
@@ -223,37 +282,37 @@ void MyGL::createChunkVector()
     allLayerChunk->populateVoxelBuffer();
     allLayerChunk->create();
     chunks.push_back(allLayerChunk);
-#endif
+#endif*/
 }
 
 void MyGL::threadCheck(std::vector<CCreateAChunkTask*> *chunkTasks)
 {
-    int numThreads = chunkTasks->size();
+//    int numThreads = chunkTasks->size();
 
-    // Check if still running
-    bool still_running;
-    do
-    {
-        still_running = false;
-        for(unsigned int J = 0; J < numThreads; J++) {
-            if(chunkTasks->at(J)->isRunning())
-            {
-                still_running = true;
-                break;
-            }
-        }
-        if(still_running)
-        {
-            QThread::yieldCurrentThread();
-        }
-    } while(still_running);
+//    // Check if still running
+//    bool still_running;
+//    do
+//    {
+//        still_running = false;
+//        for(unsigned int J = 0; J < numThreads; J++) {
+//            if(chunkTasks->at(J)->isRunning())
+//            {
+//                still_running = true;
+//                break;
+//            }
+//        }
+//        if(still_running)
+//        {
+//            QThread::yieldCurrentThread();
+//        }
+//    } while(still_running);
 
-    // clean up image thread objects
-    for(unsigned int K = 0; K < numThreads; K++)
-    {
-        delete chunkTasks->at(K);
-    }
-    delete chunkTasks;
+//    // clean up image thread objects
+//    for(unsigned int K = 0; K < numThreads; K++)
+//    {
+//        delete chunkTasks->at(K);
+//    }
+//    delete chunkTasks;
 }
 
 

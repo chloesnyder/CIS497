@@ -1,8 +1,9 @@
-/*#ifndef CCHUNK_H
-#define CCHUNK_H
+#ifndef CCHUNKARR_H
+#define CCHUNKARR_H
+#pragma once
 #include <drawable.h>
 #include "cvoxel.h"
-#include "cworld.h"
+#include "cworldarr.h"
 
 typedef struct {
     glm::vec4 p[3]; // XYZ
@@ -13,12 +14,12 @@ typedef struct {
     double val[8];
 } GRIDCELL;
 
-class CChunk : public Drawable
+class CChunkArr : public Drawable
 {
 public:
-    CChunk(GLWidget277* context);
-    CChunk(GLWidget277* context, float, float, float, float, float, float);
-    CChunk(GLWidget277* context, CWorld*, float, float, float, float, float, float);
+    CChunkArr(GLWidget277* context);
+    CChunkArr(GLWidget277* context, float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
+    CChunkArr(GLWidget277* context, CWorldArr*, float xmin, float xmax, float ymin, float ymax, float zmin, float zmax);
 
     virtual void create();
 
@@ -36,14 +37,8 @@ public:
     void setZMin(float z) { m_Zmin = z;}
     void setZMax(float z) { m_Zmax = z;}
 
-    CWorld *getWorld() { return mWorld; }
-    void setWorld(CWorld *w) { mWorld = w; }
-
-    void setColor(glm::vec4 col) { mColor = col; }
-    glm::vec4 getColor() { return mColor; }
-
-    void recomputeAttributes() {this->create();}
-    void setCameraForward(glm::vec4 look) { mCameraForward = look; }
+    CWorldArr *getWorld() { return mWorld; }
+    void setWorld(CWorldArr *w) { mWorld = w; }
 
     int Polygonise(GRIDCELL grid, double isolevel, std::vector<TRIANGLE> &triangles);
     glm::vec4 VertexInterp(double isolevel, glm::vec4 p1, glm::vec4 p2, double valp1, double valp2);
@@ -57,21 +52,16 @@ private:
     std::vector<glm::vec4> mVertices;
     std::vector<GLuint> mIndices;
 
-    glm::vec4 mColor;
-
     //pointer to our world which gives info about hwere blocks are
-    CWorld *mWorld;
-    void checkFace(glm::vec4 *v000, glm::vec4 *v001, glm::vec4 *v010,
-                   glm::vec4 *v100, glm::vec4 *v011, glm::vec4 *v101,
-                   glm::vec4 *v110, glm::vec4 *v111, int face, int x, int y, int z, glm::vec4 color,
-                   std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
+    CWorldArr *mWorld;
+
     void createVoxelBuffer(std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
-    void pushBackVertData(glm::vec4 *a, glm::vec4 *b, glm::vec4 *c, glm::vec4 *d, glm::vec4 normal, glm::vec4 color, std::vector<glm::vec4> *vertices, std::vector<GLuint> *indices);
 
     double calculateDensity(glm::vec4 vertex);
     glm::vec4 calculateNormal(glm::vec4 vertex, int totalTris);
 
-    glm::vec4 mCameraForward;
+    int offset = 0;
+
 };
 
-#endif // CCHUNK_H*/
+#endif
