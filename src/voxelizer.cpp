@@ -14,7 +14,7 @@ CVoxelizer::CVoxelizer() : mImageReader()
 void CVoxelizer::processFiles() {
 
     // Access directory of all images
-    //QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
+   // QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
     QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/one");
     QStringList qsl; qsl.append("*.ppm");
     targetDir.setNameFilters(qsl);

@@ -41,6 +41,11 @@ private:
     std::vector<CWorld*> worlds = std::vector<CWorld*>();
     std::vector<std::vector<CVoxel*>*>* layers = new std::vector<std::vector<CVoxel*>*>();
 
+    std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
+    std::vector<GLuint>* indices = new std::vector<GLuint>();
+
+    CChunk* theChunk;
+
 
     //bounds
     int boundNegX, boundNegZ, boundPosZ, boundPosX;

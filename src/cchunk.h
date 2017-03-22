@@ -36,6 +36,9 @@ public:
     void setZMin(float z) { m_Zmin = z;}
     void setZMax(float z) { m_Zmax = z;}
 
+    void setVertices(std::vector<glm::vec4>* v) { mVertices = v; }
+    void setIndices(std::vector<GLuint>* i) { mIndices = i; }
+
     std::vector<glm::vec4>* getVertices() {return mVertices;}
     std::vector<GLuint>* getIndices() {return mIndices;}
 

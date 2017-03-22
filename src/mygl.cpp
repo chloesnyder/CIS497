@@ -123,12 +123,15 @@ void MyGL::paintGL()
     glm::mat4 model = glm::mat4(1.0f);
     prog_lambert.setModelMatrix(model);
 
+    prog_lambert.draw(*theChunk);
+
+    /*
     for(unsigned int i = 0; i < chunks.size(); i++) {
         CChunk* currChunk = chunks[i];
         // currChunk->setCameraForward(glm::vec4(camera.look, 0));
         // currChunk->recomputeAttributes();
         prog_lambert.draw(*currChunk);
-    }
+    }*/
 }
 
 
@@ -201,10 +204,12 @@ void MyGL::createChunkVector()
         QThreadPool::globalInstance()->start(task);
     }
 
+
+
    if(QThreadPool::globalInstance()->waitForDone())
     {
         for (CChunk* chunkToCreate : chunks) {
-            chunkToCreate->create();
+           // chunkToCreate->create();
 
 
             /* Question:
@@ -217,26 +222,53 @@ void MyGL::createChunkVector()
              * Do I need to interleave my data so all these vertices and indices get loaded into
              * just one buffer that is drawn from when i draw in paintGl?
              *
+             * This new approach: A world and a chunk are created for a copy of a range of layers from all the images.
+             * A thread cosntructs this. Then all chunks are created from myGl.
+             * This is producing the same output as before -
+             * but it is all separate memory on the CPU side,
+             * so this can’t be the issue. So there must be overwriting occurring in the GPU.
+             *
+             * When maxThreadCount = 1 it works correctly
+             * So why does the data get corrupted when multithreading is enabled?
+             *
+             * http://stackoverflow.com/questions/22363644/how-to-synchronize-multithreaded-opengl-buffer-access
+             * glbuffersubdata?
+             *
+             * have the task be able to return vertices and indices
+             * the task then populates those vectors which can be returned as an object
+             * and then here, i can have a really big vert and indices  vector
+             * that copies in the verts and indices from every thread object
+             * and then this big vert/indices array will be used to populate the buffer
+             *
              * */
 
-           /*
-            std::vector<glm::vec4>* vertices = chunkToCreate->getVertices();
-            std::vector<GLuint>* indicies = chunkToCreate->getIndices();
 
-            count = indices->size();
-            generateIdx();
-            context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIdx);
-            context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() *
-                                  sizeof(GLuint), mIndices->data(), GL_STATIC_DRAW);
+            std::vector<glm::vec4> *verts = chunkToCreate->getVertices();
+            std::vector<GLuint> *inds = chunkToCreate->getIndices();
 
-            generateVertData();
-            context->glBindBuffer(GL_ARRAY_BUFFER, bufVertData);
-            context->glBufferData(GL_ARRAY_BUFFER, vertices->size() *
-                                  sizeof(glm::vec4), vertices->data(), GL_STATIC_DRAW);
+            //vertices->
 
-            */
+
+            for(glm::vec4 v : *verts)
+            {
+                vertices->push_back(v);
+            }
+
+            for(GLuint ind : *inds)
+            {
+                indices->push_back(ind);
+            }
         }
     }
+
+   // create one chunk with these verts and inds
+   theChunk = new CChunk(this);
+   theChunk->setVertices(vertices);
+   theChunk->setIndices(indices);
+   theChunk->create();
+
+
+
 
 
     /*
