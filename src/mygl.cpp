@@ -197,7 +197,7 @@ void MyGL::createChunkVector()
         chunkTasks->push_back(thread);
     }
 
-    QThreadPool::globalInstance()->setMaxThreadCount(1);
+    //QThreadPool::globalInstance()->setMaxThreadCount(1);
 
     for(CCreateWorldAndChunk* task : *chunkTasks)
     {
