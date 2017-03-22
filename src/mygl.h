@@ -16,6 +16,8 @@
 #include "voxelizer.h"
 #include "ccreateachunktask.h"
 
+#include "ccreateworldandchunk.h"
+
 #include <QListWidget>
 
 
@@ -36,6 +38,8 @@ private:
     CWorld mWorld;
 
     std::vector<CChunk*> chunks = std::vector<CChunk*>();
+    std::vector<CWorld*> worlds = std::vector<CWorld*>();
+    std::vector<std::vector<CVoxel*>*>* layers = new std::vector<std::vector<CVoxel*>*>();
 
 
     //bounds

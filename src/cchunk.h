@@ -36,6 +36,9 @@ public:
     void setZMin(float z) { m_Zmin = z;}
     void setZMax(float z) { m_Zmax = z;}
 
+    std::vector<glm::vec4>* getVertices() {return mVertices;}
+    std::vector<GLuint>* getIndices() {return mIndices;}
+
     CWorld *getWorld() { return mWorld; }
     void setWorld(CWorld *w) { mWorld = w; }
 
@@ -54,8 +57,8 @@ private:
     // coords to define the absolute min and max coordinates of chunk's volume
     float m_Xmin, m_Xmax, m_Ymin, m_Ymax, m_Zmin, m_Zmax;
 
-    std::vector<glm::vec4> mVertices;
-    std::vector<GLuint> mIndices;
+    std::vector<glm::vec4>* mVertices = new std::vector<glm::vec4>();
+    std::vector<GLuint>* mIndices = new std::vector<GLuint>();
 
     glm::vec4 mColor;
 

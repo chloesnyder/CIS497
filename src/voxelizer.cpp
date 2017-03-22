@@ -3,6 +3,8 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QThread>
+#include <QRunnable>
+#include <QThreadPool>
 
 CVoxelizer::CVoxelizer() : mImageReader()
 {
@@ -12,7 +14,7 @@ CVoxelizer::CVoxelizer() : mImageReader()
 void CVoxelizer::processFiles() {
 
     // Access directory of all images
-   // QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
+    //QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/PPMS/firsthalf/firstquarter/firsteighth");
     QDir targetDir = QDir("/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/one");
     QStringList qsl; qsl.append("*.ppm");
     targetDir.setNameFilters(qsl);
@@ -30,18 +32,27 @@ void CVoxelizer::processFiles() {
 
         // voxelize the image
          CVoxelizeAnImageSliceTask *currImageTask = new CVoxelizeAnImageSliceTask(currImg, voxelLength, mAllLayers);
-         currImageTask->start();
+         //currImageTask->start();
          imageTasks->push_back(currImageTask);
 
          voxelLength++;
 
     }
+
+    for(CVoxelizeAnImageSliceTask* task : *imageTasks)
+    {
+        QThreadPool::globalInstance()->start(task);
+    }
+
+    QThreadPool::globalInstance()->waitForDone();
+
+
     // Check to see if thread is still running, kill when done
-    threadCheck(imageTasks);
+    //threadCheck(imageTasks);
 }
 
 void CVoxelizer::threadCheck(std::vector<CVoxelizeAnImageSliceTask*> *imageTasks)
-{
+{/*
     int numThreads = imageTasks->size();
 
 
@@ -69,5 +80,6 @@ void CVoxelizer::threadCheck(std::vector<CVoxelizeAnImageSliceTask*> *imageTasks
         delete imageTasks->at(K);
     }
     delete imageTasks;
+    */
 
 }

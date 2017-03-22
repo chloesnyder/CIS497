@@ -1,8 +1,9 @@
 #ifndef CVOXELIZER_H
 #define CVOXELIZER_H
-
+#pragma once
 #include "cvoxelizeanimageslicetask.h"
 #include "cimagereader.h"
+#include <QRunnable>
 
 class CVoxelizer
 {

@@ -542,8 +542,7 @@ glm::vec4 CChunk::calculateNormal(glm::vec4 vertex)
 
     glm::vec4 grad;
 
-    //float d = 1.0/(float)voxels_per_block -> so for me 1/(512*512)? thats so close to 0...
-    float d = 1.0/512.0;
+    float d = 1.0;
 
     grad.x = calculateDensity(vertex + glm::vec4(d, 0, 0, 0)) -
             calculateDensity(vertex + glm::vec4(-d, 0, 0, 0));
@@ -617,10 +616,6 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
         for(int j = m_Ymin; j < m_Ymax; j++) {
             for(int k = m_Zmin; k < m_Zmax; k++) {
 
-                //if(mWorld->hasVoxelAt(i, j, k)) {
-                //   if(mWorld->voxelAtIsType(i, j, k) == CVoxel::NONEMPTY)
-                //   {
-
                 glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
 
                 // For each voxel, polygonise it
@@ -639,8 +634,7 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
                 currCell.p[0] = v000; currCell.p[1] = v001; currCell.p[2] = v010; currCell.p[3] = v100;
                 currCell.p[4] = v011; currCell.p[5] = v101; currCell.p[6] = v110; currCell.p[7] = v111;
 
-
-                bool hasDensity = false;
+                bool hasDensity = true;
                 // define densities at each vertex as the alpha value of the voxel at that vertex location
                 for(int corner = 0; corner < 8; corner++) {
                     // sample the corners as a lerped value between neighboring voxels
@@ -670,11 +664,7 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
                         for(int v = 0; v < 3; v++) {
 
                             // calculate the normal for this vertex based on xyz gradient
-                            glm::vec4 v1 = currTriangles[u].p[1] - currTriangles[u].p[2];
-                            glm::vec4 v2 = currTriangles[u].p[0] - currTriangles[u].p[2];
-
-
-                            glm::vec4 normal = glm::vec4(glm::cross(glm::vec3(v1), glm::vec3(v2)),0);//calculateNormal(currTriangles[u].p[v]);
+                            glm::vec4 normal = calculateNormal(currTriangles[u].p[v]);
 
                             vertices->push_back(currTriangles.at(u).p[v]); // push back first vertex of this triangle
                             vertices->push_back(color); // then the color
@@ -699,23 +689,25 @@ void CChunk::createVoxelBuffer(std::vector<glm::vec4> *vertices,
 void CChunk::populateVoxelBuffer()
 {
     //populates the vertices and indices buffers
-    createVoxelBuffer(&mVertices, &mIndices);
+    createVoxelBuffer(mVertices, mIndices);
 }
 
 
 void CChunk::create()
 {
 
-    count = mIndices.size();
+   // populateVoxelBuffer();
+
+    count = mIndices->size();
     generateIdx();
     context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIdx);
-    context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices.size() *
-                          sizeof(GLuint), mIndices.data(), GL_STATIC_DRAW);
+    context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndices->size() *
+                          sizeof(GLuint), mIndices->data(), GL_STATIC_DRAW);
 
     generateVertData();
     context->glBindBuffer(GL_ARRAY_BUFFER, bufVertData);
-    context->glBufferData(GL_ARRAY_BUFFER, mVertices.size() *
-                          sizeof(glm::vec4), mVertices.data(), GL_STATIC_DRAW);
+    context->glBufferData(GL_ARRAY_BUFFER, mVertices->size() *
+                          sizeof(glm::vec4), mVertices->data(), GL_STATIC_DRAW);
 
 
 }
