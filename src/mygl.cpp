@@ -12,6 +12,32 @@
 #include <QKeyEvent>
 
 
+void MyGL::slot_on_loadMesh_clicked()
+{
+    // allow user to select a file
+    // read through the file to get the vertices and indices
+    // set these verts and ints for currChunk
+    // create and draw
+}
+
+void MyGL::slot_on_newMesh_clicked()
+{
+    // allow user to select a directory, set this in voxelizer
+    // run the program as normal, but at end, export the indices and vertices to a file
+
+    chunks.clear();
+
+    QString dirName = QFileDialog::getExistingDirectory(this,
+                                                        tr("Open Directory"),
+                                                        "/Users/chloebrownsnyder/Desktop/Spring2017/CIS497/CIS497_SD/src/CTScanImages/CTScanImages",
+                                                        QFileDialog::ShowDirsOnly);
+    isNewScan = true;
+    mVoxelizer = CVoxelizer();
+    mVoxelizer.setTargetDirPath(dirName);
+    processFiles();
+}
+
+
 MyGL::MyGL(QWidget *parent)
     : GLWidget277(parent), prog_lambert(this), prog_wire(this), camera(Camera())
 {
@@ -44,12 +70,12 @@ void MyGL::initializeGL()
 
 
     // PLAY WITH BLEND FUNC? GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
-  //  glEnable(GL_BLEND);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //  glEnable(GL_BLEND);
+    //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
     // DO I WANT THIS?
-   /* glDisable(GL_DEPTH_TEST);
+    /* glDisable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
     glEnable(GL_DEPTH_TEST);*/
@@ -80,15 +106,10 @@ void MyGL::initializeGL()
     // using multiple VAOs, we can just bind one once.
     glBindVertexArray(vao);
 
-    // Read in the test image
-    //mImageReader = CImageReader();
-
-    processFiles();
 }
 
 void MyGL::processFiles() {
 
-    mVoxelizer = CVoxelizer();
     mVoxelizer.processFiles();
     createChunkVector();
 }
@@ -122,8 +143,6 @@ void MyGL::paintGL()
 
     for(unsigned int i = 0; i < chunks.size(); i++) {
         CChunk* currChunk = chunks[i];
-       // currChunk->setCameraForward(glm::vec4(camera.look, 0));
-       // currChunk->recomputeAttributes();
         prog_lambert.draw(*currChunk);
     }
 }
@@ -199,9 +218,5 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     }
     camera.RecomputeAttributes();
     update();  // Calls paintGL, among other things
-}
-
-bool MyGL::initTextures3d(){
-
 }
 

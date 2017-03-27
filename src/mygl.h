@@ -36,6 +36,7 @@ private:
 
     std::vector<CChunk*> chunks = std::vector<CChunk*>();
 
+    bool isNewScan = false;
 
     //bounds
     int boundNegX, boundNegZ, boundPosZ, boundPosX;
@@ -43,8 +44,6 @@ private:
 
     void createChunkVector();
     void processFiles();
-
-    bool initTextures3d();
 
 
 public:
@@ -61,6 +60,10 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 
 signals:
+
+public slots:
+    void slot_on_loadMesh_clicked();
+    void slot_on_newMesh_clicked();
 
 
 

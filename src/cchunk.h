@@ -54,8 +54,6 @@ private:
     int Polygonise(GRIDCELL grid, double isolevel, std::vector<TRIANGLE> &triangles);
     glm::vec4 VertexInterp(double isolevel, glm::vec4 p1, glm::vec4 p2, double valp1, double valp2);
 
-
-
     int edgeTable[256]={
         0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
         0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,

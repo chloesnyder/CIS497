@@ -13,6 +13,8 @@ public:
 
     std::vector<std::vector<CVoxel*>*> *getAllLayers() { return mAllLayers; }
 
+    void setTargetDirPath(QString path);
+
 private:
 
 
@@ -22,6 +24,8 @@ private:
     CImageReader mImageReader;
 
     void threadCheck(std::vector<CVoxelizeAnImageSliceTask*> *imageTasks);
+
+    QString targetDirPath;
 
 
 };
