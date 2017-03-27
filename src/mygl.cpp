@@ -146,7 +146,7 @@ void MyGL::createChunkVector()
     int numThreads = 0;
 
     int totalLayers = allLayers->size();
-    int incr = totalLayers / 2;
+    int incr = totalLayers / 10;
     int layer;
     int curr_ymin;
     int curr_ymax;
@@ -197,7 +197,7 @@ void MyGL::createChunkVector()
         chunkTasks->push_back(thread);
     }
 
-    //QThreadPool::globalInstance()->setMaxThreadCount(1);
+    QThreadPool::globalInstance()->setMaxThreadCount(1);
 
     for(CCreateWorldAndChunk* task : *chunkTasks)
     {
