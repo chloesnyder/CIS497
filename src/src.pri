@@ -15,10 +15,7 @@ SOURCES += \
     $$PWD/drawable.cpp \
     $$PWD/cworld.cpp \
     $$PWD/cchunk.cpp \
-    $$PWD/cvoxelizeanimageslicetask.cpp \
-    $$PWD/ccreateachunktask.cpp \
-    $$PWD/cchunkarr.cpp \
-    $$PWD/cworldarr.cpp
+    $$PWD/cvoxelizeanimageslicetask.cpp
 
 HEADERS += \
     $$PWD/mainwindow.h \
@@ -35,8 +32,4 @@ HEADERS += \
     $$PWD/cworld.h \
     $$PWD/cchunk.h \
     $$PWD/cvoxelizeanimageslicetask.h \
-    $$PWD/marching_cubes_data.h \
-    $$PWD/ccreateachunktask.h \
-    $$PWD/cchunkarr.h \
-    $$PWD/cworldarr.h \
-    $$PWD/structs.h
+    $$PWD/marching_cubes_data.h

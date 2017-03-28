@@ -4,5 +4,7 @@
         <file>glsl/lambert.vert.glsl</file>
         <file>glsl/wire.frag.glsl</file>
         <file>glsl/wire.vert.glsl</file>
+        <file>glsl/colormap.frag.glsl</file>
+        <file>glsl/colormap.vert.glsl</file>
     </qresource>
 </RCC>

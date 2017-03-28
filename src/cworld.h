@@ -21,6 +21,8 @@ private:
 
     std::map<std::tuple<int, int, int>, glm::vec4> voxColMap = std::map<std::tuple<int, int, int>, glm::vec4>();
 
+    void addVoxelLocationData(int x1, int x2, int y1, int y2, int z1, int z2, glm::vec4 color);
+
     // Declare array of pairs of voxel address with voxel type, or voxel color
     // Each array index corresponds to voxel ID
     // Start with max voxels possible (801 * 512 * 512, may update this later)

@@ -10,12 +10,10 @@
 
 
 #include "cchunk.h"
-
+//#include "cimagereader.h"
 #include "cworld.h"
-#include "cworldarr.h"
 #include "cvoxel.h"
 #include "voxelizer.h"
-#include "ccreateachunktask.h"
 
 #include <QListWidget>
 
@@ -28,6 +26,7 @@ private:
 
     ShaderProgram prog_lambert;
     ShaderProgram prog_wire;
+    ShaderProgram prog_color;
 
     GLuint vao;
 
@@ -36,13 +35,9 @@ private:
     CVoxelizer mVoxelizer;
     CWorld mWorld;
 
-    CWorldArr* mWorldArr;
-
-
     std::vector<CChunk*> chunks = std::vector<CChunk*>();
-    std::vector<CChunkArr*> chunksArr = std::vector<CChunkArr*>();
 
-
+    QString newFileName;
 
     //bounds
     int boundNegX, boundNegZ, boundPosZ, boundPosX;
@@ -51,9 +46,8 @@ private:
     void createChunkVector();
     void processFiles();
 
-    bool initTextures3d();
-
-    void threadCheck(std::vector<CCreateAChunkTask*> *chunkTasks);
+    bool isOpacityEnabled = false;
+    double isolevel = .01; //default value so as much as possible draws
 
 
 public:
@@ -70,6 +64,13 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 
 signals:
+
+public slots:
+    void slot_on_loadMesh_clicked();
+    void slot_on_newMesh_clicked();
+    void slot_on_text_changed(QString s);
+    void slot_on_opacity_checkbox_changed(bool opa);
+    void slot_on_isolevel_changed(double iso);
 
 
 

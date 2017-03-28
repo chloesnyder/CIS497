@@ -10,14 +10,121 @@
 #include <cstring>
 #include <QApplication>
 #include <QKeyEvent>
-#include <QThreadPool>
+
+void MyGL::slot_on_isolevel_changed(double iso)
+{
+    isolevel = iso;
+}
+
+void MyGL::slot_on_opacity_checkbox_changed(bool opa)
+{
+    isOpacityEnabled = opa;
+    update();
+}
+
+void MyGL::slot_on_text_changed(QString s)
+{
+    newFileName = "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesignCIS497/src/preloaded_volumes/" + s;
+}
 
 
-//#define NEW_ALGORITHM
-#define MULTITHREADING
+void MyGL::slot_on_loadMesh_clicked()
+{
+    // allow user to select a file
+    // read through the file to get the vertices and indices
+    // set these verts and ints for currChunk
+    // create and draw
+
+    chunks.clear();
+
+    CChunk* allLayerChunk = new CChunk(this);
+
+    std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
+    std::vector<GLuint>* indices = new std::vector<GLuint>();
+
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                    "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesignCIS497/src/preloaded_volumes/",
+                                                    tr("Text Files (*.txt)"));
+
+    QFile file(filename);
+    bool isReadingVerts = false;
+    bool isReadingIndices = false;
+
+    if(file.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&file);
+
+        while(!in.atEnd())
+        {
+            QString line = in.readLine();
+
+            if(isReadingVerts)
+            {
+                if (line.compare("i") == 0)
+                {
+                    isReadingVerts = false;
+                    isReadingIndices = true;
+                } else {
+
+                    //split the line around commas and create a new vec4
+                    //push back into vertices vector
+                    QStringList fields = line.split(",");
+                    float x = fields.at(0).toFloat();
+                    float y = fields.at(1).toFloat();
+                    float z = fields.at(2).toFloat();
+                    float a = fields.at(3).toFloat();
+
+                    glm::vec4 newVert = glm::vec4(x, y, z, a);
+                    vertices->push_back(newVert);
+
+                }
+            } else if (isReadingIndices)
+            {
+                unsigned int uint = line.toUInt();
+                GLuint newGLuint = uint;
+                indices->push_back(newGLuint);
+            }
+
+            // toggles reading behavior for verts and indices
+            if(line.compare("v") == 0)
+            {
+                isReadingVerts = true;
+                isReadingIndices = false;
+            }
+
+        }
+    }
+
+    file.close();
+
+    allLayerChunk->setVertices(vertices);
+    allLayerChunk->setIndices(indices);
+    allLayerChunk->create();
+    chunks.push_back(allLayerChunk);
+    update();
+
+}
+
+void MyGL::slot_on_newMesh_clicked()
+{
+    // allow user to select a directory, set this in voxelizer
+    // run the program as normal, but at end, export the indices and vertices to a file
+
+    chunks.clear();
+
+    QString dirName = QFileDialog::getExistingDirectory(this,
+                                                        tr("Open Directory"),
+                                                        "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesignCIS497/src/CTScanImages/",
+                                                        QFileDialog::ShowDirsOnly);
+    mVoxelizer = CVoxelizer();
+    mVoxelizer.setTargetDirPath(dirName);
+    processFiles();
+    update();
+}
+
 
 MyGL::MyGL(QWidget *parent)
-    : GLWidget277(parent), prog_lambert(this), prog_wire(this), camera(Camera())
+    : GLWidget277(parent), prog_lambert(this), prog_wire(this), prog_color(this), camera(Camera())
 {
     setFocusPolicy(Qt::ClickFocus);
 
@@ -47,18 +154,6 @@ void MyGL::initializeGL()
     glEnable(GL_POLYGON_SMOOTH);
 
 
-    // PLAY WITH BLEND FUNC? GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
-    // glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-
-    // DO I WANT THIS?
-    /* glDisable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    glEnable(GL_DEPTH_TEST);*/
-
-
     /// TRIANGLE LINES
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
@@ -79,43 +174,31 @@ void MyGL::initializeGL()
     prog_lambert.create(":/glsl/lambert.vert.glsl", ":/glsl/lambert.frag.glsl");
     // Create and set up the wireframe shader
     prog_wire.create(":/glsl/wire.vert.glsl", ":/glsl/wire.frag.glsl");
+    // Create and set up the heat map shader
+    prog_color.create(":/glsl/colormap.vert.glsl", ":/glsl/colormap.frag.glsl");
 
     // We have to have a VAO bound in OpenGL 3.2 Core. But if we're not
     // using multiple VAOs, we can just bind one once.
     glBindVertexArray(vao);
 
-    // Read in the test image
-    //mImageReader = CImageReader();
-
-    processFiles();
 }
 
 void MyGL::processFiles() {
 
-    mVoxelizer = CVoxelizer();
     mVoxelizer.processFiles();
     createChunkVector();
-
-    // call create on every chunk
-    /* for(int i = 0; i < chunks.size(); i++)
-    {
-        chunks.at(i)->populateVoxelBuffer();
-        chunks.at(i)->create();
-    }*/
 }
 
 void MyGL::resizeGL(int w, int h)
 {
-    // camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
-    camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));
-    //Camera()
-
+    camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
 
     glm::mat4 viewproj = camera.getViewProj();
 
     // Upload the projection matrix
     prog_lambert.setViewProjMatrix(viewproj);
     prog_wire.setViewProjMatrix(viewproj);
+    prog_color.setViewProjMatrix(viewproj);
 
     printGLErrorLog();
 }
@@ -130,177 +213,46 @@ void MyGL::paintGL()
     // Update the viewproj matrix
     prog_lambert.setViewProjMatrix(camera.getViewProj());
     prog_wire.setViewProjMatrix(camera.getViewProj());
+    prog_color.setViewProjMatrix(camera.getViewProj());
 
     glm::mat4 model = glm::mat4(1.0f);
     prog_lambert.setModelMatrix(model);
+    prog_color.setModelMatrix(model);
+
+    if(isOpacityEnabled){
+        // PLAY WITH BLEND FUNC? GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    } else {
+        glDisable(GL_BLEND);
+    }
 
     for(unsigned int i = 0; i < chunks.size(); i++) {
-        //CChunk* currChunk = chunks[i];
- #ifdef NEW_ALGORITHM
-        CChunkArr* currChunk = chunksArr[i];
-        prog_lambert.draw(*currChunk);
-#else
         CChunk* currChunk = chunks[i];
-        prog_lambert.draw(*currChunk);
-#endif
+        //prog_lambert.draw(*currChunk);
+        prog_color.draw(*currChunk);
     }
 }
 
-
-//update to do multithreading
 void MyGL::createChunkVector()
 {
 
-    /// NEW WITH ARRAYS INSTEAD
 
-#ifdef NEW_ALGORITHM
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
-    std::vector<CCreateAChunkTask*> *chunkTasks = new std::vector<CCreateAChunkTask*>();
-
-    // Init world array and populate with color data
-    // A voxel at (x, y, z) has a color
-    // This color stored in the world array at address = x + max_x*y + max_x*max_y*z
-    mWorldArr = new CWorldArr(513, allLayers->size(), 513);
-
-    for(int i = 0; i < allLayers->size(); i++) {
-
-        std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
-        for(CVoxel* v : *currVoxelPlane) {
-
-            glm::vec4 voxPos = v->getPosition();
-            glm::vec4 voxCol = v->getColor();
-
-            mWorldArr->addVoxelAt(voxPos.x, voxPos.y, voxPos.z, voxCol);
-        }
-    }
-
-   CChunkArr* allLayerChunk = new CChunkArr(this);
-   allLayerChunk ->setXMin(0);
-   allLayerChunk ->setXMax(512);
-   allLayerChunk ->setYMin(0);
-   allLayerChunk ->setYMax(allLayers->size());
-   allLayerChunk ->setZMin(0);
-   allLayerChunk ->setZMax(512);
-   allLayerChunk ->setWorld(mWorldArr);
-
-
-   allLayerChunk->populateVoxelBuffer();
-   allLayerChunk->create();
-   chunksArr.push_back(allLayerChunk);
-#else
-    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
-
-   CChunk* allLayerChunk = new CChunk(this);
-   allLayerChunk ->setXMin(0);
-   allLayerChunk ->setXMax(512);
-   allLayerChunk ->setYMin(0);
-   allLayerChunk ->setYMax(allLayers->size());
-   //allLayerChunk ->setYMax(20);
-   allLayerChunk ->setZMin(0);
-   allLayerChunk ->setZMax(512);
-
-   // turn this part into the multithreading, to have multiple chunks, push back, render later
-
-   // go through each layer, and voxelize that layer's voxel plane
-   for(int i = 0; i < allLayers->size(); i++) {
-
-       std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
-       allLayerChunk ->setWorld(&mWorld);
-
-       for(CVoxel* v : *currVoxelPlane) {
-
-           glm::vec4 voxPos = v->getPosition();
-           glm::vec4 voxCol = v->getColor();
-           int voxID = v->getID();
-
-           mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
-       }
-   }
-
-   allLayerChunk->populateVoxelBuffer();
-   allLayerChunk->create();
-   chunks.push_back(allLayerChunk);
-#endif
-
-  /*  // threading
-    int totalLayers = 50;//allLayers->size();
-    int incr = totalLayers / 10;
-    int layer;
-    int ymin;
-    int ymax;
-    int numThreads = 0;
-
-    for(layer = 0; layer < totalLayers; layer += incr)
-    {
-        ymin = layer;
-        ymax = layer + incr;
-        if(ymax > totalLayers) ymax = totalLayers;
-
-        CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, mWorldArr, ymin, ymax, this);
-        QThreadPool::globalInstance()->start(currChunkTask);
-        numThreads++;
-    }
-
-    if(QThreadPool::globalInstance()->waitForDone())
-    {
-       for(int thread = 0; thread < numThreads; thread++)
-        {
-            chunks.at(thread)->create();
-        }
-    }
-
-*/
-
-
-    /*#ifdef OLD_MULTITHREADING
-    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
-    std::vector<CCreateAChunkTask*> *chunkTasks = new std::vector<CCreateAChunkTask*>();
-    int numThreads = 0;
-
-    int totalLayers = 20;//allLayers->size();
-    int incr = totalLayers / 10;
-    int layer;
-    int ymin;
-    int ymax;
-
-
-    // Each thread populates the vertex and index buffers for a chunk
-    // a chunk is a subset of the overall structure, from layer ymin to layer ymax
-    for(layer = 0; layer < totalLayers; layer += incr)
-    {
-
-        ymin = layer;
-        ymax = layer + incr;
-        if (ymax > totalLayers) ymax = totalLayers;
-        CCreateAChunkTask *currChunkTask = new CCreateAChunkTask(allLayers, &chunks, mWorld, ymin, ymax, this);
-        currChunkTask->start();
-        chunkTasks->push_back(currChunkTask);
-        numThreads++;
-    }
-
-    for(int thread = 0; thread < numThreads; thread++)
-    {
-        chunkTasks->at(thread)->wait();
-        chunks.at(thread)->populateVoxelBuffer();
-        chunks.at(thread)->create();
-    }
-
-    threadCheck(chunkTasks);
-
-#elif
-
-     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
-
     CChunk* allLayerChunk = new CChunk(this);
     allLayerChunk ->setXMin(0);
     allLayerChunk ->setXMax(512);
     allLayerChunk ->setYMin(0);
     allLayerChunk ->setYMax(allLayers->size());
-    //allLayerChunk ->setYMax(20);
     allLayerChunk ->setZMin(0);
     allLayerChunk ->setZMax(512);
 
-    // turn this part into the multithreading, to have multiple chunks, push back, render later
+    allLayerChunk->setIsolevel(isolevel);
+
+    std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
+    std::vector<GLuint>* indices = new std::vector<GLuint>();
+    allLayerChunk->setVertices(vertices);
+    allLayerChunk->setIndices(indices);
 
     // go through each layer, and voxelize that layer's voxel plane
     for(int i = 0; i < allLayers->size(); i++) {
@@ -318,10 +270,15 @@ void MyGL::createChunkVector()
         }
     }
 
-    allLayerChunk->populateVoxelBuffer();
+    allLayerChunk->createVoxelBuffer();
     allLayerChunk->create();
     chunks.push_back(allLayerChunk);
-#endif*/
+
+    // after the chunk has been created, save the verts and indices to a file
+    // so they can be used
+    allLayerChunk->setNewFileName(newFileName);
+    allLayerChunk->exportVerticesAndIndicesToFile();
+
 }
 
 
@@ -361,9 +318,5 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     }
     camera.RecomputeAttributes();
     update();  // Calls paintGL, among other things
-}
-
-bool MyGL::initTextures3d(){
-
 }
 
