@@ -24,7 +24,7 @@ void MyGL::slot_on_opacity_checkbox_changed(bool opa)
 
 void MyGL::slot_on_text_changed(QString s)
 {
-    newFileName = "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesignCIS497/src/preloaded_volumes/" + s;
+    newFileName = "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/preloaded_volumes/" + s;
 }
 
 
@@ -43,7 +43,7 @@ void MyGL::slot_on_loadMesh_clicked()
     std::vector<GLuint>* indices = new std::vector<GLuint>();
 
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                    "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesignCIS497/src/preloaded_volumes/",
+                                                    "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/preloaded_volumes/",
                                                     tr("Text Files (*.txt)"));
 
     QFile file(filename);
@@ -114,7 +114,7 @@ void MyGL::slot_on_newMesh_clicked()
 
     QString dirName = QFileDialog::getExistingDirectory(this,
                                                         tr("Open Directory"),
-                                                        "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesignCIS497/src/CTScanImages/",
+                                                        "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/CTScanImages/",
                                                         QFileDialog::ShowDirsOnly);
     mVoxelizer = CVoxelizer();
     mVoxelizer.setTargetDirPath(dirName);
