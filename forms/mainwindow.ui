@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1146</width>
+    <width>1431</width>
     <height>664</height>
    </rect>
   </property>
@@ -143,8 +143,20 @@
       <height>491</height>
      </rect>
     </property>
+    <property name="maximum">
+     <number>20</number>
+    </property>
+    <property name="singleStep">
+     <number>1</number>
+    </property>
     <property name="orientation">
      <enum>Qt::Vertical</enum>
+    </property>
+    <property name="invertedAppearance">
+     <bool>false</bool>
+    </property>
+    <property name="invertedControls">
+     <bool>false</bool>
     </property>
     <property name="tickPosition">
      <enum>QSlider::TicksBelow</enum>
@@ -182,14 +194,30 @@
    <widget class="QLabel" name="ImageViewer">
     <property name="geometry">
      <rect>
-      <x>920</x>
-      <y>50</y>
-      <width>221</width>
-      <height>231</height>
+      <x>910</x>
+      <y>40</y>
+      <width>512</width>
+      <height>512</height>
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>CT Scan Image Viewer</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="redcheckbox">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>580</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Red only</string>
     </property>
    </widget>
   </widget>
@@ -198,7 +226,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1146</width>
+     <width>1431</width>
      <height>22</height>
     </rect>
    </property>
@@ -236,6 +264,7 @@
     <slot>slot_on_isolevel_changed(double)</slot>
     <slot>slot_on_color_checkbox_changed(bool)</slot>
     <slot>slot_on_slider_moved(int)</slot>
+    <slot>slot_on_red_changed(bool)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -386,22 +415,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>mygl</sender>
-   <signal>sig_show_image()</signal>
-   <receiver>ImageViewer</receiver>
-   <slot>update()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>813</x>
-     <y>226</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>954</x>
-     <y>241</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>layerSlider</sender>
    <signal>sliderMoved(int)</signal>
    <receiver>mygl</receiver>
@@ -414,6 +427,22 @@
     <hint type="destinationlabel">
      <x>767</x>
      <y>316</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>redcheckbox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_on_red_changed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>867</x>
+     <y>612</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>787</x>
+     <y>519</y>
     </hint>
    </hints>
   </connection>

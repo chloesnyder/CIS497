@@ -11,18 +11,63 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <QPixmap>
+#include <QImage>
+#include <QDir>
+#include <QDirIterator>
 
 void MyGL::slot_on_slider_moved(int num)
 {
-   // figure out the "percentage" of the way up it is
-   float percent = (float) num / 99.0f;
-   float layer = maxLayers * percent;
-   currLayer = std::round(layer);
+    // figure out the "percentage" of the way up it is
+  //  float percent = (float) num / 99.0f;
+  //  float layer = maxLayers * percent;
+    currLayer = num;//std::round(layer);
 
 
-   QPixmap img = QPixmap("/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/CTScanImages/full_rabbit/IM-0001-000.ppm");
-   emit sig_send_image(img);
-   emit sig_show_image();
+    // If there are image files associated with this, display the image on the slider
+    if(!ctScanFilePath.isEmpty())
+    {
+        QDir imgDir = QDir(ctScanFilePath);
+        QStringList qsl; qsl.append("*.ppm");
+        imgDir.setNameFilters(qsl);
+
+        int count = 0;
+
+
+        QDirIterator it(imgDir, QDirIterator::Subdirectories);
+        QString currFile;
+        if(count = 0)
+        {
+            if(it.hasNext())
+            {
+                currFile = it.next();
+            }
+        } else {
+            currFile = prevImage;
+        }
+
+        while(it.hasNext()) {
+
+            if(count == currLayer)
+            {
+                currFile = it.next();
+                prevImage = currFile;
+                break;
+            } else {
+                count++;
+            }
+        }
+
+
+        QImage img = QImage(currFile);
+        QPixmap pix = QPixmap(512, 512);
+        pix.fromImage(img);
+
+        if(!img.isNull() && !pix.isNull() && !currFile.isEmpty() && !currFile.isNull())
+        {
+            emit sig_send_image(pix);
+           // emit sig_show_image();
+        }
+    }
 }
 
 
@@ -36,6 +81,12 @@ void MyGL::slot_on_color_checkbox_changed(bool col)
 void MyGL::slot_on_isolevel_changed(double iso)
 {
     isolevel = iso;
+}
+
+void MyGL::slot_on_red_changed(bool red)
+{
+    isRedOnly = red;
+    update();
 }
 
 void MyGL::slot_on_opacity_checkbox_changed(bool opa)
@@ -160,7 +211,7 @@ void MyGL::slot_on_newMesh_clicked()
 
 
 MyGL::MyGL(QWidget *parent)
-    : GLWidget277(parent), prog_lambert(this), prog_wire(this), prog_color(this), mImageScroller(this), camera(Camera())
+    : GLWidget277(parent), prog_lambert(this), prog_wire(this), prog_color(this), prog_red(this), mImageScroller(this), camera(Camera())
 {
     setFocusPolicy(Qt::ClickFocus);
 
@@ -212,6 +263,7 @@ void MyGL::initializeGL()
     prog_wire.create(":/glsl/wire.vert.glsl", ":/glsl/wire.frag.glsl");
     // Create and set up the heat map shader
     prog_color.create(":/glsl/colormap.vert.glsl", ":/glsl/colormap.frag.glsl");
+    prog_red.create(":/glsl/red_only.vert.glsl", ":/glsl/red_only.frag.glsl");
 
     mImageScroller.create();
 
@@ -239,6 +291,7 @@ void MyGL::resizeGL(int w, int h)
     prog_lambert.setViewProjMatrix(viewproj);
     prog_wire.setViewProjMatrix(viewproj);
     prog_color.setViewProjMatrix(viewproj);
+    prog_red.setViewProjMatrix(viewproj);
 
     printGLErrorLog();
 }
@@ -254,13 +307,15 @@ void MyGL::paintGL()
     prog_lambert.setViewProjMatrix(camera.getViewProj());
     prog_wire.setViewProjMatrix(camera.getViewProj());
     prog_color.setViewProjMatrix(camera.getViewProj());
+    prog_red.setViewProjMatrix(camera.getViewProj());
 
     glm::mat4 model = glm::mat4(1.0f);
     prog_lambert.setModelMatrix(model);
     prog_color.setModelMatrix(model);
     prog_wire.setModelMatrix(model);
+    prog_red.setModelMatrix(model);
 
-    if(isOpacityEnabled){
+    if(isOpacityEnabled || isRedOnly){
         // PLAY WITH BLEND FUNC? GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -268,12 +323,26 @@ void MyGL::paintGL()
         glDisable(GL_BLEND);
     }
 
-    prog_wire.draw(mImageScroller);
+    if(isRedOnly)
+    {
+        glEnable(GL_LIGHTING);
+        glEnable(GL_COLOR_MATERIAL);
+        glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+        glShadeModel(GL_SMOOTH);
+        glEnable(GL_LIGHT0);
+        GLfloat global_ambient[] = { 0.4, 0.4, 0.4, 1 };
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+        glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+    }
+
+    // prog_wire.draw(mImageScroller);
 
     for(unsigned int i = 0; i < chunks.size(); i++) {
         CChunk* currChunk = chunks[i];
         if(isColorEnabled){
             prog_color.draw(*currChunk);
+        } else if(isRedOnly){
+            prog_red.draw(*currChunk);
         } else {
             prog_lambert.draw(*currChunk);
         }

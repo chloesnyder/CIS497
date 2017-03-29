@@ -22,30 +22,33 @@ out vec4 out_Col;  // This is the final output color that you will see on your s
 // http://paulbourke.net/texture_colour/colourspace/ Colour Ramping for Data Visualisation
 vec4 getColor(float v,float vmin, float vmax)
 {
-   vec4 c = vec4(1.0,1.0,1.0,1.0); // white
-   float dv;
+    vec4 c = vec4(1.0,1.0,1.0,1.0); // white
+    float dv;
 
-   if (v < vmin)
-      v = vmin;
-   if (v > vmax)
-      v = vmax;
-   dv = vmax - vmin;
+    if (v < vmin)
+	v = vmin;
+    if (v > vmax)
+	v = vmax;
+    dv = vmax - vmin;
 
-   if (v < (vmin + 0.25 * dv)) {
-      c.r = 0;
-      c.g = 4 * (v - vmin) / dv;
-   } else if (v < (vmin + 0.5 * dv)) {
-      c.r = 0;
-      c.b = 1 + 4 * (vmin + 0.25 * dv - v) / dv;
-   } else if (v < (vmin + 0.75 * dv)) {
-      c.r = 4 * (v - vmin - 0.5 * dv) / dv;
-      c.b = 0;
-   } else {
-      c.g = 1 + 4 * (vmin + 0.75 * dv - v) / dv;
-      c.b = 0;
-   }
+    if (v < (vmin + 0.25 * dv)) {
+	c.r = 0;
+	c.g = 0;
+	//c.g = 4 * (v - vmin) / dv;
+    } else if (v < (vmin + 0.5 * dv)) {
+	c.r = 0;
+	c.b = 0;
+	//c.b = 1 + 4 * (vmin + 0.25 * dv - v) / dv;
+    } else if (v < (vmin + 0.75 * dv)) {
+	c.r = 4 * (v - vmin - 0.5 * dv) / dv;
+	c.b = 0;
+    } else {
+	//c.g = 1 + 4 * (vmin + 0.75 * dv - v) / dv;
+	c.g = 0;
+	c.b = 0;
+    }
 
-   return(c);
+    return(c);
 }
 
 void main()
@@ -63,7 +66,13 @@ void main()
     // density is the alpha value, where a = r + g + b / 3
 
     vec4 heatColor = getColor(diffuseColor.a, 0, 1);
+    if (heatColor.r > 0)
+    {
 
-    out_Col = vec4(heatColor.rgb * lightIntensity, diffuseColor.a);
+	out_Col = vec4(heatColor.rgb * lightIntensity, 1);
+    } else {
+	out_Col = vec4(0,0,0,0);
+    }
+
 
 }

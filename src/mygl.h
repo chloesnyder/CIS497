@@ -29,6 +29,7 @@ private:
     ShaderProgram prog_lambert;
     ShaderProgram prog_wire;
     ShaderProgram prog_color;
+    ShaderProgram prog_red;
 
     GLuint vao;
 
@@ -52,9 +53,12 @@ private:
 
     bool isOpacityEnabled = false;
     bool isColorEnabled = false;
+    bool isRedOnly = false;
+
     double isolevel = .01; //default value so as much as possible draws
 
     QString ctScanFilePath = "";
+    QString prevImage = "";
 
     int maxLayers;
 
@@ -87,6 +91,7 @@ public slots:
     void slot_on_isolevel_changed(double iso);
     void slot_on_color_checkbox_changed(bool col);
     void slot_on_slider_moved(int num);
+    void slot_on_red_changed(bool red);
 
 
 
