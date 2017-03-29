@@ -327,6 +327,12 @@ void CChunk::exportVerticesAndIndicesToFile()
     if (file.open(QIODevice::ReadWrite)) {
         QTextStream stream(&file);
 
+        // load the file path to the ct scans associated with this
+        stream << ctScans << endl;
+
+        // load the max number of layers
+        stream << m_Ymax << endl;
+
         // load in all vertices
         // first, load a "v" to denote start of vertices
         stream << "v" << endl;

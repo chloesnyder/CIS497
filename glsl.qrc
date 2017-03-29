@@ -6,5 +6,7 @@
         <file>glsl/wire.vert.glsl</file>
         <file>glsl/colormap.frag.glsl</file>
         <file>glsl/colormap.vert.glsl</file>
+        <file>glsl/red_only.frag.glsl</file>
+        <file>glsl/red_only.vert.glsl</file>
     </qresource>
 </RCC>

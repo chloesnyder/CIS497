@@ -10,6 +10,28 @@
 #include <cstring>
 #include <QApplication>
 #include <QKeyEvent>
+#include <QPixmap>
+
+void MyGL::slot_on_slider_moved(int num)
+{
+   // figure out the "percentage" of the way up it is
+   float percent = (float) num / 99.0f;
+   float layer = maxLayers * percent;
+   currLayer = std::round(layer);
+
+
+   QPixmap img = QPixmap("/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/CTScanImages/full_rabbit/IM-0001-000.ppm");
+   emit sig_send_image(img);
+   emit sig_show_image();
+}
+
+
+void MyGL::slot_on_color_checkbox_changed(bool col)
+{
+    isColorEnabled = col;
+    update();
+}
+
 
 void MyGL::slot_on_isolevel_changed(double iso)
 {
@@ -90,7 +112,19 @@ void MyGL::slot_on_loadMesh_clicked()
             {
                 isReadingVerts = true;
                 isReadingIndices = false;
+            } else if (!isReadingIndices && !isReadingVerts){
+                // first line is the file path, second is the max layers
+                if(line.contains("/")) {
+                    ctScanFilePath = line;
+                } else {
+                    bool ok;
+                    maxLayers = line.toInt(&ok, 10);
+                    emit sig_send_max_layers(maxLayers);
+                }
+
             }
+
+
 
         }
     }
@@ -99,6 +133,7 @@ void MyGL::slot_on_loadMesh_clicked()
 
     allLayerChunk->setVertices(vertices);
     allLayerChunk->setIndices(indices);
+    allLayerChunk->setCtScanFilePath(ctScanFilePath);
     allLayerChunk->create();
     chunks.push_back(allLayerChunk);
     update();
@@ -116,6 +151,7 @@ void MyGL::slot_on_newMesh_clicked()
                                                         tr("Open Directory"),
                                                         "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/CTScanImages/",
                                                         QFileDialog::ShowDirsOnly);
+    ctScanFilePath = dirName;
     mVoxelizer = CVoxelizer();
     mVoxelizer.setTargetDirPath(dirName);
     processFiles();
@@ -124,7 +160,7 @@ void MyGL::slot_on_newMesh_clicked()
 
 
 MyGL::MyGL(QWidget *parent)
-    : GLWidget277(parent), prog_lambert(this), prog_wire(this), prog_color(this), camera(Camera())
+    : GLWidget277(parent), prog_lambert(this), prog_wire(this), prog_color(this), mImageScroller(this), camera(Camera())
 {
     setFocusPolicy(Qt::ClickFocus);
 
@@ -177,9 +213,13 @@ void MyGL::initializeGL()
     // Create and set up the heat map shader
     prog_color.create(":/glsl/colormap.vert.glsl", ":/glsl/colormap.frag.glsl");
 
+    mImageScroller.create();
+
     // We have to have a VAO bound in OpenGL 3.2 Core. But if we're not
     // using multiple VAOs, we can just bind one once.
     glBindVertexArray(vao);
+
+
 
 }
 
@@ -218,19 +258,25 @@ void MyGL::paintGL()
     glm::mat4 model = glm::mat4(1.0f);
     prog_lambert.setModelMatrix(model);
     prog_color.setModelMatrix(model);
+    prog_wire.setModelMatrix(model);
 
     if(isOpacityEnabled){
         // PLAY WITH BLEND FUNC? GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     } else {
         glDisable(GL_BLEND);
     }
 
+    prog_wire.draw(mImageScroller);
+
     for(unsigned int i = 0; i < chunks.size(); i++) {
         CChunk* currChunk = chunks[i];
-        //prog_lambert.draw(*currChunk);
-        prog_color.draw(*currChunk);
+        if(isColorEnabled){
+            prog_color.draw(*currChunk);
+        } else {
+            prog_lambert.draw(*currChunk);
+        }
     }
 }
 
@@ -277,6 +323,7 @@ void MyGL::createChunkVector()
     // after the chunk has been created, save the verts and indices to a file
     // so they can be used
     allLayerChunk->setNewFileName(newFileName);
+    allLayerChunk->setCtScanFilePath(ctScanFilePath);
     allLayerChunk->exportVerticesAndIndicesToFile();
 
 }

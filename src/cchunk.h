@@ -55,6 +55,8 @@ public:
 
     void setIsolevel(double iso) { mIsolevel = iso; }
 
+    void setCtScanFilePath(QString ct) { ctScans = ct; }
+
 private:
     double mIsolevel;
 
@@ -67,6 +69,7 @@ private:
     CWorld *mWorld;
 
     QString newFileName;
+    QString ctScans;
 
     double calculateDensity(glm::vec4 vertex);
     glm::vec4 calculateNormal(glm::vec4 vertex);

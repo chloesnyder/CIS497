@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>837</width>
+    <width>1146</width>
     <height>664</height>
    </rect>
   </property>
@@ -121,13 +121,84 @@
      <string>Enter desired isolevel</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="colormap">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>580</y>
+      <width>171</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enable Color Mapping</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="layerSlider">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>49</y>
+      <width>22</width>
+      <height>491</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksBelow</enum>
+    </property>
+    <property name="tickInterval">
+     <number>1</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>30</y>
+      <width>60</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>N/A</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>540</y>
+      <width>60</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ImageViewer">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>50</y>
+      <width>221</width>
+      <height>231</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>837</width>
+     <width>1146</width>
      <height>22</height>
     </rect>
    </property>
@@ -155,11 +226,16 @@
    <extends>QWidget</extends>
    <header>mygl.h</header>
    <slots>
+    <signal>sig_send_max_layers(int)</signal>
+    <signal>sig_send_image(QPixmap)</signal>
+    <signal>sig_show_image()</signal>
     <slot>slot_on_loadMesh_clicked()</slot>
     <slot>slot_on_newMesh_clicked()</slot>
     <slot>slot_on_text_changed(QString)</slot>
     <slot>slot_on_opacity_checkbox_changed(bool)</slot>
     <slot>slot_on_isolevel_changed(double)</slot>
+    <slot>slot_on_color_checkbox_changed(bool)</slot>
+    <slot>slot_on_slider_moved(int)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -242,6 +318,102 @@
     <hint type="destinationlabel">
      <x>748</x>
      <y>533</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>colormap</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_on_color_checkbox_changed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>230</x>
+     <y>607</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>506</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_send_max_layers(int)</signal>
+   <receiver>label_3</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>277</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>879</x>
+     <y>53</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_send_image(QPixmap)</signal>
+   <receiver>ImageViewer</receiver>
+   <slot>setPixmap(QPixmap)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>679</x>
+     <y>175</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>993</x>
+     <y>131</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_show_image()</signal>
+   <receiver>ImageViewer</receiver>
+   <slot>show()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>729</x>
+     <y>179</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1077</x>
+     <y>198</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_show_image()</signal>
+   <receiver>ImageViewer</receiver>
+   <slot>update()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>813</x>
+     <y>226</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>954</x>
+     <y>241</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>layerSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_on_slider_moved(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>875</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>767</x>
+     <y>316</y>
     </hint>
    </hints>
   </connection>

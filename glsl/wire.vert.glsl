@@ -5,13 +5,12 @@ uniform mat4 u_Model;
 uniform mat4 u_ViewProj;
 
 in vec4 vs_Pos;
-in vec4 vs_Col;
 
 out vec4 fs_Col;
 
 void main()
 {
-    fs_Col = vs_Col;
+    fs_Col = vec4(1,0,0,1);
     vec4 modelposition = u_Model * vs_Pos;
 
     // built-in things to pass down the pipeline
