@@ -7,6 +7,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <algorithm>
 #include <cstring>
 #include <QApplication>
 #include <QKeyEvent>
@@ -18,9 +19,10 @@
 void MyGL::slot_on_slider_moved(int num)
 {
     // figure out the "percentage" of the way up it is
-  //  float percent = (float) num / 99.0f;
-  //  float layer = maxLayers * percent;
-    currLayer = num;//std::round(layer);
+    float percent = (float) num / 100.0f;
+    float layer = maxLayers * percent;
+    currLayer = std::round(layer);
+    currLayer = glm::clamp(currLayer, 0, maxLayers - 1);
 
 
     // If there are image files associated with this, display the image on the slider
@@ -30,44 +32,16 @@ void MyGL::slot_on_slider_moved(int num)
         QStringList qsl; qsl.append("*.ppm");
         imgDir.setNameFilters(qsl);
 
-        int count = 0;
-
-
         QDirIterator it(imgDir, QDirIterator::Subdirectories);
-        QString currFile;
-        if(count = 0)
-        {
-            if(it.hasNext())
-            {
-                currFile = it.next();
-            }
-        } else {
-            currFile = prevImage;
-        }
-
-        while(it.hasNext()) {
-
-            if(count == currLayer)
-            {
-                currFile = it.next();
-                prevImage = currFile;
-                break;
-            } else {
-                count++;
-            }
-        }
+        QStringList fileList = imgDir.entryList();
+        QString currFile = imgDir.absolutePath().append("/").append(fileList.at(currLayer));
 
 
-        QImage img = QImage(currFile);
-        QPixmap pix = QPixmap(512, 512);
-        pix.fromImage(img);
+        QPixmap pix = QPixmap(currFile);
 
-        if(!img.isNull() && !pix.isNull() && !currFile.isEmpty() && !currFile.isNull())
-        {
-            emit sig_send_image(pix);
-           // emit sig_show_image();
-        }
+        emit sig_send_image(pix);
     }
+
 }
 
 
