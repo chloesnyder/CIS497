@@ -14,10 +14,10 @@
 #include "cworld.h"
 #include "cvoxel.h"
 #include "voxelizer.h"
+#include "cube.h"
 
 #include <QListWidget>
 
-#include "csquareplane.h"
 
 
 class MyGL
@@ -29,7 +29,6 @@ private:
     ShaderProgram prog_lambert;
     ShaderProgram prog_wire;
     ShaderProgram prog_color;
-    ShaderProgram prog_red;
 
     GLuint vao;
 
@@ -38,7 +37,7 @@ private:
     CVoxelizer mVoxelizer;
     CWorld mWorld;
 
-    CSquarePlane mImageScroller;
+    Cube squareplane;
 
     std::vector<CChunk*> chunks = std::vector<CChunk*>();
 
@@ -53,7 +52,6 @@ private:
 
     bool isOpacityEnabled = false;
     bool isColorEnabled = false;
-    bool isRedOnly = false;
 
     double isolevel = .01; //default value so as much as possible draws
 
@@ -64,6 +62,7 @@ private:
 
     int currLayer; // the slider determines this number, should show the image at this layer
 
+    float densityThreshold;
 
 public:
 
@@ -91,7 +90,7 @@ public slots:
     void slot_on_isolevel_changed(double iso);
     void slot_on_color_checkbox_changed(bool col);
     void slot_on_slider_moved(int num);
-    void slot_on_red_changed(bool red);
+    void slot_get_density_threshold(double thresh);
 
 
 

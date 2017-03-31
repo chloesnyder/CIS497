@@ -1,6 +1,6 @@
 QT += core widgets
 
-TARGET = 277
+TARGET = SeniorDesign
 TEMPLATE = app
 CONFIG += c++11
 CONFIG += warn_on

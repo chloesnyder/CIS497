@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>OpenGLDemo</string>
+   <string>SeniorDesign</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="MyGL" name="mygl" native="true">
@@ -210,17 +210,27 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QCheckBox" name="redcheckbox">
+   <widget class="QDoubleSpinBox" name="alphathresh">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>580</y>
-      <width>131</width>
-      <height>20</height>
+      <x>840</x>
+      <y>610</y>
+      <width>68</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>610</y>
+      <width>151</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Red only</string>
+     <string>alpha thresh</string>
     </property>
    </widget>
   </widget>
@@ -268,6 +278,7 @@
     <slot>slot_on_color_checkbox_changed(bool)</slot>
     <slot>slot_on_slider_moved(int)</slot>
     <slot>slot_on_red_changed(bool)</slot>
+    <slot>slot_get_density_threshold(double)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -434,22 +445,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>redcheckbox</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>mygl</receiver>
-   <slot>slot_on_red_changed(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>867</x>
-     <y>612</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>787</x>
-     <y>519</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>mygl</sender>
    <signal>sig_show_image()</signal>
    <receiver>ImageViewer</receiver>
@@ -462,6 +457,22 @@
     <hint type="destinationlabel">
      <x>1002</x>
      <y>438</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>alphathresh</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_get_density_threshold(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>860</x>
+     <y>638</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>785</x>
+     <y>505</y>
     </hint>
    </hints>
   </connection>

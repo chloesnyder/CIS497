@@ -15,6 +15,10 @@ void CVoxelizer::setTargetDirPath(QString path)
 
 }
 
+void CVoxelizer::setDensityThreshold(float t)
+{
+    densityThreshold = t;
+}
 
 void CVoxelizer::processFiles()
 {
@@ -37,6 +41,7 @@ void CVoxelizer::processFiles()
 
         // voxelize the image
          CVoxelizeAnImageSliceTask *currImageTask = new CVoxelizeAnImageSliceTask(currImg, voxelLength, mAllLayers);
+         currImageTask->setDensityThreshold(densityThreshold);
          currImageTask->start();
          imageTasks->push_back(currImageTask);
 

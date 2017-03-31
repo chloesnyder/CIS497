@@ -14,6 +14,7 @@ public:
     std::vector<std::vector<CVoxel*>*> *getAllLayers() { return mAllLayers; }
 
     void setTargetDirPath(QString path);
+    void setDensityThreshold(float t);
 
 private:
 
@@ -26,6 +27,8 @@ private:
     void threadCheck(std::vector<CVoxelizeAnImageSliceTask*> *imageTasks);
 
     QString targetDirPath;
+
+     float densityThreshold;
 
 
 };

@@ -14,10 +14,14 @@ public:
     CVoxelizeAnImageSliceTask(img_t *slice, int length, std::vector<std::vector<CVoxel *> *> *mAllLayers);
     void run();
 
+    void setDensityThreshold(float dt) {densityThreshold = dt;}
+
 private:
     img_t* mSlice;
     int mLength;
     std::vector<std::vector<CVoxel*>*> *mAllLayers;
+
+    float densityThreshold;
 
     int mMaxThreadCount;
 };
