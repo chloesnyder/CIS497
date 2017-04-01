@@ -16,6 +16,25 @@
 #include <QDir>
 #include <QDirIterator>
 
+
+void MyGL::slot_tissue_preset(QString s)
+{
+    if(s.compare("bone tissue") == 0)
+    {
+        densityThreshold = 1;
+    } else if (s.compare("muscle tissue") == 0) {
+        densityThreshold = 2;
+    } else if (s.compare("lung tissue") == 0) {
+        densityThreshold = 3;
+    } else if (s.compare("fat tissue") == 0) {
+        densityThreshold = 4;
+    } else if (s.compare("all tissue") == 0) {
+        densityThreshold = 0;
+    } else {
+        densityThreshold = 0;
+    }
+}
+
 void MyGL::slot_get_density_threshold(double thresh)
 {
     densityThreshold = thresh;

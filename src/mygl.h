@@ -92,6 +92,7 @@ public slots:
     void slot_on_slider_moved(int num);
     void slot_get_density_threshold(double thresh);
 
+    void slot_tissue_preset(QString s);
 
 
 };

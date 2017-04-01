@@ -43,15 +43,57 @@ void CVoxelizeAnImageSliceTask::run()
                 float alpha = (red + green + blue) / 3;
 
 
-                // Black pixels represent empty space
-                // If the pixel isn't black, create a voxel
-                // Store this voxel in the mVoxelPlane vector
-                if(alpha > densityThreshold) {
-                    glm::vec4 position = glm::vec4(row, mLength, col, 1);
-                    glm::vec4 color = glm::vec4(red, green, blue, alpha);
-                    CVoxel* currVoxel = new CVoxel(position, color, count);
-                    voxelPlane->push_back(currVoxel);
+                if(densityThreshold == 0) //default, all. alpha > .25
+                {
+                    // This option renders everything
+                    // Black pixels represent empty space
+                    // If the pixel isn't black, create a voxel
+                    // Store this voxel in the mVoxelPlane vector
+                    if(alpha > .25) {
+                        glm::vec4 position = glm::vec4(row, mLength, col, 1);
+                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
+                        CVoxel* currVoxel = new CVoxel(position, color, count);
+                        voxelPlane->push_back(currVoxel);
+                    }
+
+                } else if (densityThreshold == 1) // bone
+                {
+                    if(alpha > .75) {
+                        glm::vec4 position = glm::vec4(row, mLength, col, 1);
+                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
+                        CVoxel* currVoxel = new CVoxel(position, color, count);
+                        voxelPlane->push_back(currVoxel);
+                    }
+
+                } else if (densityThreshold == 2) // muscle
+                {
+                    int minMuscleDensity = 0;
+                    int maxMuscleDensity = 1;
+                    if(alpha > minMuscleDensity && alpha < maxMuscleDensity) {
+                        glm::vec4 position = glm::vec4(row, mLength, col, 1);
+                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
+                        CVoxel* currVoxel = new CVoxel(position, color, count);
+                        voxelPlane->push_back(currVoxel);
+                    }
+
+                } else if (densityThreshold == 3) // lung
+                {
+                    int minLungDensity = 0;
+                    int maxLungDensity = 1;
+                    if(alpha > minLungDensity && alpha < maxLungDensity) {
+                        glm::vec4 position = glm::vec4(row, mLength, col, 1);
+                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
+                        CVoxel* currVoxel = new CVoxel(position, color, count);
+                        voxelPlane->push_back(currVoxel);
+                    }
+
+                } else if (densityThreshold == 4) // fat?
+                {
+
                 }
+
+
+
                 count++;
             }
         }

@@ -101,8 +101,8 @@
    <widget class="QDoubleSpinBox" name="doubleSpinBox">
     <property name="geometry">
      <rect>
-      <x>660</x>
-      <y>580</y>
+      <x>990</x>
+      <y>610</y>
       <width>151</width>
       <height>24</height>
      </rect>
@@ -111,8 +111,8 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>660</x>
-      <y>560</y>
+      <x>980</x>
+      <y>590</y>
       <width>171</width>
       <height>16</height>
      </rect>
@@ -213,7 +213,7 @@
    <widget class="QDoubleSpinBox" name="alphathresh">
     <property name="geometry">
      <rect>
-      <x>840</x>
+      <x>1340</x>
       <y>610</y>
       <width>68</width>
       <height>24</height>
@@ -223,8 +223,8 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>920</x>
-      <y>610</y>
+      <x>1260</x>
+      <y>620</y>
       <width>151</width>
       <height>16</height>
      </rect>
@@ -232,6 +232,41 @@
     <property name="text">
      <string>alpha thresh</string>
     </property>
+   </widget>
+   <widget class="QComboBox" name="tissueSelection">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>580</y>
+      <width>151</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>all tissue</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>bone tissue</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>muscle tissue</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>lung tissue</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>fat tissue</string>
+     </property>
+    </item>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -279,6 +314,7 @@
     <slot>slot_on_slider_moved(int)</slot>
     <slot>slot_on_red_changed(bool)</slot>
     <slot>slot_get_density_threshold(double)</slot>
+    <slot>slot_tissue_preset(QString)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -355,8 +391,8 @@
    <slot>slot_on_isolevel_changed(double)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>755</x>
-     <y>611</y>
+     <x>1085</x>
+     <y>655</y>
     </hint>
     <hint type="destinationlabel">
      <x>748</x>
@@ -467,12 +503,28 @@
    <slot>slot_get_density_threshold(double)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>860</x>
-     <y>638</y>
+     <x>1360</x>
+     <y>655</y>
     </hint>
     <hint type="destinationlabel">
      <x>785</x>
      <y>505</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tissueSelection</sender>
+   <signal>activated(QString)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_tissue_preset(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>718</x>
+     <y>608</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>724</x>
+     <y>538</y>
     </hint>
    </hints>
   </connection>

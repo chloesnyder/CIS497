@@ -70,24 +70,6 @@ void createCubeIndices(GLuint (&cub_idx)[CUB_IDX_COUNT])
     cub_idx[idx++] = 3;
     cub_idx[idx++] = 0;
 
-
-   /* cub_idx[idx++] = 0;
-    cub_idx[idx++] = 1;
-    cub_idx[idx++] = 1;
-    cub_idx[idx++] = 2;
-    cub_idx[idx++] = 2;
-    cub_idx[idx++] = 3;
-    cub_idx[idx++] = 3;
-    cub_idx[idx++] = 0;*/
-   /* int idx = 0;
-    for(int i = 0; i < 6; i++){
-        cub_idx[idx++] = i*4;
-        cub_idx[idx++] = i*4+1;
-        cub_idx[idx++] = i*4+2;
-        cub_idx[idx++] = i*4;
-        cub_idx[idx++] = i*4+2;
-        cub_idx[idx++] = i*4+3;
-    }*/
 }
 
 void Cube::create()
