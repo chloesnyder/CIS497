@@ -60,7 +60,7 @@ private:
 
     int maxLayers;
 
-    int currLayer = 0; // the slider determines this number, should show the image at this layer
+    int currLayer = 1; // the slider determines this number, should show the image at this layer
 
     float densityThreshold = 0;
 
@@ -72,6 +72,8 @@ public:
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
+
+    void createChunkVectorMT();
 
 
 protected:

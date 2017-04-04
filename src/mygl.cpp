@@ -321,6 +321,16 @@ void MyGL::paintGL()
     glFlush();
 }
 
+void MyGL::createChunkVectorMT()
+{
+    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
+
+    int numThreads = 10;
+    int incr = allLayers->size() / numThreads;
+
+    for(int layer = 0; layer < allLayers)
+}
+
 void MyGL::createChunkVector()
 {
 
