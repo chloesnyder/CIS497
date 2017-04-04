@@ -60,9 +60,9 @@ private:
 
     int maxLayers;
 
-    int currLayer; // the slider determines this number, should show the image at this layer
+    int currLayer = 0; // the slider determines this number, should show the image at this layer
 
-    float densityThreshold;
+    float densityThreshold = 0;
 
 public:
 
@@ -92,7 +92,7 @@ public slots:
     void slot_on_slider_moved(int num);
     void slot_get_density_threshold(double thresh);
 
-    void slot_tissue_preset(QString s);
+    void slot_tissue_preset(int s);
 
 
 };

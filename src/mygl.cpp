@@ -17,22 +17,10 @@
 #include <QDirIterator>
 
 
-void MyGL::slot_tissue_preset(QString s)
+
+void MyGL::slot_tissue_preset(int s)
 {
-    if(s.compare("bone tissue") == 0)
-    {
-        densityThreshold = 1;
-    } else if (s.compare("muscle tissue") == 0) {
-        densityThreshold = 2;
-    } else if (s.compare("lung tissue") == 0) {
-        densityThreshold = 3;
-    } else if (s.compare("fat tissue") == 0) {
-        densityThreshold = 4;
-    } else if (s.compare("all tissue") == 0) {
-        densityThreshold = 0;
-    } else {
-        densityThreshold = 0;
-    }
+   densityThreshold = s;
 }
 
 void MyGL::slot_get_density_threshold(double thresh)
@@ -291,6 +279,7 @@ void MyGL::resizeGL(int w, int h)
 // For example, when the function updateGL is called, paintGL is called implicitly.
 void MyGL::paintGL()
 {
+
     // Clear the screen so that we only see newly drawn images
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -328,6 +317,8 @@ void MyGL::paintGL()
             prog_lambert.draw(*currChunk);
         }
     }
+
+    glFlush();
 }
 
 void MyGL::createChunkVector()

@@ -65,10 +65,10 @@ void CVoxelizeAnImageSliceTask::run()
                         voxelPlane->push_back(currVoxel);
                     }
 
-                } else if (densityThreshold == 2) // muscle
+                } else if (densityThreshold == 2) // muscle, organs
                 {
-                    int minMuscleDensity = 0;
-                    int maxMuscleDensity = 1;
+                    float minMuscleDensity = .4;
+                    float maxMuscleDensity = .75;
                     if(alpha > minMuscleDensity && alpha < maxMuscleDensity) {
                         glm::vec4 position = glm::vec4(row, mLength, col, 1);
                         glm::vec4 color = glm::vec4(red, green, blue, alpha);
@@ -76,22 +76,19 @@ void CVoxelizeAnImageSliceTask::run()
                         voxelPlane->push_back(currVoxel);
                     }
 
-                } else if (densityThreshold == 3) // lung
+                } else if (densityThreshold == 3) // lung, fat, other low density tissue
                 {
-                    int minLungDensity = 0;
-                    int maxLungDensity = 1;
+                    float minLungDensity = 0.01f;
+                    float maxLungDensity = 0.2f;
                     if(alpha > minLungDensity && alpha < maxLungDensity) {
                         glm::vec4 position = glm::vec4(row, mLength, col, 1);
-                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
+
+                        glm::vec4 color = glm::vec4(red, green, blue, alpha + .8f);
                         CVoxel* currVoxel = new CVoxel(position, color, count);
                         voxelPlane->push_back(currVoxel);
                     }
 
-                } else if (densityThreshold == 4) // fat?
-                {
-
                 }
-
 
 
                 count++;

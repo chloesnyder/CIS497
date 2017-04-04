@@ -249,22 +249,17 @@
     </item>
     <item>
      <property name="text">
-      <string>bone tissue</string>
+      <string>high density tissue (bone)</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>muscle tissue</string>
+      <string>medium density tissue (muscle, liver, heart, intestine, etc.)</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>lung tissue</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>fat tissue</string>
+      <string>low density tissue (lung, fat)</string>
      </property>
     </item>
    </widget>
@@ -315,6 +310,7 @@
     <slot>slot_on_red_changed(bool)</slot>
     <slot>slot_get_density_threshold(double)</slot>
     <slot>slot_tissue_preset(QString)</slot>
+    <slot>slot_tissue_preset(int)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -514,17 +510,17 @@
   </connection>
   <connection>
    <sender>tissueSelection</sender>
-   <signal>activated(QString)</signal>
+   <signal>activated(int)</signal>
    <receiver>mygl</receiver>
-   <slot>slot_tissue_preset(QString)</slot>
+   <slot>slot_tissue_preset(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>718</x>
-     <y>608</y>
+     <x>774</x>
+     <y>604</y>
     </hint>
     <hint type="destinationlabel">
-     <x>724</x>
-     <y>538</y>
+     <x>774</x>
+     <y>530</y>
     </hint>
    </hints>
   </connection>
