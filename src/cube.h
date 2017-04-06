@@ -7,10 +7,10 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 
-class Cube : public Drawable
+class SquarePlane : public Drawable
 {
 public:
-    Cube(GLWidget277* context) : Drawable(context){}
+    SquarePlane(GLWidget277* context) : Drawable(context){}
     virtual void create();
 
     GLenum drawMode();

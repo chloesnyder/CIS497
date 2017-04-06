@@ -17,9 +17,6 @@ CVoxelizeAnImageSliceTask::CVoxelizeAnImageSliceTask(img_t* slice, int length,
 
 // One thread of this loads the content of this task's image slice into a voxel plane
 // Then adds the voxel plane to the "allLayers" vector of vocel planes
-// allLayers is a pointer that all the concurrently running threads will be populating
-
-// Question - can multiple threads push to the same vector if provided the same memory address?
 void CVoxelizeAnImageSliceTask::run()
 {
 

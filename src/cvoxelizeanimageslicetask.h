@@ -2,12 +2,12 @@
 #define CVOXELIZEANIMAGESLICETASK_H
 #pragma once
 
-#include <QThread>
+#include <QRunnable>
 
 #include "cimagereader.h"
 #include "cvoxel.h"
 
-class CVoxelizeAnImageSliceTask : public QThread
+class CVoxelizeAnImageSliceTask : public QRunnable
 {
 public:
     CVoxelizeAnImageSliceTask();
@@ -23,7 +23,6 @@ private:
 
     float densityThreshold;
 
-    int mMaxThreadCount;
 };
 
 #endif // CVOXELIZEANIMAGESLICETASK_H

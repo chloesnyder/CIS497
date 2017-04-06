@@ -19,16 +19,9 @@
 
 #define MULTITHREADING
 
-
-
 void MyGL::slot_tissue_preset(int s)
 {
     densityThreshold = s;
-}
-
-void MyGL::slot_get_density_threshold(double thresh)
-{
-    densityThreshold = thresh;
 }
 
 void MyGL::slot_on_slider_moved(int num)
@@ -72,12 +65,6 @@ void MyGL::slot_on_color_checkbox_changed(bool col)
 {
     isColorEnabled = col;
     update();
-}
-
-
-void MyGL::slot_on_isolevel_changed(double iso)
-{
-    isolevel = iso;
 }
 
 void MyGL::slot_on_opacity_checkbox_changed(bool opa)
@@ -279,11 +266,8 @@ void MyGL::processFiles() {
 
 void MyGL::resizeGL(int w, int h)
 {
-    //    camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
-    // camera = Camera(w, h, glm::vec3(0, 2, 0), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));//Camera(w, h);
-    camera = Camera(w, h, glm::vec3(-256, 200, 265), glm::vec3(-255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
 
-
+    camera = Camera(w, h, glm::vec3(-256, 200, 265), glm::vec3(-255, 0, 260), glm::vec3(0, 1, 0));
 
     glm::mat4 viewproj = camera.getViewProj();
 
@@ -330,11 +314,6 @@ void MyGL::paintGL()
         glDisable(GL_BLEND);
     }
 
-    /*if(chunks.size() > 0)
-    {
-        prog_lambert.draw(*chunks[2]);
-    }*/
-
     for(unsigned int i = 0; i < chunks.size() ; i++) {
         CChunk* currChunk = chunks[i];
         if(isColorEnabled){
@@ -351,8 +330,8 @@ void MyGL::createChunkVectorMT()
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
     std::vector<CCreateWorldAndChunkTask*>* chunkTasks = new std::vector<CCreateWorldAndChunkTask*>();
 
-    int totalLayers = 50;//allLayers->size();
-    int numThreads = 10;
+    int totalLayers = allLayers->size();
+    int numThreads = 2;
     int incr = totalLayers / numThreads;
 
     int layer;
@@ -396,9 +375,6 @@ void MyGL::createChunkVectorMT()
         currChunk->setVertices(vertices);
         currChunk->setIndices(indices);
 
-        // the different chunks all read from the same world but
-        // this shouldn't cause a race condition because
-        // reading from a map used .at() which is const?
         currChunk->setWorld(&mWorld);
 
         chunks.push_back(currChunk);
@@ -428,8 +404,7 @@ void MyGL::createChunkVectorMT()
         }
     }
 
-    // set up slider
-    //allLayerChunk->setCtScanFilePath(ctScanFilePath);
+    // set up slider's max value label
     maxLayers = allLayers->size();
 
 

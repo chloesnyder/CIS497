@@ -37,7 +37,7 @@ private:
     CVoxelizer mVoxelizer;
     CWorld mWorld;
 
-    Cube squareplane;
+    SquarePlane squareplane;
 
     std::vector<CChunk*> chunks = std::vector<CChunk*>();
 
@@ -60,7 +60,7 @@ private:
 
     int maxLayers;
 
-    int currLayer = 1; // the slider determines this number, should show the image at this layer
+    int currLayer = 0; // the slider determines this number, should show the image at this layer
 
     float densityThreshold = 0;
 
@@ -89,11 +89,8 @@ public slots:
     void slot_on_newMesh_clicked();
     void slot_on_text_changed(QString s);
     void slot_on_opacity_checkbox_changed(bool opa);
-    void slot_on_isolevel_changed(double iso);
     void slot_on_color_checkbox_changed(bool col);
     void slot_on_slider_moved(int num);
-    void slot_get_density_threshold(double thresh);
-
     void slot_tissue_preset(int s);
 
 

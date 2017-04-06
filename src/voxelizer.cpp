@@ -2,7 +2,8 @@
 
 #include <QDir>
 #include <QDirIterator>
-#include <QThread>
+#include <QRunnable>
+#include <QThreadPool>
 
 CVoxelizer::CVoxelizer() : mImageReader()
 {
@@ -42,44 +43,20 @@ void CVoxelizer::processFiles()
         // voxelize the image
          CVoxelizeAnImageSliceTask *currImageTask = new CVoxelizeAnImageSliceTask(currImg, voxelLength, mAllLayers);
          currImageTask->setDensityThreshold(densityThreshold);
-         currImageTask->start();
+        // currImageTask->start();
          imageTasks->push_back(currImageTask);
 
          voxelLength++;
 
     }
-    // Check to see if thread is still running, kill when done
-    threadCheck(imageTasks);
-}
 
-void CVoxelizer::threadCheck(std::vector<CVoxelizeAnImageSliceTask*> *imageTasks)
-{
-    int numThreads = imageTasks->size();
-
-
-    // Check if still running
-    bool still_running;
-    do
+    // start each of the threads and wait until all of them finished before exiting the function
+    for(CVoxelizeAnImageSliceTask* task : *imageTasks)
     {
-        still_running = false;
-        for(unsigned int J = 0; J < numThreads; J++) {
-            if(imageTasks->at(J)->isRunning())
-            {
-                still_running = true;
-                break;
-            }
-        }
-        if(still_running)
-        {
-            QThread::yieldCurrentThread();
-        }
-    } while(still_running);
-
-    // clean up image thread objects
-    for(unsigned int K = 0; K < numThreads; K++)
-    {
-        delete imageTasks->at(K);
+        QThreadPool::globalInstance()->start(task);
     }
-    delete imageTasks;
+
+    QThreadPool::globalInstance()->waitForDone();
 
 }
+
