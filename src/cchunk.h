@@ -58,6 +58,9 @@ public:
     void setCtScanFilePath(QString ct) { ctScans = ct; }
 
 private:
+
+    int offset = 0;
+
     double mIsolevel;
 
     // coords to define the absolute min and max coordinates of chunk's volume

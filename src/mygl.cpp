@@ -17,7 +17,7 @@
 #include <QDirIterator>
 #include <QThreadPool>
 
-//#define MULTITHREADING
+#define MULTITHREADING
 
 
 
@@ -279,7 +279,7 @@ void MyGL::processFiles() {
 
 void MyGL::resizeGL(int w, int h)
 {
-//    camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
+    //    camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
     // camera = Camera(w, h, glm::vec3(0, 2, 0), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));//Camera(w, h);
     camera = Camera(w, h, glm::vec3(-256, 200, 265), glm::vec3(-255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
 
@@ -330,7 +330,12 @@ void MyGL::paintGL()
         glDisable(GL_BLEND);
     }
 
-    for(unsigned int i = 0; i < chunks.size(); i++) {
+    /*if(chunks.size() > 0)
+    {
+        prog_lambert.draw(*chunks[2]);
+    }*/
+
+    for(unsigned int i = 0; i < chunks.size() ; i++) {
         CChunk* currChunk = chunks[i];
         if(isColorEnabled){
             prog_color.draw(*currChunk);
@@ -346,8 +351,8 @@ void MyGL::createChunkVectorMT()
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
     std::vector<CCreateWorldAndChunkTask*>* chunkTasks = new std::vector<CCreateWorldAndChunkTask*>();
 
-    int totalLayers = 20; //allLayers->size();
-    int numThreads = 2;
+    int totalLayers = 50;//allLayers->size();
+    int numThreads = 10;
     int incr = totalLayers / numThreads;
 
     int layer;
@@ -400,29 +405,14 @@ void MyGL::createChunkVectorMT()
     }
 
     // create the thread for each chunk
-    for(int i = 0; i < chunks.size(); i++)
+    for(unsigned long i = 0; i < chunks.size(); i++)
     {
 
         CChunk* chunk = chunks.at(i);
-
-        int ymin = chunk->getYMin();
-        int ymax = chunk->getYMax();
-
-        // get a vector that copies the data from allLayers.at(ymin) to allLAyers.at(ymax)
-        // this is newly allocated memory, so multiple threads should never be reading from this
-        // basically, in this sequential part of my code, I am allocating distinct portions of memory
-        // then passing pointers to these places in memories, so multiple threads can operate on multiple places
-        // i am trading space for time!
-        std::vector<std::vector<CVoxel*>*>* layers = new std::vector<std::vector<CVoxel*>*>(allLayers->begin() + ymin, allLayers->begin() + ymax);
-
-        // it is ok that this is an obejct and
-        //that this data will be popped off the stack because it'll be copied into world which is maintained from here in a pointer
-        // so the data will be preserved
-        CCreateWorldAndChunkTask* thread = new CCreateWorldAndChunkTask(chunk, layers);
+        CCreateWorldAndChunkTask* thread = new CCreateWorldAndChunkTask(chunk);
         chunkTasks->push_back(thread);
     }
 
-    // QThreadPool::globalInstance()->setMaxThreadCount(1);
 
     // now actually run each thread
     for(CCreateWorldAndChunkTask* task : *chunkTasks)
@@ -432,11 +422,17 @@ void MyGL::createChunkVectorMT()
 
     // create each chunk
     if(QThreadPool::globalInstance()->waitForDone()){
-        for(int c = 0; c < chunks.size(); c++)
+        for(unsigned long c = 0; c < chunks.size(); c++)
         {
             chunks.at(c)->create();
         }
     }
+
+    // set up slider
+    //allLayerChunk->setCtScanFilePath(ctScanFilePath);
+    maxLayers = allLayers->size();
+
+
 }
 
 void MyGL::createChunkVector()

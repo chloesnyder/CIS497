@@ -1,6 +1,6 @@
 #include "cchunk.h"
 
-int offset = 0;
+
 
 
 // USED CODE FROM HERE: http://paulbourke.net/geometry/polygonise/, credit to Trung Le for showing me!
