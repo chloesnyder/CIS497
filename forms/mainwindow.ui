@@ -98,29 +98,6 @@
      <string>Enable Opacity</string>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="doubleSpinBox">
-    <property name="geometry">
-     <rect>
-      <x>990</x>
-      <y>610</y>
-      <width>151</width>
-      <height>24</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>980</x>
-      <y>590</y>
-      <width>171</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Enter desired isolevel</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="colormap">
     <property name="geometry">
      <rect>
@@ -210,29 +187,6 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="alphathresh">
-    <property name="geometry">
-     <rect>
-      <x>1340</x>
-      <y>610</y>
-      <width>68</width>
-      <height>24</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>1260</x>
-      <y>620</y>
-      <width>151</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>alpha thresh</string>
-    </property>
-   </widget>
    <widget class="QComboBox" name="tissueSelection">
     <property name="geometry">
      <rect>
@@ -300,6 +254,32 @@
     <signal>sig_send_max_layers(int)</signal>
     <signal>sig_send_image(QPixmap)</signal>
     <signal>sig_show_image()</signal>
+    <signal>sig_sendSceneGraph(QTreeWidgetItem*)</signal>
+    <signal>sig_sendRZ(double)</signal>
+    <signal>sig_sendRY(double)</signal>
+    <signal>sig_sendRX(double)</signal>
+    <signal>sig_sendSZ(double)</signal>
+    <signal>sig_sendSY(double)</signal>
+    <signal>sig_sendSX(double)</signal>
+    <signal>sig_sendTZ(double)</signal>
+    <signal>sig_sendTY(double)</signal>
+    <signal>sig_sendTX(double)</signal>
+    <signal>sig_noSelection()</signal>
+    <signal>sig_sendRefX(int)</signal>
+    <signal>sig_sendRefY(int)</signal>
+    <signal>sig_sendRefZ(int)</signal>
+    <signal>sig_sendSelectedNode(QTreeWidgetItem*)</signal>
+    <signal>sig_SendRootNode(QTreeWidgetItem*)</signal>
+    <signal>sig_SendRaycastSelection(QTreeWidgetItem*)</signal>
+    <signal>sig_SendFaceList(QListWidgetItem*)</signal>
+    <signal>sig_sendEdgeList(QListWidgetItem*)</signal>
+    <signal>sig_SendVertList(QListWidgetItem*)</signal>
+    <signal>sig_sendNextEdge(QListWidgetItem*)</signal>
+    <signal>sig_sendFace(QListWidgetItem*)</signal>
+    <signal>sig_sendSymEdge(QListWidgetItem*)</signal>
+    <signal>sig_sendVert(QListWidgetItem*)</signal>
+    <signal>sig_removeHEList(QListWidgetItem*)</signal>
+    <signal>sig_removeVertList(QListWidgetItem*)</signal>
     <slot>slot_on_loadMesh_clicked()</slot>
     <slot>slot_on_newMesh_clicked()</slot>
     <slot>slot_on_text_changed(QString)</slot>
@@ -311,6 +291,48 @@
     <slot>slot_get_density_threshold(double)</slot>
     <slot>slot_tissue_preset(QString)</slot>
     <slot>slot_tissue_preset(int)</slot>
+    <slot>slot_storeSceneGraph(QTreeWidgetItem*)</slot>
+    <slot>slot_itemClicked(QTreeWidgetItem*)</slot>
+    <slot>slot_changeRZ(double)</slot>
+    <slot>slot_changeRY(double)</slot>
+    <slot>slot_changeRX(double)</slot>
+    <slot>slot_changeSZ(double)</slot>
+    <slot>slot_changeSY(double)</slot>
+    <slot>slot_changeSX(double)</slot>
+    <slot>slot_changeTX(double)</slot>
+    <slot>slot_changeTZ(double)</slot>
+    <slot>slot_changeTY(double)</slot>
+    <slot>slot_createNewChild()</slot>
+    <slot>slot_deleteChild()</slot>
+    <slot>slot_Cube()</slot>
+    <slot>slot_Cylinder()</slot>
+    <slot>slot_Sphere()</slot>
+    <slot>slot_Cone()</slot>
+    <slot>slot_noGeo()</slot>
+    <slot>slot_rename()</slot>
+    <slot>slot_newNameText()</slot>
+    <slot>slot_newNameText(QString)</slot>
+    <slot>slot_changeRefX(int)</slot>
+    <slot>slot_changeRefY(int)</slot>
+    <slot>slot_changeRefZ(int)</slot>
+    <slot>slot_showWireframe()</slot>
+    <slot>slot_ReceiveSelectedNode(QTreeWidgetItem*)</slot>
+    <slot>slot_ReceiveFaceList(QListWidgetItem*)</slot>
+    <slot>slot_ReceiveEdgeList(QListWidgetItem*)</slot>
+    <slot>slot1()</slot>
+    <slot>slot_storeVertList(QListWidgetItem*)</slot>
+    <slot>slot_ReceiveVertList(QListWidgetItem*)</slot>
+    <slot>slot_addVertex()</slot>
+    <slot>slot_triangulate()</slot>
+    <slot>slot_deleteVertex()</slot>
+    <slot>slot_receiveR(double)</slot>
+    <slot>slot_receiveG(double)</slot>
+    <slot>slot_receiveB(double)</slot>
+    <slot>slot_receiveX(double)</slot>
+    <slot>slot_receiveY(double)</slot>
+    <slot>slot_receiveZ(double)</slot>
+    <slot>slot_CatmullClark()</slot>
+    <slot>slot_importObjFile()</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -377,22 +399,6 @@
     <hint type="destinationlabel">
      <x>95</x>
      <y>525</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>doubleSpinBox</sender>
-   <signal>valueChanged(double)</signal>
-   <receiver>mygl</receiver>
-   <slot>slot_on_isolevel_changed(double)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1085</x>
-     <y>655</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>748</x>
-     <y>533</y>
     </hint>
    </hints>
   </connection>
@@ -489,22 +495,6 @@
     <hint type="destinationlabel">
      <x>1002</x>
      <y>438</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>alphathresh</sender>
-   <signal>valueChanged(double)</signal>
-   <receiver>mygl</receiver>
-   <slot>slot_get_density_threshold(double)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1360</x>
-     <y>655</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>785</x>
-     <y>505</y>
     </hint>
    </hints>
   </connection>

@@ -278,8 +278,6 @@ void CChunk::createVoxelBuffer()
                         for(int v = 0; v < 3; v++) {
 
                             // calculate the normal for this vertex based on xyz gradient
-
-
                             glm::vec4 normal = calculateNormal(currTriangles[u].p[v]);
 
                             vertices->push_back(currTriangles.at(u).p[v]); // push back first vertex of this triangle

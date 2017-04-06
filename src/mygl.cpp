@@ -15,12 +15,15 @@
 #include <QImage>
 #include <QDir>
 #include <QDirIterator>
+#include <QThreadPool>
+
+//#define MULTITHREADING
 
 
 
 void MyGL::slot_tissue_preset(int s)
 {
-   densityThreshold = s;
+    densityThreshold = s;
 }
 
 void MyGL::slot_get_density_threshold(double thresh)
@@ -30,11 +33,6 @@ void MyGL::slot_get_density_threshold(double thresh)
 
 void MyGL::slot_on_slider_moved(int num)
 {
-    // figure out the "percentage" of the way up it is
-    float percent = (float) num / 100.0f;
-    float layer = maxLayers * percent;
-    currLayer = std::round(layer);
-    currLayer = glm::clamp(currLayer, 0, maxLayers - 1);
 
 
     // If there are image files associated with this, display the image on the slider
@@ -46,12 +44,25 @@ void MyGL::slot_on_slider_moved(int num)
 
         QDirIterator it(imgDir, QDirIterator::Subdirectories);
         QStringList fileList = imgDir.entryList();
+
+        // figure out the "percentage" of the way up it is
+        float percent = (float) num / 100.0f;
+        float layer = maxLayers * percent;
+        currLayer = std::round(layer);
+
+        if(currLayer < 0) {
+            currLayer = 0;
+        } else if (currLayer >= fileList.size()) {
+            currLayer = fileList.size() - 1;
+        }
+
         QString currFile = imgDir.absolutePath().append("/").append(fileList.at(currLayer));
 
         QPixmap pix = QPixmap(currFile);
 
         emit sig_send_image(pix);
         update();
+
     }
 
 }
@@ -99,75 +110,75 @@ void MyGL::slot_on_loadMesh_clicked()
                                                     "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/preloaded_volumes/",
                                                     tr("Text Files (*.txt)"));
 
-    QFile file(filename);
-    bool isReadingVerts = false;
-    bool isReadingIndices = false;
-
-    if(file.open(QIODevice::ReadOnly))
+    if(!filename.isNull() && !filename.isEmpty())
     {
-        QTextStream in(&file);
+        QFile file(filename);
+        bool isReadingVerts = false;
+        bool isReadingIndices = false;
 
-        while(!in.atEnd())
+        if(file.open(QIODevice::ReadOnly))
         {
-            QString line = in.readLine();
+            QTextStream in(&file);
 
-            if(isReadingVerts)
+            while(!in.atEnd())
             {
-                if (line.compare("i") == 0)
+                QString line = in.readLine();
+
+                if(isReadingVerts)
                 {
-                    isReadingVerts = false;
-                    isReadingIndices = true;
-                } else {
+                    if (line.compare("i") == 0)
+                    {
+                        isReadingVerts = false;
+                        isReadingIndices = true;
+                    } else {
 
-                    //split the line around commas and create a new vec4
-                    //push back into vertices vector
-                    QStringList fields = line.split(",");
-                    float x = fields.at(0).toFloat();
-                    float y = fields.at(1).toFloat();
-                    float z = fields.at(2).toFloat();
-                    float a = fields.at(3).toFloat();
+                        //split the line around commas and create a new vec4
+                        //push back into vertices vector
+                        QStringList fields = line.split(",");
+                        float x = fields.at(0).toFloat();
+                        float y = fields.at(1).toFloat();
+                        float z = fields.at(2).toFloat();
+                        float a = fields.at(3).toFloat();
 
-                    glm::vec4 newVert = glm::vec4(x, y, z, a);
-                    vertices->push_back(newVert);
+                        glm::vec4 newVert = glm::vec4(x, y, z, a);
+                        vertices->push_back(newVert);
 
-                }
-            } else if (isReadingIndices)
-            {
-                unsigned int uint = line.toUInt();
-                GLuint newGLuint = uint;
-                indices->push_back(newGLuint);
-            }
-
-            // toggles reading behavior for verts and indices
-            if(line.compare("v") == 0)
-            {
-                isReadingVerts = true;
-                isReadingIndices = false;
-            } else if (!isReadingIndices && !isReadingVerts){
-                // first line is the file path, second is the max layers
-                if(line.contains("/")) {
-                    ctScanFilePath = line;
-                } else {
-                    bool ok;
-                    maxLayers = line.toInt(&ok, 10);
-                    emit sig_send_max_layers(maxLayers);
+                    }
+                } else if (isReadingIndices)
+                {
+                    unsigned int uint = line.toUInt();
+                    GLuint newGLuint = uint;
+                    indices->push_back(newGLuint);
                 }
 
+                // toggles reading behavior for verts and indices
+                if(line.compare("v") == 0)
+                {
+                    isReadingVerts = true;
+                    isReadingIndices = false;
+                } else if (!isReadingIndices && !isReadingVerts){
+                    // first line is the file path, second is the max layers
+                    if(line.contains("/")) {
+                        ctScanFilePath = line;
+                    } else {
+                        bool ok;
+                        maxLayers = line.toInt(&ok, 10);
+                        emit sig_send_max_layers(maxLayers);
+                    }
+                }
             }
 
 
+            file.close();
 
+            allLayerChunk->setVertices(vertices);
+            allLayerChunk->setIndices(indices);
+            allLayerChunk->setCtScanFilePath(ctScanFilePath);
+            allLayerChunk->create();
+            chunks.push_back(allLayerChunk);
+            update();
         }
     }
-
-    file.close();
-
-    allLayerChunk->setVertices(vertices);
-    allLayerChunk->setIndices(indices);
-    allLayerChunk->setCtScanFilePath(ctScanFilePath);
-    allLayerChunk->create();
-    chunks.push_back(allLayerChunk);
-    update();
 
 }
 
@@ -182,12 +193,15 @@ void MyGL::slot_on_newMesh_clicked()
                                                         tr("Open Directory"),
                                                         "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/CTScanImages/",
                                                         QFileDialog::ShowDirsOnly);
-    ctScanFilePath = dirName;
-    mVoxelizer = CVoxelizer();
-    mVoxelizer.setTargetDirPath(dirName);
-    mVoxelizer.setDensityThreshold(densityThreshold);
-    processFiles();
-    update();
+    if(!dirName.isNull() && !dirName.isEmpty()){
+        ctScanFilePath = dirName;
+        mVoxelizer = CVoxelizer();
+        mVoxelizer.setTargetDirPath(dirName);
+        mVoxelizer.setDensityThreshold(densityThreshold);
+        processFiles();
+        emit sig_send_max_layers(maxLayers);
+        update();
+    }
 }
 
 
@@ -256,13 +270,19 @@ void MyGL::initializeGL()
 void MyGL::processFiles() {
 
     mVoxelizer.processFiles();
+#ifndef MULTITHREADING
     createChunkVector();
+#else
+    createChunkVectorMT();
+#endif
 }
 
 void MyGL::resizeGL(int w, int h)
 {
-    camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
-   // camera = Camera(w, h, glm::vec3(0, 2, 0), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));//Camera(w, h);
+//    camera = Camera(w, h, glm::vec3(256, 100, 265), glm::vec3(255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
+    // camera = Camera(w, h, glm::vec3(0, 2, 0), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));//Camera(w, h);
+    camera = Camera(w, h, glm::vec3(-256, 200, 265), glm::vec3(-255, 0, 260), glm::vec3(0, 1, 0));//Camera(w, h);
+
 
 
     glm::mat4 viewproj = camera.getViewProj();
@@ -289,6 +309,7 @@ void MyGL::paintGL()
     prog_color.setViewProjMatrix(camera.getViewProj());
 
     glm::mat4 model = glm::mat4(1.0f);
+    model = glm::scale(model, glm::vec3(-1, 1, 1));
     prog_lambert.setModelMatrix(model);
     prog_color.setModelMatrix(model);
     prog_wire.setModelMatrix(model);
@@ -318,17 +339,104 @@ void MyGL::paintGL()
         }
     }
 
-    glFlush();
 }
 
 void MyGL::createChunkVectorMT()
 {
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
+    std::vector<CCreateWorldAndChunkTask*>* chunkTasks = new std::vector<CCreateWorldAndChunkTask*>();
 
-    int numThreads = 10;
-    int incr = allLayers->size() / numThreads;
+    int totalLayers = 20; //allLayers->size();
+    int numThreads = 2;
+    int incr = totalLayers / numThreads;
 
-    for(int layer = 0; layer < allLayers)
+    int layer;
+    int curr_ymin;
+    int curr_ymax;
+
+    // build the world. All threads will read from this world
+    // go through each layer, and voxelize that layer's voxel plane
+    for(int i = 0; i < totalLayers; i++) {
+
+        std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
+        for(CVoxel* v : *currVoxelPlane) {
+
+            glm::vec4 voxPos = v->getPosition();
+            glm::vec4 voxCol = v->getColor();
+            int voxID = v->getID();
+
+            mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
+        }
+    }
+
+
+    // now, allocate the memory for each chunk
+    for(layer = 0; layer < totalLayers; layer += incr)
+    {
+        curr_ymin = layer;
+        curr_ymax = layer + incr;
+        if(curr_ymax > totalLayers) curr_ymax = totalLayers;
+
+        CChunk* currChunk = new CChunk(this);
+        currChunk ->setXMin(0);
+        currChunk ->setXMax(512);
+        currChunk ->setYMin(curr_ymin);
+        currChunk ->setYMax(curr_ymax);
+        currChunk ->setZMin(0);
+        currChunk ->setZMax(512);
+        currChunk ->setIsolevel(isolevel);
+
+        std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
+        std::vector<GLuint>* indices = new std::vector<GLuint>();
+        currChunk->setVertices(vertices);
+        currChunk->setIndices(indices);
+
+        // the different chunks all read from the same world but
+        // this shouldn't cause a race condition because
+        // reading from a map used .at() which is const?
+        currChunk->setWorld(&mWorld);
+
+        chunks.push_back(currChunk);
+    }
+
+    // create the thread for each chunk
+    for(int i = 0; i < chunks.size(); i++)
+    {
+
+        CChunk* chunk = chunks.at(i);
+
+        int ymin = chunk->getYMin();
+        int ymax = chunk->getYMax();
+
+        // get a vector that copies the data from allLayers.at(ymin) to allLAyers.at(ymax)
+        // this is newly allocated memory, so multiple threads should never be reading from this
+        // basically, in this sequential part of my code, I am allocating distinct portions of memory
+        // then passing pointers to these places in memories, so multiple threads can operate on multiple places
+        // i am trading space for time!
+        std::vector<std::vector<CVoxel*>*>* layers = new std::vector<std::vector<CVoxel*>*>(allLayers->begin() + ymin, allLayers->begin() + ymax);
+
+        // it is ok that this is an obejct and
+        //that this data will be popped off the stack because it'll be copied into world which is maintained from here in a pointer
+        // so the data will be preserved
+        CCreateWorldAndChunkTask* thread = new CCreateWorldAndChunkTask(chunk, layers);
+        chunkTasks->push_back(thread);
+    }
+
+    // QThreadPool::globalInstance()->setMaxThreadCount(1);
+
+    // now actually run each thread
+    for(CCreateWorldAndChunkTask* task : *chunkTasks)
+    {
+        QThreadPool::globalInstance()->start(task);
+    }
+
+    // create each chunk
+    if(QThreadPool::globalInstance()->waitForDone()){
+        for(int c = 0; c < chunks.size(); c++)
+        {
+            chunks.at(c)->create();
+        }
+    }
 }
 
 void MyGL::createChunkVector()
@@ -376,6 +484,7 @@ void MyGL::createChunkVector()
     allLayerChunk->setNewFileName(newFileName);
     allLayerChunk->setCtScanFilePath(ctScanFilePath);
     allLayerChunk->exportVerticesAndIndicesToFile();
+    maxLayers = allLayers->size();
 
 }
 

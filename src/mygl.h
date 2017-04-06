@@ -10,11 +10,11 @@
 
 
 #include "cchunk.h"
-//#include "cimagereader.h"
 #include "cworld.h"
 #include "cvoxel.h"
 #include "voxelizer.h"
 #include "cube.h"
+#include "ccreateworldandchunktask.h"
 
 #include <QListWidget>
 
