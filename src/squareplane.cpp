@@ -1,14 +1,15 @@
-#include "cube.h"
+#include "squareplane.h"
 #include <la.h>
 #include <iostream>
 
-static const int SQUARE_IDX_COUNT = 8;
+static const int SQUARE_IDX_COUNT = 6;//8;
 static const int SQUARE_VERT_COUNT = 4;
 
 
 GLenum SquarePlane::drawMode()
 {
-    return GL_LINES;
+    //return GL_LINES;
+    return GL_TRIANGLES;
 }
 
 
@@ -21,6 +22,7 @@ void createSquareVertexPositions(glm::vec4 (&square_vert_pos)[SQUARE_VERT_COUNT]
     square_vert_pos[idx++] = glm::vec4(512, 0, 0, 1);
     square_vert_pos[idx++] = glm::vec4(512, 0, 512, 1);
     square_vert_pos[idx++] = glm::vec4(0, 0, 512, 1);
+
 }
 
 
@@ -38,7 +40,7 @@ void createSquareIndices(GLuint (&square_idx)[SQUARE_IDX_COUNT])
 {
     int idx = 0;
 
-    square_idx[idx++] = 0;
+   /* square_idx[idx++] = 0;
     square_idx[idx++] = 1;
 
     square_idx[idx++] = 1;
@@ -48,7 +50,14 @@ void createSquareIndices(GLuint (&square_idx)[SQUARE_IDX_COUNT])
     square_idx[idx++] = 3;
 
     square_idx[idx++] = 3;
+    square_idx[idx++] = 0;*/
+
     square_idx[idx++] = 0;
+    square_idx[idx++] = 1;
+    square_idx[idx++] = 2;
+    square_idx[idx++] = 0;
+    square_idx[idx++] = 2;
+    square_idx[idx++] = 3;
 
 }
 
@@ -65,7 +74,7 @@ void SquarePlane::create()
 
 
     for(int i = 0; i < SQUARE_VERT_COUNT; i++){
-        square_vert_col[i] = glm::vec4(1, 1, 1, 1);
+        square_vert_col[i] = glm::vec4(1, 1, 1, .2);
     }
 
     count = SQUARE_IDX_COUNT;

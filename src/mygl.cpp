@@ -1,23 +1,18 @@
 #include "mygl.h"
-#include <la.h>
-#include<QFileDialog>
-#include<QFile>
-#include<QStringList>
 
-#include <iostream>
-#include <stdlib.h>
-#include <string>
-#include <algorithm>
-#include <cstring>
-#include <QApplication>
-#include <QKeyEvent>
-#include <QPixmap>
-#include <QImage>
-#include <QDir>
-#include <QDirIterator>
-#include <QThreadPool>
 
 #define MULTITHREADING
+
+void MyGL::slot_on_show_plane_changed(bool b)
+{
+    showPlane = b;
+    update();
+}
+
+void MyGL::slot_set_num_threads(int t)
+{
+    numThreads = t;
+}
 
 void MyGL::slot_tissue_preset(int s)
 {
@@ -26,7 +21,6 @@ void MyGL::slot_tissue_preset(int s)
 
 void MyGL::slot_on_slider_moved(int num)
 {
-
 
     // If there are image files associated with this, display the image on the slider
     if(!ctScanFilePath.isEmpty())
@@ -256,12 +250,14 @@ void MyGL::initializeGL()
 
 void MyGL::processFiles() {
 
+    timer.start();
     mVoxelizer.processFiles();
 #ifndef MULTITHREADING
     createChunkVector();
 #else
     createChunkVectorMT();
 #endif
+    std::cout << "Process took " << timer.elapsed() << " milliseconds" << std::endl;
 }
 
 void MyGL::resizeGL(int w, int h)
@@ -302,7 +298,13 @@ void MyGL::paintGL()
 
     prog_lambert.setModelMatrix(translate);
 
-    prog_lambert.draw(squareplane);
+    if(showPlane)
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        prog_lambert.draw(squareplane);
+        glDisable(GL_BLEND);
+    }
 
     prog_lambert.setModelMatrix(model);
 
@@ -327,11 +329,16 @@ void MyGL::paintGL()
 
 void MyGL::createChunkVectorMT()
 {
+
+    QElapsedTimer worldTimer;
+    QElapsedTimer chunkMemAllocTimer;
+    QElapsedTimer threadTimer;
+
+    worldTimer.start();
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
     std::vector<CCreateWorldAndChunkTask*>* chunkTasks = new std::vector<CCreateWorldAndChunkTask*>();
 
     int totalLayers = allLayers->size();
-    int numThreads = 2;
     int incr = totalLayers / numThreads;
 
     int layer;
@@ -353,6 +360,9 @@ void MyGL::createChunkVectorMT()
         }
     }
 
+    std::cout << "Elapsed time for building the world: " << worldTimer.elapsed() << " milliseconds" << std::endl;
+
+    chunkMemAllocTimer.start();
 
     // now, allocate the memory for each chunk
     for(layer = 0; layer < totalLayers; layer += incr)
@@ -389,7 +399,10 @@ void MyGL::createChunkVectorMT()
         chunkTasks->push_back(thread);
     }
 
+    std::cout << "Elapsed time for allocating memory for each chunk and thread: " << chunkMemAllocTimer.elapsed() << " milliseconds." << std::endl;
 
+
+    threadTimer.start();
     // now actually run each thread
     for(CCreateWorldAndChunkTask* task : *chunkTasks)
     {
@@ -407,6 +420,7 @@ void MyGL::createChunkVectorMT()
     // set up slider's max value label
     maxLayers = allLayers->size();
 
+    std::cout << "Elapsed time for threads to run: " << threadTimer.elapsed() << " milliseconds" << std::endl;
 
 }
 

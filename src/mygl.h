@@ -2,9 +2,26 @@
 
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
+#include <QFileDialog>
+#include <QFile>
+#include <QStringList>
+#include <QApplication>
+#include <QKeyEvent>
+#include <QPixmap>
+#include <QImage>
+#include <QDir>
+#include <QDirIterator>
+#include <QThreadPool>
+#include <QListWidget>
+#include <QElapsedTimer>
 
-#include <glwidget277.h>
 #include <la.h>
+#include <iostream>
+#include <stdlib.h>
+#include <string>
+#include <algorithm>
+#include <cstring>
+#include <glwidget277.h>
 #include <shaderprogram.h>
 #include <277files/scene/camera.h>
 
@@ -13,12 +30,8 @@
 #include "cworld.h"
 #include "cvoxel.h"
 #include "voxelizer.h"
-#include "cube.h"
+#include "squareplane.h"
 #include "ccreateworldandchunktask.h"
-
-#include <QListWidget>
-
-
 
 class MyGL
     : public GLWidget277
@@ -43,6 +56,8 @@ private:
 
     QString newFileName;
 
+    QElapsedTimer timer;
+
     //bounds
     int boundNegX, boundNegZ, boundPosZ, boundPosX;
     int boundWorldX, boundWorldZ;
@@ -63,6 +78,10 @@ private:
     int currLayer = 0; // the slider determines this number, should show the image at this layer
 
     float densityThreshold = 0;
+
+    int numThreads = 1;
+
+    bool showPlane = false;
 
 public:
 
@@ -92,6 +111,8 @@ public slots:
     void slot_on_color_checkbox_changed(bool col);
     void slot_on_slider_moved(int num);
     void slot_tissue_preset(int s);
+    void slot_set_num_threads(int t);
+    void slot_on_show_plane_changed(bool b);
 
 
 };
