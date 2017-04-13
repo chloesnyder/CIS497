@@ -24,19 +24,19 @@ public:
 
     virtual void create();
 
-    float getXMin() { return m_Xmin;}
-    float getXMax() { return m_Xmax;}
+    //float getXMin() { return m_Xmin;}
+    //float getXMax() { return m_Xmax;}
     float getYMin() { return m_Ymin;}
     float getYMax() { return m_Ymax;}
-    float getZMin() { return m_Zmin;}
-    float getZMax() { return m_Zmax;}
+    //float getZMin() { return m_Zmin;}
+    //float getZMax() { return m_Zmax;}
 
-    void setXMin(float x) { m_Xmin = x;}
-    void setXMax(float x) { m_Xmax = x;}
+   // void setXMin(float x) { m_Xmin = x;}
+   // void setXMax(float x) { m_Xmax = x;}
     void setYMin(float y) { m_Ymin = y;}
     void setYMax(float y) { m_Ymax = y;}
-    void setZMin(float z) { m_Zmin = z;}
-    void setZMax(float z) { m_Zmax = z;}
+   // void setZMin(float z) { m_Zmin = z;}
+   // void setZMax(float z) { m_Zmax = z;}
 
     CWorld *getWorld() { return mWorld; }
     void setWorld(CWorld *w) { mWorld = w; }
@@ -57,14 +57,24 @@ public:
 
     void setCtScanFilePath(QString ct) { ctScans = ct; }
 
+    void setMinXsForChunk(std::vector<int>* minXs) { minXForEachChunkLayer = minXs;}
+    void setMinZsForChunk(std::vector<int>* minZs) { minZForEachChunkLayer = minZs;}
+    void setMaxXsForChunk(std::vector<int>* maxXs) { maxXForEachChunkLayer = maxXs;}
+    void setMaxZsForChunk(std::vector<int>* maxZs) { maxZForEachChunkLayer = maxZs;}
+
 private:
+
+    std::vector<int> *minXForEachChunkLayer;
+    std::vector<int> *minZForEachChunkLayer;
+    std::vector<int> *maxXForEachChunkLayer;
+    std::vector<int> *maxZForEachChunkLayer;
 
     int offset = 0;
 
     double mIsolevel;
 
     // coords to define the absolute min and max coordinates of chunk's volume
-    float m_Xmin, m_Xmax, m_Ymin, m_Ymax, m_Zmin, m_Zmax;
+    float  m_Xmin, m_Xmax, m_Ymin, m_Ymax, m_Zmin, m_Zmax;
 
     glm::vec4 mColor;
 

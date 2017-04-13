@@ -21,6 +21,15 @@ void CVoxelizer::setDensityThreshold(float t)
     densityThreshold = t;
 }
 
+void CVoxelizer::destroy()
+{
+    mAllLayers->clear();
+    minXForAllLayers->clear();
+    maxXForAllLayers->clear();
+    minZForAllLayers->clear();
+    maxZForAllLayers->clear();
+}
+
 void CVoxelizer::processFiles()
 {
 
@@ -41,9 +50,11 @@ void CVoxelizer::processFiles()
         img_t* currImg = mImageReader.getImageArray();
 
         // voxelize the image
-         CVoxelizeAnImageSliceTask *currImageTask = new CVoxelizeAnImageSliceTask(currImg, voxelLength, mAllLayers);
+         CVoxelizeAnImageSliceTask *currImageTask = new CVoxelizeAnImageSliceTask(currImg, voxelLength, mAllLayers,
+                                                                                  minXForAllLayers, minZForAllLayers,
+                                                                                  maxXForAllLayers, maxZForAllLayers);
          currImageTask->setDensityThreshold(densityThreshold);
-        // currImageTask->start();
+
          imageTasks->push_back(currImageTask);
 
          voxelLength++;

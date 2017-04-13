@@ -16,6 +16,11 @@ void MyGL::slot_set_num_threads(int t)
 
 void MyGL::slot_tissue_preset(int s)
 {
+    chunks.clear();
+    mWorld.destroy();
+    mVoxelizer.destroy();
+    ctScanFilePath = "";
+
     densityThreshold = s;
 }
 
@@ -336,6 +341,12 @@ void MyGL::createChunkVectorMT()
 
     worldTimer.start();
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
+
+    std::vector<int>* allMinXs = mVoxelizer.getMinXForAllLayers();
+    std::vector<int>* allMinZs = mVoxelizer.getMinZForAllLayers();
+    std::vector<int>* allMaxXs = mVoxelizer.getMaxXForAllLayers();
+    std::vector<int>* allMaxZs = mVoxelizer.getMaxZForAllLayers();
+
     std::vector<CCreateWorldAndChunkTask*>* chunkTasks = new std::vector<CCreateWorldAndChunkTask*>();
 
     int totalLayers = allLayers->size();
@@ -372,13 +383,17 @@ void MyGL::createChunkVectorMT()
         if(curr_ymax > totalLayers) curr_ymax = totalLayers;
 
         CChunk* currChunk = new CChunk(this);
-        currChunk ->setXMin(0);
-        currChunk ->setXMax(512);
+        currChunk ->setIsolevel(isolevel);
+
+
         currChunk ->setYMin(curr_ymin);
         currChunk ->setYMax(curr_ymax);
-        currChunk ->setZMin(0);
-        currChunk ->setZMax(512);
-        currChunk ->setIsolevel(isolevel);
+
+        // pass the chunk the vectors containing the min/max x and z positions for each layer in the world
+        currChunk->setMinXsForChunk(allMinXs);
+        currChunk->setMinZsForChunk(allMinZs);
+        currChunk->setMaxXsForChunk(allMaxXs);
+        currChunk->setMaxZsForChunk(allMaxZs);
 
         std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
         std::vector<GLuint>* indices = new std::vector<GLuint>();
@@ -424,6 +439,7 @@ void MyGL::createChunkVectorMT()
 
 }
 
+/*
 void MyGL::createChunkVector()
 {
 
@@ -472,7 +488,7 @@ void MyGL::createChunkVector()
     maxLayers = allLayers->size();
 
 }
-
+*/
 
 void MyGL::keyPressEvent(QKeyEvent *e)
 {

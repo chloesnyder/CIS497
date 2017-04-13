@@ -223,11 +223,19 @@ double CChunk::calculateDensity(glm::vec4 vertex)
 void CChunk::createVoxelBuffer()
 {
 
+
     int totalNumVoxels = 0;
     // iterate over all the existing blocks in the environment
-    for(int i = m_Xmin; i < m_Xmax; i++) {
-        for(int j = m_Ymin; j < m_Ymax; j++) {
-            for(int k = m_Zmin; k < m_Zmax; k++) {
+
+    for(int j = m_Ymin; j < m_Ymax; j++) {
+
+        int minXForLayerJ = minXForEachChunkLayer->at(j);
+        int minZForLayerJ = minZForEachChunkLayer->at(j);
+        int maxXForLayerJ = maxXForEachChunkLayer->at(j);
+        int maxZForLayerJ = maxZForEachChunkLayer->at(j);
+
+        for(int i = minXForLayerJ; i < maxXForLayerJ; i++) {
+            for(int k = minZForLayerJ; k < maxZForLayerJ; k++) {
 
                 glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
 

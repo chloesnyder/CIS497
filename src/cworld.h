@@ -44,6 +44,8 @@ public:
     // If data for a block is already there, then use old data
     void createChunkVoxelData(glm::vec4 position, glm::vec4 color, int id);
 
+    void destroy();
+
 };
 
 #endif // CWORLD_H

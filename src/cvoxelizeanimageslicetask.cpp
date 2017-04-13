@@ -6,12 +6,41 @@ CVoxelizeAnImageSliceTask::CVoxelizeAnImageSliceTask()
 }
 
 CVoxelizeAnImageSliceTask::CVoxelizeAnImageSliceTask(img_t* slice, int length,
-                                                     std::vector<std::vector<CVoxel*>*> *allLayers)
+                                                     std::vector<std::vector<CVoxel*>*> *allLayers,
+                                                     std::vector<int> *mMinXs, std::vector<int> *mMinZs,
+                                                     std::vector<int> *mMaxXs, std::vector<int> *mMaxZs)
 {
     mSlice = slice;
     mLength = length;
     mAllLayers = allLayers;
+    minXForEachLayer = mMinXs;
+    minZForEachLayer = mMinZs;
+    maxXForEachLayer = mMaxXs;
+    maxZForEachLayer = mMaxZs;
 
+}
+
+void CVoxelizeAnImageSliceTask::checkMaxAndMinXAndZ(int minXForThisLayer, int maxXForThisLayer, int minZForThisLayer, int maxZForThisLayer, int row, int column)
+{
+    if(minXForThisLayer > row)
+    {
+        minXForThisLayer = row;
+    }
+
+    if(minZForThisLayer > column)
+    {
+        minZForThisLayer = column;
+    }
+
+    if(maxXForThisLayer < row)
+    {
+        maxXForThisLayer = row;
+    }
+
+    if(maxZForThisLayer < column)
+    {
+        maxZForThisLayer = column;
+    }
 }
 
 
@@ -26,6 +55,16 @@ void CVoxelizeAnImageSliceTask::run()
     int width = mSlice->w;
     const int size = height * width;
     int count = 0; // This keeps track of pixel address in 1D array
+
+    // min x, max x
+    int minXForThisLayer = 512;
+    int maxXForThisLayer = 0;
+
+    // min z, max z
+    int minZForThisLayer = 512;
+    int maxZForThisLayer = 0;
+
+
     for(int row = 0; row < height; row++) {
         for(int col = 0; col < width; col++) {
             if(count < size) {
@@ -39,6 +78,8 @@ void CVoxelizeAnImageSliceTask::run()
 
                 float alpha = (red + green + blue) / 3;
 
+                glm::vec4 position;
+                glm::vec4 color;
 
                 if(densityThreshold == 0) //default, all. alpha > .25
                 {
@@ -47,19 +88,31 @@ void CVoxelizeAnImageSliceTask::run()
                     // If the pixel isn't black, create a voxel
                     // Store this voxel in the mVoxelPlane vector
                     if(alpha > .25) {
-                        glm::vec4 position = glm::vec4(row, mLength, col, 1);
-                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
+                        position = glm::vec4(row, mLength, col, 1);
+                        color = glm::vec4(red, green, blue, alpha);
                         CVoxel* currVoxel = new CVoxel(position, color, count);
                         voxelPlane->push_back(currVoxel);
+
+                        minXForThisLayer = std::min(minXForThisLayer, row);
+                        minZForThisLayer = std::min(minZForThisLayer, col);
+                        maxXForThisLayer = std::max(maxXForThisLayer, row);
+                        maxZForThisLayer = std::max(maxZForThisLayer, col);
+
                     }
 
                 } else if (densityThreshold == 1) // bone
                 {
                     if(alpha > .7225) {
-                        glm::vec4 position = glm::vec4(row, mLength, col, 1);
-                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
+                        position = glm::vec4(row, mLength, col, 1);
+                        color = glm::vec4(red, green, blue, alpha);
                         CVoxel* currVoxel = new CVoxel(position, color, count);
                         voxelPlane->push_back(currVoxel);
+
+                        minXForThisLayer = std::min(minXForThisLayer, row);
+                        minZForThisLayer = std::min(minZForThisLayer, col);
+                        maxXForThisLayer = std::max(maxXForThisLayer, row);
+                        maxZForThisLayer = std::max(maxZForThisLayer, col);
+
                     }
 
                 } else if (densityThreshold == 2) // muscle, organs
@@ -67,10 +120,16 @@ void CVoxelizeAnImageSliceTask::run()
                     float minMuscleDensity = .45;
                     float maxMuscleDensity = .7;
                     if(alpha > minMuscleDensity && alpha < maxMuscleDensity) {
-                        glm::vec4 position = glm::vec4(row, mLength, col, 1);
-                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
+                        position = glm::vec4(row, mLength, col, 1);
+                        color = glm::vec4(red, green, blue, alpha);
                         CVoxel* currVoxel = new CVoxel(position, color, count);
                         voxelPlane->push_back(currVoxel);
+
+                        minXForThisLayer = std::min(minXForThisLayer, row);
+                        minZForThisLayer = std::min(minZForThisLayer, col);
+                        maxXForThisLayer = std::max(maxXForThisLayer, row);
+                        maxZForThisLayer = std::max(maxZForThisLayer, col);
+
                     }
 
                 } else if (densityThreshold == 3) // lung, fat, other low density tissue
@@ -78,20 +137,29 @@ void CVoxelizeAnImageSliceTask::run()
                     float minLungDensity = 0.01f;
                     float maxLungDensity = 0.4f;
                     if(alpha > minLungDensity && alpha < maxLungDensity) {
-                        glm::vec4 position = glm::vec4(row, mLength, col, 1);
-
-                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
+                        position = glm::vec4(row, mLength, col, 1);
+                        color = glm::vec4(red, green, blue, alpha);
                         CVoxel* currVoxel = new CVoxel(position, color, count);
                         voxelPlane->push_back(currVoxel);
+
+                        minXForThisLayer = std::min(minXForThisLayer, row);
+                        minZForThisLayer = std::min(minZForThisLayer, col);
+                        maxXForThisLayer = std::max(maxXForThisLayer, row);
+                        maxZForThisLayer = std::max(maxZForThisLayer, col);
                     }
 
                 }
-
 
                 count++;
             }
         }
     }
+
     mAllLayers->push_back(voxelPlane);
+
+    minXForEachLayer->push_back(minXForThisLayer);
+    minZForEachLayer->push_back(minZForThisLayer);
+    maxXForEachLayer->push_back(maxXForThisLayer);
+    maxZForEachLayer->push_back(maxZForThisLayer);
 }
 

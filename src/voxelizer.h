@@ -16,6 +16,13 @@ public:
     void setTargetDirPath(QString path);
     void setDensityThreshold(float t);
 
+    std::vector<int> *getMinXForAllLayers() { return minXForAllLayers; }
+    std::vector<int> *getMinZForAllLayers() { return minZForAllLayers; }
+    std::vector<int> *getMaxXForAllLayers() { return maxXForAllLayers; }
+    std::vector<int> *getMaxZForAllLayers() { return maxZForAllLayers; }
+
+    void destroy();
+
 private:
 
 
@@ -28,7 +35,15 @@ private:
 
     QString targetDirPath;
 
-     float densityThreshold;
+    float densityThreshold;
+
+
+    // stores the min and max location for voxels added to the plane
+    // this is done to cut down on the number of loops later in the code
+    std::vector<int> *minXForAllLayers = new std::vector<int>();
+    std::vector<int> *minZForAllLayers = new std::vector<int>();
+    std::vector<int> *maxXForAllLayers = new std::vector<int>();
+    std::vector<int> *maxZForAllLayers = new std::vector<int>();
 
 
 };

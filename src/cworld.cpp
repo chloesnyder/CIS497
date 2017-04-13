@@ -66,6 +66,12 @@ bool CWorld::destroyVoxelAt(int x, int y, int z)
     }
 }
 
+void CWorld::destroy()
+{
+    voxColMap.clear();
+    currWorldView.clear();
+}
+
 // add in data for new chunk
 // If data for a block is already there, then use old data
 void CWorld::createChunkVoxelData(glm::vec4 position, glm::vec4 color, int id)
