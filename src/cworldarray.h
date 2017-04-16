@@ -23,6 +23,9 @@ public:
     glm::vec4 voxelAtIsColor(int x, int y, int z);
 
     void createChunkVoxelData(glm::vec4 position, glm::vec4 color, int id);
+    int getSize();
+
+    glm::vec3 to3D(int idx);
 
 
 private:

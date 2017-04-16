@@ -10,7 +10,7 @@ public:
 
     // Not sure if I will need this, but saving a voxel type?
     // Could be useful for bone vs air vs density?
-    enum VTYPE {EMPTY, NONEMPTY, NULLTYPE};
+    enum VTYPE {EMPTY, NONEMPTY};
 
     void setColor(glm::vec4 col) { color = col; }
     void setPosition(glm::vec4 position) { this->pos = position; }

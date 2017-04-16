@@ -9,10 +9,10 @@ CWorldArray::CWorldArray(int layers) : numLayers(layers)
 {
 
     currWorldView = std::vector<CVoxel::VTYPE>();
-    currWorldView.resize(513 * 513 * (numLayers+1), CVoxel::EMPTY);
+    currWorldView.resize(512 * 512 * (numLayers));
 
     voxColArr = std::vector<glm::vec4>();
-    voxColArr.resize(513 * 513 * (numLayers+1), glm::vec4(0, 0, 0, 1));
+    voxColArr.resize(512 * 512 * (numLayers));
 
 }
 
@@ -20,6 +20,23 @@ CWorldArray::CWorldArray(const CWorldArray &cwa)
     : currWorldView(cwa.currWorldView), voxColArr(cwa.voxColArr), numLayers(cwa.numLayers)
 {
 
+}
+
+int CWorldArray::getSize()
+{
+    return currWorldView.size();
+}
+
+glm::vec3 CWorldArray::to3D(int idx)
+{
+    int xMax = 512;
+    int yMax = numLayers;
+
+    int z = idx / (xMax * yMax);
+    idx -= (z * xMax * yMax);
+    int y = idx / xMax;
+    int x = idx % xMax;
+    return glm::vec3(x, y, z);
 }
 
 int CWorldArray::calculateIndex(int x, int y, int z)
@@ -30,9 +47,6 @@ int CWorldArray::calculateIndex(int x, int y, int z)
 
     int idx = x + y*xMax + z*yMax*xMax;
 
-    //int idx = y + z*yMax + x*zMax*yMax;
-
-   // [x + y*WIDTH + Z*WIDTH*DEPTH]
     return idx;
 }
 
@@ -45,8 +59,8 @@ bool CWorldArray::hasVoxelAt(int x, int y, int z)
         bool isNotEmpty = (currWorldView.at(idx) == CVoxel::NONEMPTY); // true if not empty
         return isNotEmpty;
     } else {
-     //   std::cout << "hasVoxelAt Error: " << x << ", " << y << ", " << z << " index calculation resulted in invalid index" << std::endl;
-       // for grid cells at edge cases, such as 512, 0, 512, this case will be hit because grid cell will cehck something like 513, 0, 512
+        //   std::cout << "hasVoxelAt Error: " << x << ", " << y << ", " << z << " index calculation resulted in invalid index" << std::endl;
+        // for grid cells at edge cases, such as 512, 0, 512, this case will be hit because grid cell will cehck something like 513, 0, 512
         return false;
     }
 
@@ -54,26 +68,21 @@ bool CWorldArray::hasVoxelAt(int x, int y, int z)
 
 CVoxel::VTYPE CWorldArray::voxelAtIsType(int x, int y, int z)
 {
-
-    int idx = calculateIndex(x, y, z);
-    if(idx > -1 && idx < currWorldView.size())
+    if(hasVoxelAt(x, y, z))
     {
+        int idx = calculateIndex(x, y, z);
         return currWorldView.at(idx);
-    } else {
-        std::cout << "voxelAtIsType Error: " << x << ", " << y << ", " << z << " index calculation resulted in invalid index" << std::endl;
-        return CVoxel::NULLTYPE;
     }
 }
 
 glm::vec4 CWorldArray::voxelAtIsColor(int x, int y, int z)
 {
-    int idx = calculateIndex(x, y, z);
-    if(idx > -1 && idx < voxColArr.size())
+    if(hasVoxelAt(x, y, z))
     {
+        int idx = calculateIndex(x, y, z);
         return voxColArr.at(idx);
     } else {
-        std::cout << "voxelAtIsColor Error: " << x << ", " << y << ", " << z << " index calculation resulted in invalid index" << std::endl;
-        return glm::vec4(0,0,0,0);
+        return glm::vec4(0, 0, 0, 0);
     }
 }
 
