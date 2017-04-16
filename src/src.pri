@@ -18,7 +18,8 @@ SOURCES += \
     $$PWD/cvoxelizeanimageslicetask.cpp \
     $$PWD/277files/scene/arcballcamera.cpp \
     $$PWD/ccreateworldandchunktask.cpp \
-    $$PWD/squareplane.cpp
+    $$PWD/squareplane.cpp \
+    $$PWD/cworldarray.cpp
 
 HEADERS += \
     $$PWD/mainwindow.h \
@@ -38,4 +39,5 @@ HEADERS += \
     $$PWD/marching_cubes_data.h \
     $$PWD/277files/scene/arcballcamera.h \
     $$PWD/ccreateworldandchunktask.h \
-    $$PWD/squareplane.h
+    $$PWD/squareplane.h \
+    $$PWD/cworldarray.h

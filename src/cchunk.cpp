@@ -133,7 +133,7 @@ CChunk::CChunk(GLWidget277* context, float xmin, float xmax, float ymin, float y
 
 }
 
-CChunk::CChunk(GLWidget277* context, CWorld* w, float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
+CChunk::CChunk(GLWidget277* context, CWorldArray* w, float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
     : Drawable(context), mWorld(w), m_Xmin(xmin), m_Xmax(xmax), m_Ymin(ymin), m_Ymax(ymax), m_Zmin(zmin), m_Zmax(zmax)
 {
 
@@ -222,6 +222,11 @@ double CChunk::calculateDensity(glm::vec4 vertex)
 
 void CChunk::createVoxelBuffer()
 {
+
+/// TODO: Try to convert from map to array again. This didn't work well the first time
+/// but this may improve speed to access from an 1D array as opposed to a map
+
+
 
     int totalNumVoxels = 0;
     // iterate over all the existing blocks in the environment

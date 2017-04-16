@@ -2,7 +2,7 @@
 #define CCHUNK_H
 #include <drawable.h>
 #include "cvoxel.h"
-#include "cworld.h"
+#include "cworldarray.h"
 
 #include <QFile>
 
@@ -20,7 +20,7 @@ class CChunk : public Drawable
 public:
     CChunk(GLWidget277* context);
     CChunk(GLWidget277* context, float, float, float, float, float, float);
-    CChunk(GLWidget277* context, CWorld*, float, float, float, float, float, float);
+    CChunk(GLWidget277* context, CWorldArray*, float, float, float, float, float, float);
 
     virtual void create();
 
@@ -38,8 +38,8 @@ public:
     void setZMin(float z) { m_Zmin = z;}
     void setZMax(float z) { m_Zmax = z;}
 
-    CWorld *getWorld() { return mWorld; }
-    void setWorld(CWorld *w) { mWorld = w; }
+    CWorldArray *getWorld() { return mWorld; }
+    void setWorld(CWorldArray *w) { mWorld = w; }
 
     std::vector<glm::vec4>* getVertices() { return vertices; }
     std::vector<GLuint>* getIndices() {return indices; }
@@ -69,7 +69,7 @@ private:
     glm::vec4 mColor;
 
     //pointer to our world which gives info about hwere blocks are
-    CWorld *mWorld;
+    CWorldArray *mWorld;
 
     QString newFileName;
     QString ctScans;
