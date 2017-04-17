@@ -394,9 +394,9 @@ void MyGL::createChunkVectorMT()
         // make a copy of the world and set it to the chunk
         // this will ensure that threads never read from the same array, so thread safety is ensured
         // but data will be preserved, so the same triangles should draw
-        CWorldArray* currWorld = new CWorldArray(mWorldArr);
+       // CWorldArray* currWorld = new CWorldArray(mWorldArr);
 
-        currChunk->setWorld(currWorld);
+        currChunk->setWorld(&mWorldArr);
 
         chunks.push_back(currChunk);
     }

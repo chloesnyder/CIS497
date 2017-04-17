@@ -59,7 +59,7 @@ public:
 
 private:
 
-    int offset = 0;
+    int offset;
 
     double mIsolevel;
 

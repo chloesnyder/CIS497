@@ -123,18 +123,18 @@ glm::vec4 CChunk::VertexInterp(double isolevel, glm::vec4 p1, glm::vec4 p2, doub
 
 
 CChunk::CChunk(GLWidget277 *context)
-    : Drawable(context), mWorld(nullptr), m_Xmin(0), m_Xmax(0), m_Ymin(0), m_Ymax(0), m_Zmin(0), m_Zmax(0)
+    : Drawable(context), mWorld(nullptr), m_Xmin(0), m_Xmax(0), m_Ymin(0), m_Ymax(0), m_Zmin(0), m_Zmax(0), offset(0)
 {
 }
 
 CChunk::CChunk(GLWidget277* context, float xmin, float xmax, float ymin, float ymax, float zmin, float zmax) :
-    Drawable(context), mWorld(nullptr), m_Xmin(xmin), m_Xmax(xmax), m_Ymin(ymin), m_Ymax(ymax), m_Zmin(zmin), m_Zmax(zmax)
+    Drawable(context), mWorld(nullptr), m_Xmin(xmin), m_Xmax(xmax), m_Ymin(ymin), m_Ymax(ymax), m_Zmin(zmin), m_Zmax(zmax), offset(0)
 {
 
 }
 
 CChunk::CChunk(GLWidget277* context, CWorldArray* w, float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
-    : Drawable(context), mWorld(w), m_Xmin(xmin), m_Xmax(xmax), m_Ymin(ymin), m_Ymax(ymax), m_Zmin(zmin), m_Zmax(zmax)
+    : Drawable(context), mWorld(w), m_Xmin(xmin), m_Xmax(xmax), m_Ymin(ymin), m_Ymax(ymax), m_Zmin(zmin), m_Zmax(zmax), offset(0)
 {
 
 }
@@ -156,7 +156,7 @@ glm::vec4 CChunk::calculateNormal(glm::vec4 vertex)
     glm::vec4 grad;
 
     //float d = 1.0/(float)voxels_per_block -> so for me 1/(512*512)? thats so close to 0...
-    float d = 1.0;
+    float d = 1.5;
 
     grad.x = calculateDensity(vertex + glm::vec4(d, 0, 0, 0)) -
             calculateDensity(vertex + glm::vec4(-d, 0, 0, 0));
@@ -237,6 +237,8 @@ void CChunk::createVoxelBuffer()
         int j = idxIn3D.y;
         int k = idxIn3D.z;
 
+        //if(j < m_Ymax && j > 1) {
+
         glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
 
         // For each voxel, polygonise it
@@ -264,10 +266,11 @@ void CChunk::createVoxelBuffer()
 
             if(mWorld->hasVoxelAt(x,y,z)) {
                 currCell.val[corner] = mWorld->voxelAtIsColor(x,y,z).a;
-                hasDensity = true;
+                if(currCell.val[corner] > .01) hasDensity = true;
             } else {
                 currCell.val[corner] = 0;
             }
+
         }
 
         if(hasDensity){
@@ -276,6 +279,7 @@ void CChunk::createVoxelBuffer()
             double currIsolevel = mIsolevel;
 
             int totalTris = Polygonise(currCell, currIsolevel, currTriangles);
+
 
             unsigned int indexCount = offset;
 
@@ -288,12 +292,12 @@ void CChunk::createVoxelBuffer()
                     //glm::vec4 normal = glm::vec4();
 
                     // calculate the normal for this vertex based on xyz gradient
-                   // if(j != m_Ymax - 1) {
-                  //      normal = calculateNormal(currTriangles[u].p[v]);
-                  //  } else {
-                  //     glm::vec4 normal = -glm::vec4(glm::cross(glm::vec3(currTriangles[u].p[1] - currTriangles[u].p[2]),
+                    // if(j != m_Ymax - 1) {
+                    //      normal = calculateNormal(currTriangles[u].p[v]);
+                    //  } else {
+                    //     glm::vec4 normal = -glm::vec4(glm::cross(glm::vec3(currTriangles[u].p[1] - currTriangles[u].p[2]),
                     //           glm::vec3(currTriangles[u].p[3] - currTriangles[u].p[2])), 0);
-                   // }
+                    // }
 
 
                     glm::vec4 normal = calculateNormal(currTriangles[u].p[v]);
@@ -311,6 +315,7 @@ void CChunk::createVoxelBuffer()
         }
         totalNumVoxels++;
     }
+    // }
 
 }
 

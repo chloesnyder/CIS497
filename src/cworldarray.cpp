@@ -8,11 +8,11 @@ CWorldArray::CWorldArray()
 CWorldArray::CWorldArray(int layers) : numLayers(layers)
 {
 
-    currWorldView = std::vector<CVoxel::VTYPE>();
-    currWorldView.resize(512 * 512 * (numLayers), CVoxel::EMPTY);
+    currWorldView = std::vector<CVoxel::VTYPE>(512 * 512 * (numLayers), CVoxel::EMPTY);
+   // currWorldView.resize(512 * 512 * (numLayers));
 
-    voxColArr = std::vector<glm::vec4>();
-    voxColArr.resize(512 * 512 * (numLayers));
+    voxColArr = std::vector<glm::vec4>(512 * 512 * (numLayers), glm::vec4(1, 1, 1, 0));
+   // voxColArr.resize(512 * 512 * (numLayers));
 
 }
 
@@ -72,6 +72,8 @@ CVoxel::VTYPE CWorldArray::voxelAtIsType(int x, int y, int z)
     {
         int idx = calculateIndex(x, y, z);
         return currWorldView.at(idx);
+    } else {
+        return CVoxel::EMPTY;
     }
 }
 
@@ -82,7 +84,7 @@ glm::vec4 CWorldArray::voxelAtIsColor(int x, int y, int z)
         int idx = calculateIndex(x, y, z);
         return voxColArr.at(idx);
     } else {
-        return glm::vec4(0, 1, 0, 0);
+       return glm::vec4(.5, .5, .5, 0);
     }
 }
 

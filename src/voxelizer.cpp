@@ -32,25 +32,26 @@ void CVoxelizer::processFiles()
     int voxelLength = 0;
     std::vector<CVoxelizeAnImageSliceTask*> *imageTasks = new std::vector<CVoxelizeAnImageSliceTask*>();
 
-   // std::vector<CVoxel*>* firstVoxelPlane = new std::vector<CVoxel*>();
+    std::vector<CVoxel*>* firstVoxelPlane = new std::vector<CVoxel*>();
 
     // add one more "buffer layer" at front
     // buffer "image" at the end = gray pixels with 0 density
-    //    int count = 0;
-    //    for(int x = 0; x < 512; x++)
-    //    {
-    //        for(int z = 0; z < 512; z++)
-    //        {
-    //            glm::vec4 position = glm::vec4(x, voxelLength, z, 1);
+       /* int count = 0;
+        for(int x = 0; x < 512; x++)
+        {
+            for(int z = 0; z < 512; z++)
+            {
+                glm::vec4 position = glm::vec4(x, voxelLength, z, 1);
 
-    //            glm::vec4 color = glm::vec4(1, 1, 1, .5);
-    //            CVoxel* currVoxel = new CVoxel(position, color, count);
-    //            firstVoxelPlane->push_back(currVoxel);
-    //        }
-    //    }
+                glm::vec4 color = glm::vec4(1,1, 1, 0);
+                CVoxel* currVoxel = new CVoxel(position, color, count);
+                firstVoxelPlane->push_back(currVoxel);
+                count++;
+            }
+        }
 
-    //    mAllLayers->push_back(firstVoxelPlane);
-    //    voxelLength++;
+        mAllLayers->push_back(firstVoxelPlane);
+        voxelLength++;*/
 
     QDirIterator it(targetDir, QDirIterator::Subdirectories);
     while(it.hasNext()) {
@@ -83,6 +84,5 @@ void CVoxelizer::processFiles()
     }
 
     QThreadPool::globalInstance()->waitForDone();
-
 }
 
