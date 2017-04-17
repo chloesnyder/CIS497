@@ -9,10 +9,7 @@ CWorldArray::CWorldArray(int layers) : numLayers(layers)
 {
 
     currWorldView = std::vector<CVoxel::VTYPE>(512 * 512 * (numLayers), CVoxel::EMPTY);
-   // currWorldView.resize(512 * 512 * (numLayers));
-
     voxColArr = std::vector<glm::vec4>(512 * 512 * (numLayers), glm::vec4(1, 1, 1, 0));
-   // voxColArr.resize(512 * 512 * (numLayers));
 
 }
 
