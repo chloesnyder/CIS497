@@ -220,47 +220,7 @@ color: rgb(230, 230, 230);</string>
      <string>CT Scan Volume Viewer:</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>32</x>
-      <y>41</y>
-      <width>681</width>
-      <height>621</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="MyGL" name="mygl" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-         <horstretch>1</horstretch>
-         <verstretch>1</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>678</width>
-         <height>512</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>10000</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border-color: rgb(51, 51, 51);</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout"/>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>771</x>
@@ -380,30 +340,101 @@ color: rgb(230, 230, 230);</string>
      <string>Enable Opacity</string>
     </property>
    </widget>
-   <zorder>mygl</zorder>
-   <zorder>newMeshButton</zorder>
-   <zorder>checkBox</zorder>
-   <zorder>colormap</zorder>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>690</y>
+      <width>571</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 81 13pt &quot;Avenir Next&quot;;
+color: rgb(102, 102, 255);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>41</y>
+      <width>682</width>
+      <height>641</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0" colspan="2">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="MyGL" name="mygl" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+           <horstretch>1</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>678</width>
+           <height>512</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>10000</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border-color: rgb(51, 51, 51);</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout"/>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="1">
+      <widget class="QProgressBar" name="progressBar">
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="styleSheet">
+        <string notr="true">font: 81 13pt &quot;Avenir Next&quot;;
+color: rgb(230, 230, 230);</string>
+       </property>
+       <property name="text">
+        <string>Loading Progress:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <zorder>layoutWidget</zorder>
+   <zorder>layoutWidget</zorder>
    <zorder>layerSlider</zorder>
    <zorder>label_3</zorder>
    <zorder>label_4</zorder>
    <zorder>ImageViewer</zorder>
-   <zorder>tissueSelection</zorder>
-   <zorder>numThreadsSpinBox</zorder>
-   <zorder>label_2</zorder>
-   <zorder>checkBox_2</zorder>
-   <zorder>label_5</zorder>
    <zorder>label_6</zorder>
    <zorder>label_7</zorder>
    <zorder>label_8</zorder>
-   <zorder>checkBox</zorder>
    <zorder>colormap</zorder>
    <zorder>checkBox_2</zorder>
-   <zorder>colormap</zorder>
-   <zorder>checkBox_2</zorder>
-   <zorder>numThreadsSpinBox</zorder>
-   <zorder>newMeshButton</zorder>
    <zorder>checkBox</zorder>
+   <zorder>progressBar</zorder>
+   <zorder>label_9</zorder>
+   <zorder>label_10</zorder>
+   <zorder>label_9</zorder>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -424,6 +455,8 @@ color: rgb(230, 230, 230);</string>
     <signal>sig_send_max_layers(int)</signal>
     <signal>sig_send_image(QPixmap)</signal>
     <signal>sig_show_image()</signal>
+    <signal>sig_update_progress(int)</signal>
+    <signal>sig_send_text(QString)</signal>
     <slot>slot_on_loadMesh_clicked()</slot>
     <slot>slot_on_newMesh_clicked()</slot>
     <slot>slot_on_text_changed(QString)</slot>
@@ -446,8 +479,8 @@ color: rgb(230, 230, 230);</string>
    <slot>slot_on_newMesh_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>391</x>
-     <y>623</y>
+     <x>771</x>
+     <y>668</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -478,8 +511,8 @@ color: rgb(230, 230, 230);</string>
    <slot>show()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>729</x>
-     <y>179</y>
+     <x>709</x>
+     <y>181</y>
     </hint>
     <hint type="destinationlabel">
      <x>1077</x>
@@ -498,8 +531,8 @@ color: rgb(230, 230, 230);</string>
      <y>334</y>
     </hint>
     <hint type="destinationlabel">
-     <x>767</x>
-     <y>316</y>
+     <x>709</x>
+     <y>318</y>
     </hint>
    </hints>
   </connection>
@@ -510,8 +543,8 @@ color: rgb(230, 230, 230);</string>
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>783</x>
-     <y>431</y>
+     <x>709</x>
+     <y>433</y>
     </hint>
     <hint type="destinationlabel">
      <x>1002</x>
@@ -526,12 +559,12 @@ color: rgb(230, 230, 230);</string>
    <slot>slot_tissue_preset(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>774</x>
-     <y>604</y>
+     <x>890</x>
+     <y>592</y>
     </hint>
     <hint type="destinationlabel">
-     <x>774</x>
-     <y>530</y>
+     <x>709</x>
+     <y>532</y>
     </hint>
    </hints>
   </connection>
@@ -542,12 +575,12 @@ color: rgb(230, 230, 230);</string>
    <slot>slot_set_num_threads(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>864</x>
-     <y>612</y>
+     <x>983</x>
+     <y>624</y>
     </hint>
     <hint type="destinationlabel">
-     <x>805</x>
-     <y>541</y>
+     <x>709</x>
+     <y>543</y>
     </hint>
    </hints>
   </connection>
@@ -610,8 +643,40 @@ color: rgb(230, 230, 230);</string>
      <y>646</y>
     </hint>
     <hint type="destinationlabel">
-     <x>802</x>
-     <y>376</y>
+     <x>709</x>
+     <y>378</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_update_progress(int)</signal>
+   <receiver>progressBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>221</x>
+     <y>507</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>224</x>
+     <y>667</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_send_text(QString)</signal>
+   <receiver>label_10</receiver>
+   <slot>setText(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>404</x>
+     <y>609</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>406</x>
+     <y>700</y>
     </hint>
    </hints>
   </connection>

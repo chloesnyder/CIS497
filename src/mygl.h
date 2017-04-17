@@ -87,6 +87,8 @@ private:
 
     bool showPlane = false;
 
+    int progress = 0;
+
 public:
 
     explicit MyGL(QWidget *parent = 0);
@@ -98,6 +100,11 @@ public:
 
     void createChunkVectorMT();
 
+    void progressFinishedBuildingWorld();
+    void progressStartBuildingChunks();
+    void progressFinishedBuildingChunks();
+    void progressFinishCreatingChunks();
+
 
 protected:
     void keyPressEvent(QKeyEvent *e);
@@ -106,9 +113,10 @@ signals:
     void sig_send_max_layers(int max);
     void sig_send_image(QPixmap img);
     void sig_show_image();
+    void sig_update_progress(int p);
+    void sig_send_text(QString q);
 
 public slots:
-    void slot_on_loadMesh_clicked();
     void slot_on_newMesh_clicked();
     void slot_on_text_changed(QString s);
     void slot_on_opacity_checkbox_changed(bool opa);

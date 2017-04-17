@@ -72,97 +72,6 @@ void MyGL::slot_on_text_changed(QString s)
     newFileName = "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/preloaded_volumes/" + s;
 }
 
-
-void MyGL::slot_on_loadMesh_clicked()
-{
-    // allow user to select a file
-    // read through the file to get the vertices and indices
-    // set these verts and ints for currChunk
-    // create and draw
-
-    chunks.clear();
-
-    CChunk* allLayerChunk = new CChunk(this);
-
-    std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
-    std::vector<GLuint>* indices = new std::vector<GLuint>();
-
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                    "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/preloaded_volumes/",
-                                                    tr("Text Files (*.txt)"));
-
-    if(!filename.isNull() && !filename.isEmpty())
-    {
-        QFile file(filename);
-        bool isReadingVerts = false;
-        bool isReadingIndices = false;
-
-        if(file.open(QIODevice::ReadOnly))
-        {
-            QTextStream in(&file);
-
-            while(!in.atEnd())
-            {
-                QString line = in.readLine();
-
-                if(isReadingVerts)
-                {
-                    if (line.compare("i") == 0)
-                    {
-                        isReadingVerts = false;
-                        isReadingIndices = true;
-                    } else {
-
-                        //split the line around commas and create a new vec4
-                        //push back into vertices vector
-                        QStringList fields = line.split(",");
-                        float x = fields.at(0).toFloat();
-                        float y = fields.at(1).toFloat();
-                        float z = fields.at(2).toFloat();
-                        float a = fields.at(3).toFloat();
-
-                        glm::vec4 newVert = glm::vec4(x, y, z, a);
-                        vertices->push_back(newVert);
-
-                    }
-                } else if (isReadingIndices)
-                {
-                    unsigned int uint = line.toUInt();
-                    GLuint newGLuint = uint;
-                    indices->push_back(newGLuint);
-                }
-
-                // toggles reading behavior for verts and indices
-                if(line.compare("v") == 0)
-                {
-                    isReadingVerts = true;
-                    isReadingIndices = false;
-                } else if (!isReadingIndices && !isReadingVerts){
-                    // first line is the file path, second is the max layers
-                    if(line.contains("/")) {
-                        ctScanFilePath = line;
-                    } else {
-                        bool ok;
-                        maxLayers = line.toInt(&ok, 10);
-                        emit sig_send_max_layers(maxLayers);
-                    }
-                }
-            }
-
-
-            file.close();
-
-            allLayerChunk->setVertices(vertices);
-            allLayerChunk->setIndices(indices);
-            allLayerChunk->setCtScanFilePath(ctScanFilePath);
-            allLayerChunk->create();
-            chunks.push_back(allLayerChunk);
-            update();
-        }
-    }
-
-}
-
 void MyGL::slot_on_newMesh_clicked()
 {
     // allow user to select a directory, set this in voxelizer
@@ -251,14 +160,26 @@ void MyGL::initializeGL()
 void MyGL::processFiles() {
 
     timer.start();
+    progress = 0;
+    emit sig_update_progress(progress);
+    emit sig_send_text(QString("Start reading CT Scans"));
     mVoxelizer.processFiles();
     std::cout << "Reading images took " << timer.elapsed() << " milliseconds" << std::endl;
+
+    progress += 10;
+    emit sig_update_progress(progress);
+    emit sig_send_text(QString("Finished reading CT Scans"));
+
+
 #ifndef MULTITHREADING
     createChunkVector();
 #else
     createChunkVectorMT();
 #endif
+    progress = 100;
+    emit sig_update_progress(progress);
     std::cout << "Process took " << timer.elapsed() << " milliseconds" << std::endl;
+    emit sig_send_text(QString("Process complete"));
 }
 
 void MyGL::resizeGL(int w, int h)
@@ -328,16 +249,46 @@ void MyGL::paintGL()
 
 }
 
+
+void MyGL::progressFinishedBuildingWorld()
+{
+    progress += 20;
+    emit sig_update_progress(progress);
+    emit sig_send_text(QString("Finished building world"));
+}
+
+void MyGL::progressStartBuildingChunks()
+{
+    progress += 5;
+    emit sig_update_progress(progress);
+    emit sig_send_text(QString("Start building chunks"));
+}
+
+void MyGL::progressFinishedBuildingChunks()
+{
+    progress+= 30;
+    emit sig_update_progress(progress);
+    emit sig_send_text(QString("Finished building chunks"));
+}
+
+void MyGL::progressFinishCreatingChunks()
+{
+    progress += 20;
+    emit sig_update_progress(progress);
+    emit sig_send_text(QString("Finished creating chunks"));
+}
+
+
+
 void MyGL::createChunkVectorMT()
 {
-
-
 
     QElapsedTimer worldTimer;
     QElapsedTimer chunkMemAllocTimer;
     QElapsedTimer threadTimer;
 
     worldTimer.start();
+
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
     std::vector<CCreateChunkTask*>* chunkTasks = new std::vector<CCreateChunkTask*>();
     std::vector<CWorldTask*>* buildWorldTasks = new std::vector<CWorldTask*>();
@@ -353,9 +304,8 @@ void MyGL::createChunkVectorMT()
     // build the world. All threads will read from this world
     // go through each layer, and voxelize that layer's voxel plane
 
-    worldTimer.start();
-
     mWorldArr = new CWorldArray(allLayers->size());
+    emit sig_send_text(QString("Start building world"));
 
     for(int i = 0; i < totalLayers; i++) {
         // create a thread for each layer
@@ -371,12 +321,15 @@ void MyGL::createChunkVectorMT()
         QThreadPool::globalInstance()->start(build);
     }
 
+
+    // Once the world is built, build the chunks
     if(QThreadPool::globalInstance()->waitForDone())
     {
 
+        progressFinishedBuildingWorld();
+        progressStartBuildingChunks();
 
         std::cout << "Elapsed time for building the world: " << worldTimer.elapsed() << " milliseconds" << std::endl;
-
         chunkMemAllocTimer.start();
 
         // now, allocate the memory for each chunk
@@ -400,11 +353,6 @@ void MyGL::createChunkVectorMT()
             currChunk->setVertices(vertices);
             currChunk->setIndices(indices);
 
-            // make a copy of the world and set it to the chunk
-            // this will ensure that threads never read from the same array, so thread safety is ensured
-            // but data will be preserved, so the same triangles should draw
-            // CWorldArray* currWorld = new CWorldArray(mWorldArr);
-
             currChunk->setWorld(mWorldArr);
 
             chunks.push_back(currChunk);
@@ -415,7 +363,6 @@ void MyGL::createChunkVectorMT()
         {
 
             CChunk* chunk = chunks.at(i);
-            CWorldArray* arr = chunk->getWorld();
             CCreateChunkTask* thread = new CCreateChunkTask(chunk);
             chunkTasks->push_back(thread);
         }
@@ -427,15 +374,22 @@ void MyGL::createChunkVectorMT()
         // now actually run each thread
         for(CCreateChunkTask* task : *chunkTasks)
         {
+
             QThreadPool::globalInstance()->start(task);
         }
 
         // create each chunk
         if(QThreadPool::globalInstance()->waitForDone()){
+
+
+            progressFinishedBuildingChunks();
+
             for(unsigned long c = 0; c < chunks.size(); c++)
             {
                 chunks.at(c)->create();
             }
+
+            progressFinishCreatingChunks();
         }
 
         // set up slider's max value label
@@ -445,105 +399,6 @@ void MyGL::createChunkVectorMT()
     }
 }
 
-
-/*
-void MyGL::createChunkVectorMT()
-{
-
-    QElapsedTimer worldTimer;
-    QElapsedTimer chunkMemAllocTimer;
-    QElapsedTimer threadTimer;
-
-    worldTimer.start();
-    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
-    std::vector<CCreateWorldAndChunkTask*>* chunkTasks = new std::vector<CCreateWorldAndChunkTask*>();
-
-    int totalLayers = allLayers->size();
-    int incr = totalLayers / numThreads;
-
-    int layer;
-    int curr_ymin;
-    int curr_ymax;
-
-    // build the world. All threads will read from this world
-    // go through each layer, and voxelize that layer's voxel plane
-    for(int i = 0; i < totalLayers; i++) {
-
-        std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
-        for(CVoxel* v : *currVoxelPlane) {
-
-            glm::vec4 voxPos = v->getPosition();
-            glm::vec4 voxCol = v->getColor();
-            int voxID = v->getID();
-
-            mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
-        }
-    }
-
-    std::cout << "Elapsed time for building the world: " << worldTimer.elapsed() << " milliseconds" << std::endl;
-
-    chunkMemAllocTimer.start();
-
-    // now, allocate the memory for each chunk
-    for(layer = 0; layer < totalLayers; layer += incr)
-    {
-        curr_ymin = layer;
-        curr_ymax = layer + incr;
-        if(curr_ymax > totalLayers) curr_ymax = totalLayers;
-
-        CChunk* currChunk = new CChunk(this);
-        currChunk ->setXMin(0);
-        currChunk ->setXMax(512);
-        currChunk ->setYMin(curr_ymin);
-        currChunk ->setYMax(curr_ymax);
-        currChunk ->setZMin(0);
-        currChunk ->setZMax(512);
-        currChunk ->setIsolevel(isolevel);
-
-        std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
-        std::vector<GLuint>* indices = new std::vector<GLuint>();
-        currChunk->setVertices(vertices);
-        currChunk->setIndices(indices);
-
-        currChunk->setWorld(&mWorld);
-
-        chunks.push_back(currChunk);
-    }
-
-    // create the thread for each chunk
-    for(unsigned long i = 0; i < chunks.size(); i++)
-    {
-
-        CChunk* chunk = chunks.at(i);
-        CCreateWorldAndChunkTask* thread = new CCreateWorldAndChunkTask(chunk);
-        chunkTasks->push_back(thread);
-    }
-
-    std::cout << "Elapsed time for allocating memory for each chunk and thread: " << chunkMemAllocTimer.elapsed() << " milliseconds." << std::endl;
-
-
-    threadTimer.start();
-    // now actually run each thread
-    for(CCreateWorldAndChunkTask* task : *chunkTasks)
-    {
-        QThreadPool::globalInstance()->start(task);
-    }
-
-    // create each chunk
-    if(QThreadPool::globalInstance()->waitForDone()){
-        for(unsigned long c = 0; c < chunks.size(); c++)
-        {
-            chunks.at(c)->create();
-        }
-    }
-
-    // set up slider's max value label
-    maxLayers = allLayers->size();
-
-    std::cout << "Elapsed time for threads to run: " << threadTimer.elapsed() << " milliseconds" << std::endl;
-
-}
-*/
 void MyGL::createChunkVector()
 {
 
