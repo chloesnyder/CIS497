@@ -6,93 +6,52 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1431</width>
-    <height>664</height>
+    <width>1320</width>
+    <height>641</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>SeniorDesign</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(50, 50, 50);
+font: 13pt &quot;.SF NS Text&quot;;</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="MyGL" name="mygl" native="true">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>811</width>
-      <height>531</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-      <horstretch>1</horstretch>
-      <verstretch>1</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>618</width>
-      <height>432</height>
-     </size>
-    </property>
-   </widget>
    <widget class="QPushButton" name="newMeshButton">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>600</y>
-      <width>451</width>
+      <x>1090</x>
+      <y>598</y>
+      <width>189</width>
       <height>32</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+background-color: rgb(153, 153, 153);
+color: rgb(230, 230, 230);
+alternate-background-color: rgb(160, 160, 160);
+selection-background-color: rgb(128, 0, 64);
+
+</string>
     </property>
     <property name="text">
      <string>Create a New 3D Volume</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="loadButton">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>600</y>
-      <width>301</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Load 3D Volume</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
-      <y>580</y>
-      <width>281</width>
-      <height>21</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
-      <y>560</y>
-      <width>271</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Enter the desired file name in the box below</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="checkBox">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>580</y>
-      <width>151</width>
-      <height>20</height>
+      <x>30</x>
+      <y>570</y>
+      <width>114</width>
+      <height>22</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(230, 230, 230);</string>
     </property>
     <property name="text">
      <string>Enable Opacity</string>
@@ -101,11 +60,15 @@
    <widget class="QCheckBox" name="colormap">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>580</y>
-      <width>171</width>
-      <height>20</height>
+      <x>290</x>
+      <y>570</y>
+      <width>157</width>
+      <height>22</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(230, 230, 230);</string>
     </property>
     <property name="text">
      <string>Enable Color Mapping</string>
@@ -114,11 +77,29 @@
    <widget class="QSlider" name="layerSlider">
     <property name="geometry">
      <rect>
-      <x>870</x>
-      <y>49</y>
-      <width>22</width>
-      <height>491</height>
+      <x>750</x>
+      <y>40</y>
+      <width>16</width>
+      <height>512</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>512</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>512</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+gridline-color: rgb(252, 14, 49);
+alternate-background-color: rgb(0, 0, 128);
+border-color: rgb(0, 255, 255);</string>
     </property>
     <property name="maximum">
      <number>100</number>
@@ -148,11 +129,15 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>30</y>
-      <width>60</width>
-      <height>16</height>
+      <x>720</x>
+      <y>40</y>
+      <width>24</width>
+      <height>18</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(179, 179, 179);</string>
     </property>
     <property name="text">
      <string>N/A</string>
@@ -161,11 +146,15 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>540</y>
-      <width>60</width>
-      <height>16</height>
+      <x>730</x>
+      <y>530</y>
+      <width>20</width>
+      <height>20</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(179, 179, 179);</string>
     </property>
     <property name="text">
      <string>0</string>
@@ -174,11 +163,26 @@
    <widget class="QLabel" name="ImageViewer">
     <property name="geometry">
      <rect>
-      <x>910</x>
-      <y>40</y>
+      <x>774</x>
+      <y>41</y>
       <width>512</width>
       <height>512</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>512</width>
+      <height>512</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>512</width>
+      <height>512</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(0, 0, 0);</string>
     </property>
     <property name="text">
      <string>CT Scan Image Viewer</string>
@@ -190,11 +194,16 @@
    <widget class="QComboBox" name="tissueSelection">
     <property name="geometry">
      <rect>
-      <x>660</x>
-      <y>580</y>
-      <width>151</width>
+      <x>891</x>
+      <y>563</y>
+      <width>392</width>
       <height>26</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir Next&quot;;
+background-color: rgb(230, 230, 230);
+alternate-background-color: rgb(128, 128, 128);</string>
     </property>
     <item>
      <property name="text">
@@ -220,11 +229,14 @@
    <widget class="QSpinBox" name="numThreadsSpinBox">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>580</y>
-      <width>111</width>
-      <height>24</height>
+      <x>894</x>
+      <y>599</y>
+      <width>191</width>
+      <height>26</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;</string>
     </property>
     <property name="maximum">
      <number>1000</number>
@@ -233,46 +245,142 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>560</y>
-      <width>161</width>
-      <height>16</height>
+      <x>772</x>
+      <y>600</y>
+      <width>114</width>
+      <height>18</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(230, 230, 230);</string>
+    </property>
     <property name="text">
-     <string>Number of threads</string>
+     <string>Number of threads:</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_2">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>610</y>
-      <width>171</width>
-      <height>20</height>
+      <x>570</x>
+      <y>570</y>
+      <width>141</width>
+      <height>22</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(230, 230, 230);</string>
     </property>
     <property name="text">
      <string>Show scroller plane</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1431</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>772</x>
+      <y>565</y>
+      <width>97</width>
+      <height>18</height>
+     </rect>
     </property>
-    <addaction name="actionQuit"/>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(230, 230, 230);</string>
+    </property>
+    <property name="text">
+     <string>Density selector:</string>
+    </property>
    </widget>
-   <addaction name="menuFile"/>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>20</y>
+      <width>181</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 81 13pt &quot;Avenir Next&quot;;
+color: rgb(230, 230, 230);</string>
+    </property>
+    <property name="text">
+     <string>CT Scan Image Viewer:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>970</x>
+      <y>20</y>
+      <width>311</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(128, 128, 128);</string>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;right&quot;&gt;(use scroller to view different layers)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>181</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 81 13pt &quot;Avenir Next&quot;;
+color: rgb(230, 230, 230);</string>
+    </property>
+    <property name="text">
+     <string>CT Scan Volume Viewer:</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>32</x>
+      <y>41</y>
+      <width>680</width>
+      <height>526</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="MyGL" name="mygl" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>678</width>
+         <height>512</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>10000</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -309,22 +417,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>loadButton</sender>
-   <signal>clicked()</signal>
-   <receiver>mygl</receiver>
-   <slot>slot_on_loadMesh_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>233</x>
-     <y>635</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>254</x>
-     <y>404</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>newMeshButton</sender>
    <signal>clicked()</signal>
    <receiver>mygl</receiver>
@@ -337,70 +429,6 @@
     <hint type="destinationlabel">
      <x>399</x>
      <y>522</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>lineEdit</sender>
-   <signal>textEdited(QString)</signal>
-   <receiver>mygl</receiver>
-   <slot>slot_on_text_changed(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>398</x>
-     <y>610</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>692</x>
-     <y>521</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>mygl</receiver>
-   <slot>slot_on_opacity_checkbox_changed(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>76</x>
-     <y>612</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>95</x>
-     <y>525</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>colormap</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>mygl</receiver>
-   <slot>slot_on_color_checkbox_changed(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>230</x>
-     <y>607</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>226</x>
-     <y>506</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mygl</sender>
-   <signal>sig_send_max_layers(int)</signal>
-   <receiver>label_3</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>605</x>
-     <y>277</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>879</x>
-     <y>53</y>
     </hint>
    </hints>
   </connection>
@@ -497,6 +525,54 @@
     <hint type="destinationlabel">
      <x>805</x>
      <y>541</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mygl</sender>
+   <signal>sig_send_max_layers(int)</signal>
+   <receiver>label_3</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>277</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>879</x>
+     <y>53</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_on_opacity_checkbox_changed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>76</x>
+     <y>612</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>95</x>
+     <y>525</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>colormap</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>mygl</receiver>
+   <slot>slot_on_color_checkbox_changed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>230</x>
+     <y>607</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>506</y>
     </hint>
    </hints>
   </connection>
