@@ -10,6 +10,10 @@ CVoxelizeAnImageSliceTask::CVoxelizeAnImageSliceTask(img_t* slice, int length,
 {
     mSlice = slice;
     mLength = length;
+    if(mLength == 0)
+    {
+        mLength = 1;
+    }
     mAllLayers = allLayers;
 
 }
@@ -21,6 +25,8 @@ void CVoxelizeAnImageSliceTask::run()
 {
 
     std::vector<CVoxel*> *voxelPlane = new std::vector<CVoxel*>();
+    std::vector<CVoxel*> *bufferVoxelPlane = new std::vector<CVoxel*>();
+
 
     int height = mSlice->h;
     int width = mSlice->w;
@@ -46,12 +52,21 @@ void CVoxelizeAnImageSliceTask::run()
                     // Black pixels represent empty space
                     // If the pixel isn't black, create a voxel
                     // Store this voxel in the mVoxelPlane vector
-                    if(alpha > .25) {
-                        glm::vec4 position = glm::vec4(row, mLength, col, 1);
-                        glm::vec4 color = glm::vec4(red, green, blue, alpha);
-                        CVoxel* currVoxel = new CVoxel(position, color, count);
-                        voxelPlane->push_back(currVoxel);
+
+                    glm::vec4 position = glm::vec4(row, mLength, col, 1);
+                    glm::vec4 color = glm::vec4(red, green, blue, alpha);
+                    CVoxel* currVoxel = new CVoxel(position, color, count);
+                    voxelPlane->push_back(currVoxel);
+
+
+                    // we are at first image, so we need to build our "buffer layer" too
+                    if(mLength == 1) {
+                        glm::vec4 bufferPos = glm::vec4(row, 0, col, 1);
+                        glm::vec4 bufferCol = glm::vec4(red, green, blue, .009);
+                        CVoxel* bufferVoxel = new CVoxel(bufferPos, bufferCol, count);
+                        bufferVoxelPlane->push_back(bufferVoxel);
                     }
+
 
                 } else if (densityThreshold == 1) // bone
                 {
@@ -92,6 +107,12 @@ void CVoxelizeAnImageSliceTask::run()
             }
         }
     }
+
+    if(mLength == 1)
+    {
+        mAllLayers->push_back(bufferVoxelPlane);
+    }
+
     mAllLayers->push_back(voxelPlane);
 }
 

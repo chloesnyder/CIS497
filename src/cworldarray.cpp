@@ -9,7 +9,7 @@ CWorldArray::CWorldArray(int layers) : numLayers(layers)
 {
 
     currWorldView = std::vector<CVoxel::VTYPE>();
-    currWorldView.resize(512 * 512 * (numLayers));
+    currWorldView.resize(512 * 512 * (numLayers), CVoxel::EMPTY);
 
     voxColArr = std::vector<glm::vec4>();
     voxColArr.resize(512 * 512 * (numLayers));
@@ -82,12 +82,15 @@ glm::vec4 CWorldArray::voxelAtIsColor(int x, int y, int z)
         int idx = calculateIndex(x, y, z);
         return voxColArr.at(idx);
     } else {
-        return glm::vec4(0, 0, 0, 0);
+        return glm::vec4(0, 1, 0, 0);
     }
 }
 
 bool CWorldArray::addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 color, int id)
 {
+
+    // need a case to put empty voxels with a density at the boundaries? why is it not showing
+
 
     if(!hasVoxelAt(x, y, z))
     {
