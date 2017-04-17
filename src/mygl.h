@@ -31,8 +31,9 @@
 #include "cvoxel.h"
 #include "voxelizer.h"
 #include "squareplane.h"
-#include "ccreateworldandchunktask.h"
+#include "cchunktask.h"
 #include "cworldarray.h"
+#include "cworldtask.h"
 
 class MyGL
     : public GLWidget277
@@ -51,7 +52,7 @@ private:
     CVoxelizer mVoxelizer;
     CWorld mWorld;
 
-    CWorldArray mWorldArr;
+    CWorldArray* mWorldArr;
 
     SquarePlane squareplane;
 

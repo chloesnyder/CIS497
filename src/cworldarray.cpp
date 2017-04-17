@@ -100,7 +100,7 @@ bool CWorldArray::addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 
             voxColArr.at(idx) = color;
             return true;
         }
-        std::cout << "invalid index" << std::endl;
+        std::cout << "invalid index doesn't have voxel" << std::endl;
         return false;
     } else {
         if(voxelAtIsType(x, y, z) == CVoxel::EMPTY)
@@ -113,7 +113,7 @@ bool CWorldArray::addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 
                 return true;
             }
         }
-        std::cout << "invalid index" << std::endl;
+        std::cout << "invalid index voxel is empty" << std::endl;
         return false;
     }
 }

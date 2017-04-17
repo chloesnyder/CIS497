@@ -7,11 +7,11 @@
 #include "cvoxel.h"
 
 
-class CCreateWorldAndChunkTask : public QRunnable
+class CCreateChunkTask : public QRunnable
 {
 public:
-    CCreateWorldAndChunkTask();
-    CCreateWorldAndChunkTask(CChunk* chunk);
+    CCreateChunkTask();
+    CCreateChunkTask(CChunk* chunk);
     void run();
 
 private:

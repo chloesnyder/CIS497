@@ -339,7 +339,9 @@ void MyGL::createChunkVectorMT()
 
     worldTimer.start();
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
-    std::vector<CCreateWorldAndChunkTask*>* chunkTasks = new std::vector<CCreateWorldAndChunkTask*>();
+    std::vector<CCreateChunkTask*>* chunkTasks = new std::vector<CCreateChunkTask*>();
+    std::vector<CWorldTask*>* buildWorldTasks = new std::vector<CWorldTask*>();
+
 
     int totalLayers = allLayers->size();
     int incr = totalLayers / numThreads;
@@ -351,89 +353,96 @@ void MyGL::createChunkVectorMT()
     // build the world. All threads will read from this world
     // go through each layer, and voxelize that layer's voxel plane
 
-    mWorldArr = CWorldArray(allLayers->size());
+    worldTimer.start();
+
+    mWorldArr = new CWorldArray(allLayers->size());
 
     for(int i = 0; i < totalLayers; i++) {
+        // create a thread for each layer
+        CWorldTask* buildTask = new CWorldTask(allLayers->at(i), mWorldArr);
+        buildWorldTasks->push_back(buildTask);
 
-        std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
-        for(CVoxel* v : *currVoxelPlane) {
-
-            glm::vec4 voxPos = v->getPosition();
-            glm::vec4 voxCol = v->getColor();
-            int voxID = v->getID();
-
-            mWorldArr.createChunkVoxelData(voxPos, voxCol, voxID);
-        }
     }
 
-    std::cout << "Elapsed time for building the world: " << worldTimer.elapsed() << " milliseconds" << std::endl;
 
-    chunkMemAllocTimer.start();
-
-    // now, allocate the memory for each chunk
-    for(layer = 0; layer < totalLayers; layer += incr)
+    // now run the threads
+    for(CWorldTask* build : *buildWorldTasks)
     {
-        curr_ymin = layer;
-        curr_ymax = layer + incr;
-        if(curr_ymax > totalLayers) curr_ymax = totalLayers;
-
-        CChunk* currChunk = new CChunk(this);
-        currChunk ->setXMin(0);
-        currChunk ->setXMax(512);
-        currChunk ->setYMin(curr_ymin);
-        currChunk ->setYMax(curr_ymax);
-        currChunk ->setZMin(0);
-        currChunk ->setZMax(512);
-        currChunk ->setIsolevel(isolevel);
-
-        std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
-        std::vector<GLuint>* indices = new std::vector<GLuint>();
-        currChunk->setVertices(vertices);
-        currChunk->setIndices(indices);
-
-        // make a copy of the world and set it to the chunk
-        // this will ensure that threads never read from the same array, so thread safety is ensured
-        // but data will be preserved, so the same triangles should draw
-       // CWorldArray* currWorld = new CWorldArray(mWorldArr);
-
-        currChunk->setWorld(&mWorldArr);
-
-        chunks.push_back(currChunk);
+        QThreadPool::globalInstance()->start(build);
     }
 
-    // create the thread for each chunk
-    for(unsigned long i = 0; i < chunks.size(); i++)
+    if(QThreadPool::globalInstance()->waitForDone())
     {
 
-        CChunk* chunk = chunks.at(i);
-        CWorldArray* arr = chunk->getWorld();
-        CCreateWorldAndChunkTask* thread = new CCreateWorldAndChunkTask(chunk);
-        chunkTasks->push_back(thread);
-    }
 
-    std::cout << "Elapsed time for allocating memory for each chunk and thread: " << chunkMemAllocTimer.elapsed() << " milliseconds." << std::endl;
+        std::cout << "Elapsed time for building the world: " << worldTimer.elapsed() << " milliseconds" << std::endl;
 
+        chunkMemAllocTimer.start();
 
-    threadTimer.start();
-    // now actually run each thread
-    for(CCreateWorldAndChunkTask* task : *chunkTasks)
-    {
-        QThreadPool::globalInstance()->start(task);
-    }
-
-    // create each chunk
-    if(QThreadPool::globalInstance()->waitForDone()){
-        for(unsigned long c = 0; c < chunks.size(); c++)
+        // now, allocate the memory for each chunk
+        for(layer = 0; layer < totalLayers; layer += incr)
         {
-            chunks.at(c)->create();
+            curr_ymin = layer;
+            curr_ymax = layer + incr;
+            if(curr_ymax > totalLayers) curr_ymax = totalLayers;
+
+            CChunk* currChunk = new CChunk(this);
+            currChunk ->setXMin(0);
+            currChunk ->setXMax(512);
+            currChunk ->setYMin(curr_ymin);
+            currChunk ->setYMax(curr_ymax);
+            currChunk ->setZMin(0);
+            currChunk ->setZMax(512);
+            currChunk ->setIsolevel(isolevel);
+
+            std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
+            std::vector<GLuint>* indices = new std::vector<GLuint>();
+            currChunk->setVertices(vertices);
+            currChunk->setIndices(indices);
+
+            // make a copy of the world and set it to the chunk
+            // this will ensure that threads never read from the same array, so thread safety is ensured
+            // but data will be preserved, so the same triangles should draw
+            // CWorldArray* currWorld = new CWorldArray(mWorldArr);
+
+            currChunk->setWorld(mWorldArr);
+
+            chunks.push_back(currChunk);
         }
+
+        // create the thread for each chunk
+        for(unsigned long i = 0; i < chunks.size(); i++)
+        {
+
+            CChunk* chunk = chunks.at(i);
+            CWorldArray* arr = chunk->getWorld();
+            CCreateChunkTask* thread = new CCreateChunkTask(chunk);
+            chunkTasks->push_back(thread);
+        }
+
+        std::cout << "Elapsed time for allocating memory for each chunk and thread: " << chunkMemAllocTimer.elapsed() << " milliseconds." << std::endl;
+
+
+        threadTimer.start();
+        // now actually run each thread
+        for(CCreateChunkTask* task : *chunkTasks)
+        {
+            QThreadPool::globalInstance()->start(task);
+        }
+
+        // create each chunk
+        if(QThreadPool::globalInstance()->waitForDone()){
+            for(unsigned long c = 0; c < chunks.size(); c++)
+            {
+                chunks.at(c)->create();
+            }
+        }
+
+        // set up slider's max value label
+        maxLayers = allLayers->size();
+
+        std::cout << "Elapsed time for threads to run: " << threadTimer.elapsed() << " milliseconds" << std::endl;
     }
-
-    // set up slider's max value label
-    maxLayers = allLayers->size();
-
-    std::cout << "Elapsed time for threads to run: " << threadTimer.elapsed() << " milliseconds" << std::endl;
-
 }
 
 
@@ -539,7 +548,7 @@ void MyGL::createChunkVector()
 {
 
 
-/*    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
+    /*    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
     CChunk* allLayerChunk = new CChunk(this);
     allLayerChunk ->setXMin(0);
     allLayerChunk ->setXMax(512);
