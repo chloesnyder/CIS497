@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1320</width>
-    <height>641</height>
+    <height>714</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,50 +18,11 @@
 font: 13pt &quot;.SF NS Text&quot;;</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="newMeshButton">
-    <property name="geometry">
-     <rect>
-      <x>1090</x>
-      <y>598</y>
-      <width>189</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 13pt &quot;Avenir&quot;;
-background-color: rgb(153, 153, 153);
-color: rgb(230, 230, 230);
-alternate-background-color: rgb(160, 160, 160);
-selection-background-color: rgb(128, 0, 64);
-
-</string>
-    </property>
-    <property name="text">
-     <string>Create a New 3D Volume</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>570</y>
-      <width>114</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 13pt &quot;Avenir&quot;;
-color: rgb(230, 230, 230);</string>
-    </property>
-    <property name="text">
-     <string>Enable Opacity</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="colormap">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>570</y>
+      <x>960</x>
+      <y>679</y>
       <width>157</width>
       <height>22</height>
      </rect>
@@ -136,7 +97,7 @@ border-color: rgb(0, 255, 255);</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">font: 13pt &quot;Avenir&quot;;
+     <string notr="true">font: 13pt &quot;Avenir Next&quot;;
 color: rgb(179, 179, 179);</string>
     </property>
     <property name="text">
@@ -191,80 +152,12 @@ color: rgb(179, 179, 179);</string>
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QComboBox" name="tissueSelection">
-    <property name="geometry">
-     <rect>
-      <x>891</x>
-      <y>563</y>
-      <width>392</width>
-      <height>26</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 13pt &quot;Avenir Next&quot;;
-background-color: rgb(230, 230, 230);
-alternate-background-color: rgb(128, 128, 128);</string>
-    </property>
-    <item>
-     <property name="text">
-      <string>all tissue</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>high density tissue (bone)</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>medium density tissue (muscle, liver, heart, intestine, etc.)</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>low density tissue (lung, fat)</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QSpinBox" name="numThreadsSpinBox">
-    <property name="geometry">
-     <rect>
-      <x>894</x>
-      <y>599</y>
-      <width>191</width>
-      <height>26</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 13pt &quot;Avenir&quot;;</string>
-    </property>
-    <property name="maximum">
-     <number>1000</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>772</x>
-      <y>600</y>
-      <width>114</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 13pt &quot;Avenir&quot;;
-color: rgb(230, 230, 230);</string>
-    </property>
-    <property name="text">
-     <string>Number of threads:</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="checkBox_2">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>570</y>
-      <width>141</width>
+      <x>771</x>
+      <y>679</y>
+      <width>138</width>
       <height>22</height>
      </rect>
     </property>
@@ -274,23 +167,6 @@ color: rgb(230, 230, 230);</string>
     </property>
     <property name="text">
      <string>Show scroller plane</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>772</x>
-      <y>565</y>
-      <width>97</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 13pt &quot;Avenir&quot;;
-color: rgb(230, 230, 230);</string>
-    </property>
-    <property name="text">
-     <string>Density selector:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_6">
@@ -349,8 +225,8 @@ color: rgb(230, 230, 230);</string>
      <rect>
       <x>32</x>
       <y>41</y>
-      <width>680</width>
-      <height>526</height>
+      <width>681</width>
+      <height>621</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -374,6 +250,9 @@ color: rgb(230, 230, 230);</string>
          <height>10000</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true">border-color: rgb(51, 51, 51);</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -381,6 +260,150 @@ color: rgb(230, 230, 230);</string>
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>771</x>
+      <y>565</y>
+      <width>515</width>
+      <height>104</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="styleSheet">
+            <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(230, 230, 230);</string>
+           </property>
+           <property name="text">
+            <string>Density selector:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="styleSheet">
+            <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(230, 230, 230);</string>
+           </property>
+           <property name="text">
+            <string>Set threads:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QComboBox" name="tissueSelection">
+           <property name="styleSheet">
+            <string notr="true">font: 13pt &quot;Avenir Next&quot;;
+background-color: rgb(230, 230, 230);
+alternate-background-color: rgb(128, 128, 128);</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>all tissue</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>high density tissue (bone)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>medium density tissue (muscle, liver, heart, intestine, etc.)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>low density tissue (lung, fat)</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="numThreadsSpinBox">
+           <property name="styleSheet">
+            <string notr="true">font: 13pt &quot;Avenir&quot;;
+background-color: rgb(179, 179, 179);
+color: rgb(76, 76, 76);</string>
+           </property>
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="newMeshButton">
+       <property name="styleSheet">
+        <string notr="true">font: 13pt &quot;Avenir&quot;;
+background-color: rgb(185, 179, 179);
+color: rgb(230, 230, 230);
+alternate-background-color: rgb(185, 179, 179);
+selection-background-color: rgb(128, 0, 64);
+
+</string>
+       </property>
+       <property name="text">
+        <string>Create a New 3D Volume</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QCheckBox" name="checkBox">
+    <property name="geometry">
+     <rect>
+      <x>1170</x>
+      <y>679</y>
+      <width>114</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Avenir&quot;;
+color: rgb(230, 230, 230);</string>
+    </property>
+    <property name="text">
+     <string>Enable Opacity</string>
+    </property>
+   </widget>
+   <zorder>mygl</zorder>
+   <zorder>newMeshButton</zorder>
+   <zorder>checkBox</zorder>
+   <zorder>colormap</zorder>
+   <zorder>layerSlider</zorder>
+   <zorder>label_3</zorder>
+   <zorder>label_4</zorder>
+   <zorder>ImageViewer</zorder>
+   <zorder>tissueSelection</zorder>
+   <zorder>numThreadsSpinBox</zorder>
+   <zorder>label_2</zorder>
+   <zorder>checkBox_2</zorder>
+   <zorder>label_5</zorder>
+   <zorder>label_6</zorder>
+   <zorder>label_7</zorder>
+   <zorder>label_8</zorder>
+   <zorder>checkBox</zorder>
+   <zorder>colormap</zorder>
+   <zorder>checkBox_2</zorder>
+   <zorder>colormap</zorder>
+   <zorder>checkBox_2</zorder>
+   <zorder>numThreadsSpinBox</zorder>
+   <zorder>newMeshButton</zorder>
+   <zorder>checkBox</zorder>
   </widget>
   <action name="actionQuit">
    <property name="text">
