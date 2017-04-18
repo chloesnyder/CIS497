@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QSurfaceFormat>
 #include <QDebug>
+#include <QStyleFactory>
 
 void debugFormatVersion()
 {
@@ -22,6 +23,8 @@ void debugFormatVersion()
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QApplication::setStyle(QStyleFactory::create("Fusion"));
+
 
     // Set OpenGL 3.2 and, optionally, 4-sample multisampling
     QSurfaceFormat format;

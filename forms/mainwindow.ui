@@ -357,7 +357,7 @@ color: rgb(102, 102, 255);</string>
      <string/>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -401,8 +401,14 @@ color: rgb(102, 102, 255);</string>
      </item>
      <item row="1" column="1">
       <widget class="QProgressBar" name="progressBar">
+       <property name="maximum">
+        <number>100</number>
+       </property>
        <property name="value">
         <number>0</number>
+       </property>
+       <property name="invertedAppearance">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -431,10 +437,7 @@ color: rgb(230, 230, 230);</string>
    <zorder>colormap</zorder>
    <zorder>checkBox_2</zorder>
    <zorder>checkBox</zorder>
-   <zorder>progressBar</zorder>
-   <zorder>label_9</zorder>
    <zorder>label_10</zorder>
-   <zorder>label_9</zorder>
   </widget>
   <action name="actionQuit">
    <property name="text">
