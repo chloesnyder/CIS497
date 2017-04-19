@@ -94,6 +94,22 @@ private:
     void progressFinishedBuildingChunks();
     void progressFinishCreatingChunks();
 
+    // Camera control bools
+    bool translateUp = false;
+    bool translateDown = false;
+    bool translateRight = false;
+    bool translateLeft = false;
+    bool translateForward = false;
+    bool translateBackward = false;
+    bool rotateRight = false;
+    bool rotateLeft = false;
+    bool rotateUp = false;
+    bool rotateDown = false;
+
+    void onCameraMove();
+
+
+
 public:
 
     explicit MyGL(QWidget *parent = 0);
@@ -110,6 +126,7 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent *e);
+    void keyReleaseEvent(QKeyEvent *e);
 
 signals:
     void sig_send_max_layers(int max);

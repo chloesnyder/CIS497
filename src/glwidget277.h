@@ -15,6 +15,8 @@ protected:
     /*** AUTOMATIC TESTING: DO NOT MODIFY ***/
     /*** If true, save a test image and exit */
     /***/ bool autotesting;
+private:
+    QTimer timer;
 
 public:
     GLWidget277(QWidget *parent);
@@ -25,7 +27,11 @@ public:
     void printLinkInfoLog(int prog);
     void printShaderInfoLog(int shader);
 
+
 private slots:
     /*** AUTOMATIC TESTING: DO NOT MODIFY ***/
     /***/ void saveImageAndQuit();
+    void timerUpdate();
+
+
 };

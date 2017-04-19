@@ -13,7 +13,23 @@ GLWidget277::GLWidget277(QWidget *parent)
 {
     // Check whether automatic testing is enabled
     autotesting = qgetenv("CIS277_AUTOTESTING") != nullptr;
+
+    if(!autotesting)
+    {
+        //allow the timer to redraw the window
+        connect(&timer, SIGNAL(timeout()), this, SLOT(timerUpdate()));
+        timer.start(16);
+    }
 }
+
+void GLWidget277::timerUpdate()
+{
+    // function is caleld roughly 60 times per second
+    // use it to update your scene and then tell it to redraw
+    // dont update your scene in paintGL because it sometimes get called automatically by Qt
+    update();
+}
+
 
 GLWidget277::~GLWidget277()
 {

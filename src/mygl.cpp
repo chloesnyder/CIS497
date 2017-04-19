@@ -6,7 +6,7 @@
 void MyGL::slot_on_show_plane_changed(bool b)
 {
     showPlane = b;
-    update();
+   // update();
 }
 
 void MyGL::slot_set_num_threads(int t)
@@ -48,7 +48,7 @@ void MyGL::slot_on_slider_moved(int num)
         QPixmap pix = QPixmap(currFile);
 
         emit sig_send_image(pix);
-        update();
+       // update();
 
     }
 
@@ -58,13 +58,13 @@ void MyGL::slot_on_slider_moved(int num)
 void MyGL::slot_on_color_checkbox_changed(bool col)
 {
     isColorEnabled = col;
-    update();
+   // update();
 }
 
 void MyGL::slot_on_opacity_checkbox_changed(bool opa)
 {
     isOpacityEnabled = opa;
-    update();
+   // update();
 }
 
 void MyGL::slot_on_text_changed(QString s)
@@ -100,13 +100,14 @@ void MyGL::slot_on_newMesh_clicked()
 void MyGL::slot_startLoading()
 {
     if(!ctScanFilePath.isEmpty() || !ctScanFilePath.isNull()){
+
         mVoxelizer = CVoxelizer();
         mVoxelizer.setTargetDirPath(ctScanFilePath);
         mVoxelizer.setDensityThreshold(densityThreshold);
         processFiles();
         emit sig_send_max_layers(maxLayers);
         emit sig_send_text("Begin loading");
-        update();
+      //  update();
     }
 }
 
@@ -214,10 +215,58 @@ void MyGL::resizeGL(int w, int h)
     printGLErrorLog();
 }
 
+void MyGL::onCameraMove()
+{
+    float amount = 1.f;
+    if(translateUp)
+    {
+        camera.TranslateAlongUp(amount);
+    }
+    if(translateDown)
+    {
+        camera.TranslateAlongUp(-amount);
+    }
+    if(translateRight)
+    {
+        camera.TranslateAlongRight(-amount);
+    }
+    if(translateLeft)
+    {
+        camera.TranslateAlongRight(amount);
+    }
+    if(translateForward)
+    {
+        camera.TranslateAlongLook(amount);
+    }
+    if(translateBackward)
+    {
+        camera.TranslateAlongLook(-amount);
+    }
+    if(rotateRight)
+    {
+        camera.RotateAboutUp(-amount);
+    }
+    if(rotateLeft)
+    {
+        camera.RotateAboutUp(amount);
+    }
+    if(rotateUp)
+    {
+        camera.RotateAboutRight(-amount);
+    }
+    if(rotateDown)
+    {
+        camera.RotateAboutRight(amount);
+    }
+
+}
+
 // This function is called by Qt any time your GL window is supposed to update
 // For example, when the function updateGL is called, paintGL is called implicitly.
 void MyGL::paintGL()
 {
+
+    onCameraMove();
 
     // Clear the screen so that we only see newly drawn images
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -467,7 +516,7 @@ void MyGL::createChunkVector()
 }
 
 
-void MyGL::keyPressEvent(QKeyEvent *e)
+/*void MyGL::keyPressEvent(QKeyEvent *e)
 {
     float amount = 10.0f;
     if(e->modifiers() & Qt::ShiftModifier){
@@ -477,7 +526,8 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     if (e->key() == Qt::Key_Escape) {
         QApplication::quit();
     } else if (e->key() == Qt::Key_Right) {
-        camera.RotateAboutUp(-amount);
+        bool moveright = true;
+
     } else if (e->key() == Qt::Key_Left) {
         camera.RotateAboutUp(amount);
     } else if (e->key() == Qt::Key_Up) {
@@ -502,6 +552,65 @@ void MyGL::keyPressEvent(QKeyEvent *e)
         camera.TranslateAlongUp(amount);
     }
     camera.RecomputeAttributes();
-    update();  // Calls paintGL, among other things
+   // update();  // Calls paintGL, among other things
+}*/
+
+void MyGL::keyPressEvent(QKeyEvent *e)
+{
+    // http://doc.qt.io/qt-5/qt.html#Key-enum
+    if (e->key() == Qt::Key_Escape) {
+        QApplication::quit();
+    } else if (e->key() == Qt::Key_Right) {
+        rotateRight = true;
+    } else if (e->key() == Qt::Key_Left) {
+        rotateLeft = true;
+    } else if (e->key() == Qt::Key_Up) {
+        rotateUp = true;
+    } else if (e->key() == Qt::Key_Down) {
+        rotateDown = true;
+    } else if (e->key() == Qt::Key_W) {
+        translateForward = true;
+    } else if (e->key() == Qt::Key_S) {
+        translateBackward = true;
+    } else if (e->key() == Qt::Key_D) {
+       translateRight = true;
+    } else if (e->key() == Qt::Key_A) {
+        translateLeft = true;
+    } else if (e->key() == Qt::Key_Q) {
+        translateDown = true;
+    } else if (e->key() == Qt::Key_E) {
+        translateUp = true;
+    }
+    camera.RecomputeAttributes();
+   // update();  // Calls paintGL, among other things
+}
+
+void MyGL::keyReleaseEvent(QKeyEvent *e)
+{
+    // http://doc.qt.io/qt-5/qt.html#Key-enum
+    if (e->key() == Qt::Key_Escape) {
+        QApplication::quit();
+    } else if (e->key() == Qt::Key_Right) {
+        rotateRight = false;
+    } else if (e->key() == Qt::Key_Left) {
+        rotateLeft = false;
+    } else if (e->key() == Qt::Key_Up) {
+        rotateUp = false;
+    } else if (e->key() == Qt::Key_Down) {
+        rotateDown = false;
+    } else if (e->key() == Qt::Key_W) {
+        translateForward = false;
+    } else if (e->key() == Qt::Key_S) {
+        translateBackward = false;
+    } else if (e->key() == Qt::Key_D) {
+       translateRight = false;
+    } else if (e->key() == Qt::Key_A) {
+        translateLeft = false;
+    } else if (e->key() == Qt::Key_Q) {
+        translateDown = false;
+    } else if (e->key() == Qt::Key_E) {
+        translateUp = false;
+    }
+   // update();  // Calls paintGL, among other things
 }
 
