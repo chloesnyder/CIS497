@@ -89,6 +89,11 @@ private:
 
     int progress = 0;
 
+    void progressFinishedBuildingWorld();
+    void progressStartBuildingChunks();
+    void progressFinishedBuildingChunks();
+    void progressFinishCreatingChunks();
+
 public:
 
     explicit MyGL(QWidget *parent = 0);
@@ -100,10 +105,7 @@ public:
 
     void createChunkVectorMT();
 
-    void progressFinishedBuildingWorld();
-    void progressStartBuildingChunks();
-    void progressFinishedBuildingChunks();
-    void progressFinishCreatingChunks();
+
 
 
 protected:
@@ -115,6 +117,7 @@ signals:
     void sig_show_image();
     void sig_update_progress(int p);
     void sig_send_text(QString q);
+    void sig_set_enabled(bool b);
 
 public slots:
     void slot_on_newMesh_clicked();
@@ -125,6 +128,7 @@ public slots:
     void slot_tissue_preset(int s);
     void slot_set_num_threads(int t);
     void slot_on_show_plane_changed(bool b);
+    void slot_startLoading();
 
 
 };

@@ -77,19 +77,35 @@ void MyGL::slot_on_newMesh_clicked()
     // allow user to select a directory, set this in voxelizer
     // run the program as normal, but at end, export the indices and vertices to a file
 
-    chunks.clear();
+
 
     QString dirName = QFileDialog::getExistingDirectory(this,
                                                         tr("Open Directory"),
                                                         "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/CTScanImages/",
                                                         QFileDialog::ShowDirsOnly);
     if(!dirName.isNull() && !dirName.isEmpty()){
+        chunks.clear();
         ctScanFilePath = dirName;
+        emit sig_send_text("Image directory successfully set");
+        emit sig_set_enabled(true);
+    } else {
+        if(ctScanFilePath.isEmpty() || ctScanFilePath.isNull() || dirName.isNull() || dirName.isEmpty())
+        {
+            emit sig_send_text("No image directory selected, please try again");
+            emit sig_set_enabled(false);
+        }
+    }
+}
+
+void MyGL::slot_startLoading()
+{
+    if(!ctScanFilePath.isEmpty() || !ctScanFilePath.isNull()){
         mVoxelizer = CVoxelizer();
-        mVoxelizer.setTargetDirPath(dirName);
+        mVoxelizer.setTargetDirPath(ctScanFilePath);
         mVoxelizer.setDensityThreshold(densityThreshold);
         processFiles();
         emit sig_send_max_layers(maxLayers);
+        emit sig_send_text("Begin loading");
         update();
     }
 }
@@ -180,6 +196,7 @@ void MyGL::processFiles() {
     emit sig_update_progress(progress);
     std::cout << "Process took " << timer.elapsed() << " milliseconds" << std::endl;
     emit sig_send_text(QString("Process complete"));
+    slot_on_slider_moved(0);
 }
 
 void MyGL::resizeGL(int w, int h)
@@ -255,6 +272,7 @@ void MyGL::progressFinishedBuildingWorld()
     progress += 20;
     emit sig_update_progress(progress);
     emit sig_send_text(QString("Finished building world"));
+    progressStartBuildingChunks();
 }
 
 void MyGL::progressStartBuildingChunks()
@@ -327,7 +345,6 @@ void MyGL::createChunkVectorMT()
     {
 
         progressFinishedBuildingWorld();
-        progressStartBuildingChunks();
 
         std::cout << "Elapsed time for building the world: " << worldTimer.elapsed() << " milliseconds" << std::endl;
         chunkMemAllocTimer.start();
@@ -381,6 +398,7 @@ void MyGL::createChunkVectorMT()
         // create each chunk
         if(QThreadPool::globalInstance()->waitForDone()){
 
+            std::cout << "Elapsed time for threads to run: " << threadTimer.elapsed() << " milliseconds" << std::endl;
 
             progressFinishedBuildingChunks();
 
@@ -395,7 +413,7 @@ void MyGL::createChunkVectorMT()
         // set up slider's max value label
         maxLayers = allLayers->size();
 
-        std::cout << "Elapsed time for threads to run: " << threadTimer.elapsed() << " milliseconds" << std::endl;
+        std::cout << "Elapsed time for threads to run and chunk create: " << threadTimer.elapsed() << " milliseconds" << std::endl;
     }
 }
 
