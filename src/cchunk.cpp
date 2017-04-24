@@ -231,13 +231,14 @@ void CChunk::createVoxelBuffer()
     int totalNumVoxels = 0;
     // iterate over all the existing blocks in the environment
 
-    for(int idx = 0; idx < mWorld->getSize(); idx++) {
+   // for(int idx = 0; idx < mWorld->getSize(); idx++) {
+    int maxIdxForChunk = mWorld->calculateIndex(m_Xmax, m_Ymax, m_Zmax);
+    int minIdxForChunk = mWorld->calculateIndex(m_Xmin, m_Ymin, m_Zmin);
+    for(int idx = minIdxForChunk; idx < maxIdxForChunk; idx++) {
         glm::vec3 idxIn3D = mWorld->to3D(idx);
         int i = idxIn3D.x;
         int j = idxIn3D.y;
         int k = idxIn3D.z;
-
-        //if(j < m_Ymax && j > 1) {
 
         glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
 
@@ -324,6 +325,7 @@ void CChunk::createVoxelBuffer()
 void CChunk::create()
 {
 
+
     count = indices->size();
     generateIdx();
     context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIdx);
@@ -335,6 +337,7 @@ void CChunk::create()
     context->glBufferData(GL_ARRAY_BUFFER, vertices->size() *
                           sizeof(glm::vec4), vertices->data(), GL_STATIC_DRAW);
 
+     mCreated = true;
 }
 
 void CChunk::exportVerticesAndIndicesToFile()

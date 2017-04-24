@@ -6,7 +6,7 @@
 void MyGL::slot_on_show_plane_changed(bool b)
 {
     showPlane = b;
-   // update();
+    // update();
 }
 
 void MyGL::slot_set_num_threads(int t)
@@ -48,7 +48,7 @@ void MyGL::slot_on_slider_moved(int num)
         QPixmap pix = QPixmap(currFile);
 
         emit sig_send_image(pix);
-       // update();
+        // update();
 
     }
 
@@ -58,13 +58,13 @@ void MyGL::slot_on_slider_moved(int num)
 void MyGL::slot_on_color_checkbox_changed(bool col)
 {
     isColorEnabled = col;
-   // update();
+    // update();
 }
 
 void MyGL::slot_on_opacity_checkbox_changed(bool opa)
 {
     isOpacityEnabled = opa;
-   // update();
+    // update();
 }
 
 void MyGL::slot_on_text_changed(QString s)
@@ -107,7 +107,7 @@ void MyGL::slot_startLoading()
         processFiles();
         emit sig_send_max_layers(maxLayers);
         emit sig_send_text("Begin loading");
-      //  update();
+        //  update();
     }
 }
 
@@ -198,12 +198,15 @@ void MyGL::processFiles() {
     std::cout << "Process took " << timer.elapsed() << " milliseconds" << std::endl;
     emit sig_send_text(QString("Process complete"));
     slot_on_slider_moved(0);
+
 }
 
 void MyGL::resizeGL(int w, int h)
 {
 
-    camera = Camera(w, h, glm::vec3(-256, 200, 265), glm::vec3(-255, 0, 260), glm::vec3(0, 1, 0));
+    focusWidth = w;
+    focusHeight = h;
+    camera = Camera(focusWidth, focusHeight, focusEye, focusRef, worldUp);
 
     glm::mat4 viewproj = camera.getViewProj();
 
@@ -218,6 +221,10 @@ void MyGL::resizeGL(int w, int h)
 void MyGL::onCameraMove()
 {
     float amount = 1.f;
+    if(shiftOperator)
+    {
+        amount *= 10;
+    }
     if(translateUp)
     {
         camera.TranslateAlongUp(amount);
@@ -266,6 +273,15 @@ void MyGL::onCameraMove()
 void MyGL::paintGL()
 {
 
+    threadsDone = QThreadPool::globalInstance()->waitForDone(1);
+    if(!threadsDone)
+    {
+        for(unsigned long c = 0; c < chunks.size(); c++)
+        {
+            chunks.at(c)->create();
+        }
+    }
+
     onCameraMove();
 
     // Clear the screen so that we only see newly drawn images
@@ -304,12 +320,15 @@ void MyGL::paintGL()
         glDisable(GL_BLEND);
     }
 
+
     for(unsigned int i = 0; i < chunks.size() ; i++) {
         CChunk* currChunk = chunks[i];
-        if(isColorEnabled){
-            prog_color.draw(*currChunk);
-        } else {
-            prog_lambert.draw(*currChunk);
+        if(currChunk->isCreated()){
+            if(isColorEnabled){
+                prog_color.draw(*currChunk);
+            } else {
+                prog_lambert.draw(*currChunk);
+            }
         }
     }
 
@@ -357,12 +376,14 @@ void MyGL::createChunkVectorMT()
     worldTimer.start();
 
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
-    std::vector<CCreateChunkTask*>* chunkTasks = new std::vector<CCreateChunkTask*>();
+    // std::vector<CCreateChunkTask*>* chunkTasks = new std::vector<CCreateChunkTask*>();
     std::vector<CWorldTask*>* buildWorldTasks = new std::vector<CWorldTask*>();
 
 
     int totalLayers = allLayers->size();
-    int incr = totalLayers / numThreads;
+    int idealThread = QThread::idealThreadCount();
+    int incr = totalLayers / idealThread;
+    // int incr = totalLayers / numThreads;
 
     int layer;
     int curr_ymin;
@@ -380,7 +401,6 @@ void MyGL::createChunkVectorMT()
         buildWorldTasks->push_back(buildTask);
 
     }
-
 
     // now run the threads
     for(CWorldTask* build : *buildWorldTasks)
@@ -422,14 +442,9 @@ void MyGL::createChunkVectorMT()
             currChunk->setWorld(mWorldArr);
 
             chunks.push_back(currChunk);
-        }
 
-        // create the thread for each chunk
-        for(unsigned long i = 0; i < chunks.size(); i++)
-        {
-
-            CChunk* chunk = chunks.at(i);
-            CCreateChunkTask* thread = new CCreateChunkTask(chunk);
+            // create the thread for each chunk
+            CCreateChunkTask* thread = new CCreateChunkTask(currChunk);
             chunkTasks->push_back(thread);
         }
 
@@ -440,12 +455,13 @@ void MyGL::createChunkVectorMT()
         // now actually run each thread
         for(CCreateChunkTask* task : *chunkTasks)
         {
-
             QThreadPool::globalInstance()->start(task);
         }
 
+
         // create each chunk
-        if(QThreadPool::globalInstance()->waitForDone()){
+        /* if(QThreadPool::globalInstance()->waitForDone()){
+
 
             std::cout << "Elapsed time for threads to run: " << threadTimer.elapsed() << " milliseconds" << std::endl;
 
@@ -457,10 +473,13 @@ void MyGL::createChunkVectorMT()
             }
 
             progressFinishCreatingChunks();
-        }
+        }*/
 
         // set up slider's max value label
         maxLayers = allLayers->size();
+
+        // set camera so that it is framed well
+        camera = Camera(focusWidth, focusHeight, focusEye, focusRef, worldUp);
 
         std::cout << "Elapsed time for threads to run and chunk create: " << threadTimer.elapsed() << " milliseconds" << std::endl;
     }
@@ -557,6 +576,15 @@ void MyGL::createChunkVector()
 
 void MyGL::keyPressEvent(QKeyEvent *e)
 {
+
+    if(e->key() == Qt::Key_C)
+    {
+        glm::vec3 eye = camera.eye;
+        glm::vec3 ref = camera.ref;
+        std::cout << eye.x << ", "<< eye.y << ", " << eye.z << std::endl;
+        std::cout << ref.x << ", "<< ref.y << ", " << ref.z << std::endl;
+    }
+
     // http://doc.qt.io/qt-5/qt.html#Key-enum
     if (e->key() == Qt::Key_Escape) {
         QApplication::quit();
@@ -573,16 +601,18 @@ void MyGL::keyPressEvent(QKeyEvent *e)
     } else if (e->key() == Qt::Key_S) {
         translateBackward = true;
     } else if (e->key() == Qt::Key_D) {
-       translateRight = true;
+        translateRight = true;
     } else if (e->key() == Qt::Key_A) {
         translateLeft = true;
     } else if (e->key() == Qt::Key_Q) {
         translateDown = true;
     } else if (e->key() == Qt::Key_E) {
         translateUp = true;
+    } else if (e->key() == Qt::Key_Shift) {
+        shiftOperator = true;
     }
     camera.RecomputeAttributes();
-   // update();  // Calls paintGL, among other things
+    // update();  // Calls paintGL, among other things
 }
 
 void MyGL::keyReleaseEvent(QKeyEvent *e)
@@ -603,14 +633,17 @@ void MyGL::keyReleaseEvent(QKeyEvent *e)
     } else if (e->key() == Qt::Key_S) {
         translateBackward = false;
     } else if (e->key() == Qt::Key_D) {
-       translateRight = false;
+        translateRight = false;
     } else if (e->key() == Qt::Key_A) {
         translateLeft = false;
     } else if (e->key() == Qt::Key_Q) {
         translateDown = false;
     } else if (e->key() == Qt::Key_E) {
         translateUp = false;
+    } else if (e->key() == Qt::Key_Shift) {
+        shiftOperator = false;
     }
-   // update();  // Calls paintGL, among other things
+
+    // update();  // Calls paintGL, among other things
 }
 

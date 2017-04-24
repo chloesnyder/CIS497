@@ -26,6 +26,7 @@ public:
     int getSize();
 
     glm::vec3 to3D(int idx);
+    int calculateIndex(int x, int y, int z);
 
 
 private:
@@ -33,7 +34,7 @@ private:
     std::vector<CVoxel::VTYPE> currWorldView;
     std::vector<glm::vec4> voxColArr;
 
-    int calculateIndex(int x, int y, int z);
+
 
     bool addVoxelAt(int x, int y, int z, CVoxel::VTYPE type, glm::vec4 color, int id); // return true if successful
 

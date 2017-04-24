@@ -41,6 +41,12 @@ class MyGL
     Q_OBJECT
 private:
 
+    glm::vec3 focusEye = glm::vec3(-237.499, 413.619, 959.962);
+    glm::vec3 focusRef = glm::vec3(-243.461, 331.182, 777.767);
+    glm::vec3 worldUp = glm::vec3(0, 1, 0);
+    int focusWidth;
+    int focusHeight;
+
     ShaderProgram prog_lambert;
     ShaderProgram prog_wire;
     ShaderProgram prog_color;
@@ -105,10 +111,13 @@ private:
     bool rotateLeft = false;
     bool rotateUp = false;
     bool rotateDown = false;
+    bool shiftOperator = false;
 
     void onCameraMove();
 
-
+     std::vector<CCreateChunkTask*>* chunkTasks = new std::vector<CCreateChunkTask*>();
+     bool threadsDone = false;
+     bool skip = true;
 
 public:
 

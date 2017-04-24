@@ -24,6 +24,8 @@ public:
 
     virtual void create();
 
+    bool isCreated() {return mCreated;}
+
     float getXMin() { return m_Xmin;}
     float getXMax() { return m_Xmax;}
     float getYMin() { return m_Ymin;}
@@ -81,6 +83,8 @@ private:
 
     std::vector<glm::vec4>* vertices;
     std::vector<GLuint>* indices;
+
+    bool mCreated;
 
     int edgeTable[256]={
         0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,

@@ -13,6 +13,7 @@ public:
     CCreateChunkTask();
     CCreateChunkTask(CChunk* chunk);
     void run();
+    bool isDone();
 
 private:
     CChunk* mChunk;
