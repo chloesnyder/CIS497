@@ -328,6 +328,9 @@ void CChunk::create()
 
     count = indices->size();
     generateIdx();
+
+    context->glFlush();
+
     context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIdx);
     context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() *
                           sizeof(GLuint), indices->data(), GL_STATIC_DRAW);

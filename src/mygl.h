@@ -117,7 +117,9 @@ private:
 
      std::vector<CCreateChunkTask*>* chunkTasks = new std::vector<CCreateChunkTask*>();
      bool threadsDone = false;
-     bool skip = true;
+     bool allDone = false;
+     bool processStarted = false;
+     bool isCreating = false;
 
 public:
 

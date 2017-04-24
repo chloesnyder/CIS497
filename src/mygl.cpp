@@ -172,6 +172,9 @@ void MyGL::initializeGL()
     // using multiple VAOs, we can just bind one once.
     glBindVertexArray(vao);
 
+    emit sig_update_progress(0);
+    emit sig_send_text("");
+
 }
 
 void MyGL::processFiles() {
@@ -193,10 +196,7 @@ void MyGL::processFiles() {
 #else
     createChunkVectorMT();
 #endif
-    progress = 100;
-    emit sig_update_progress(progress);
     std::cout << "Process took " << timer.elapsed() << " milliseconds" << std::endl;
-    emit sig_send_text(QString("Process complete"));
     slot_on_slider_moved(0);
 
 }
@@ -273,13 +273,21 @@ void MyGL::onCameraMove()
 void MyGL::paintGL()
 {
 
-    threadsDone = QThreadPool::globalInstance()->waitForDone(1);
-    if(!threadsDone)
+    threadsDone = QThreadPool::globalInstance()->waitForDone(3000);
+   // std::cout << threadsDone << std::endl;
+    if(!threadsDone && !isCreating)
     {
+
+        isCreating = true;
         for(unsigned long c = 0; c < chunks.size(); c++)
         {
             chunks.at(c)->create();
+            isCreating = false;
         }
+    } else if (!allDone && processStarted) {
+        emit sig_send_text("Process completed");
+        emit sig_update_progress(100);
+        allDone = true;
     }
 
     onCameraMove();
@@ -331,7 +339,6 @@ void MyGL::paintGL()
             }
         }
     }
-
 }
 
 
@@ -382,8 +389,8 @@ void MyGL::createChunkVectorMT()
 
     int totalLayers = allLayers->size();
     int idealThread = QThread::idealThreadCount();
-    int incr = totalLayers / idealThread;
-    // int incr = totalLayers / numThreads;
+   // int incr = totalLayers / idealThread;
+    int incr = totalLayers / numThreads;
 
     int layer;
     int curr_ymin;
@@ -413,6 +420,7 @@ void MyGL::createChunkVectorMT()
     if(QThreadPool::globalInstance()->waitForDone())
     {
 
+        processStarted = true;
         progressFinishedBuildingWorld();
 
         std::cout << "Elapsed time for building the world: " << worldTimer.elapsed() << " milliseconds" << std::endl;
