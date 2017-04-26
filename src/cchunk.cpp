@@ -231,7 +231,7 @@ void CChunk::createVoxelBuffer()
     int totalNumVoxels = 0;
     // iterate over all the existing blocks in the environment
 
-   // for(int idx = 0; idx < mWorld->getSize(); idx++) {
+    // for(int idx = 0; idx < mWorld->getSize(); idx++) {
     int maxIdxForChunk = mWorld->calculateIndex(m_Xmax, m_Ymax, m_Zmax);
     int minIdxForChunk = mWorld->calculateIndex(m_Xmin, m_Ymin, m_Zmin);
     for(int idx = minIdxForChunk; idx < maxIdxForChunk; idx++) {
@@ -241,83 +241,74 @@ void CChunk::createVoxelBuffer()
         int k = idxIn3D.z;
 
         glm::vec4 color = mWorld->voxelAtIsColor(i, j, k);
+        //
+        if(color.x != -1 && color.y != -1 && color.z != -1)
+        {
 
-        // For each voxel, polygonise it
-        // define voxel vertices
-        glm::vec4 v000 = glm::vec4(i, j, k, 1);
-        glm::vec4 v001 = glm::vec4(i+1, j, k, 1);
-        glm::vec4 v010 = glm::vec4(i+1, j, k+1, 1);
-        glm::vec4 v100 = glm::vec4(i, j, k+1, 1);
-        glm::vec4 v011 = glm::vec4(i, j+1, k, 1);
-        glm::vec4 v101 = glm::vec4(i+1, j+1, k, 1);
-        glm::vec4 v110 = glm::vec4(i+1, j+1, k+1, 1);
-        glm::vec4 v111 = glm::vec4(i, j+1, k+1, 1);
+            // For each voxel, polygonise it
+            // define voxel vertices
+            glm::vec4 v000 = glm::vec4(i, j, k, 1);
+            glm::vec4 v001 = glm::vec4(i+1, j, k, 1);
+            glm::vec4 v010 = glm::vec4(i+1, j, k+1, 1);
+            glm::vec4 v100 = glm::vec4(i, j, k+1, 1);
+            glm::vec4 v011 = glm::vec4(i, j+1, k, 1);
+            glm::vec4 v101 = glm::vec4(i+1, j+1, k, 1);
+            glm::vec4 v110 = glm::vec4(i+1, j+1, k+1, 1);
+            glm::vec4 v111 = glm::vec4(i, j+1, k+1, 1);
 
-        // assign vertices to the 8 corners of this grid cell
-        GRIDCELL currCell = GRIDCELL();
-        currCell.p[0] = v000; currCell.p[1] = v001; currCell.p[2] = v010; currCell.p[3] = v100;
-        currCell.p[4] = v011; currCell.p[5] = v101; currCell.p[6] = v110; currCell.p[7] = v111;
-
-
-        bool hasDensity = false;
-        // define densities at each vertex as the alpha value of the voxel at that vertex location
-        for(int corner = 0; corner < 8; corner++) {
-            // sample the corners as a lerped value between neighboring voxels
-            int x = currCell.p[corner].x; int y = currCell.p[corner].y; int z = currCell.p[corner].z;
-
-            if(mWorld->hasVoxelAt(x,y,z)) {
-                currCell.val[corner] = mWorld->voxelAtIsColor(x,y,z).a;
-                if(currCell.val[corner] > .01) hasDensity = true;
-            } else {
-                currCell.val[corner] = 0;
-            }
-
-        }
-
-        if(hasDensity){
-
-            std::vector<TRIANGLE> currTriangles = std::vector<TRIANGLE>();
-            double currIsolevel = mIsolevel;
-
-            int totalTris = Polygonise(currCell, currIsolevel, currTriangles);
+            // assign vertices to the 8 corners of this grid cell
+            GRIDCELL currCell = GRIDCELL();
+            currCell.p[0] = v000; currCell.p[1] = v001; currCell.p[2] = v010; currCell.p[3] = v100;
+            currCell.p[4] = v011; currCell.p[5] = v101; currCell.p[6] = v110; currCell.p[7] = v111;
 
 
-            unsigned int indexCount = offset;
+            bool hasDensity = false;
+            // define densities at each vertex as the alpha value of the voxel at that vertex location
+            for(int corner = 0; corner < 8; corner++) {
+                // sample the corners as a lerped value between neighboring voxels
+                int x = currCell.p[corner].x; int y = currCell.p[corner].y; int z = currCell.p[corner].z;
 
-            // push back vertex and index data
-            for(int u = 0; u < totalTris; u++)
-            {
-
-                for(int v = 0; v < 3; v++) {
-
-                    //glm::vec4 normal = glm::vec4();
-
-                    // calculate the normal for this vertex based on xyz gradient
-                    // if(j != m_Ymax - 1) {
-                    //      normal = calculateNormal(currTriangles[u].p[v]);
-                    //  } else {
-                    //     glm::vec4 normal = -glm::vec4(glm::cross(glm::vec3(currTriangles[u].p[1] - currTriangles[u].p[2]),
-                    //           glm::vec3(currTriangles[u].p[3] - currTriangles[u].p[2])), 0);
-                    // }
-
-
-                    glm::vec4 normal = calculateNormal(currTriangles[u].p[v]);
-                    vertices->push_back(currTriangles.at(u).p[v]); // push back first vertex of this triangle
-                    vertices->push_back(color); // then the color
-                    vertices->push_back(normal); // then the normal
-
-                    indices->push_back(indexCount);
-                    indexCount++;
+                if(mWorld->hasVoxelAt(x,y,z)) {
+                    currCell.val[corner] = mWorld->voxelAtIsColor(x,y,z).a;
+                    if(currCell.val[corner] > .01) hasDensity = true;
+                } else {
+                    currCell.val[corner] = 0;
                 }
-                offset += 3;
 
             }
 
-        }
-        totalNumVoxels++;
-    }
-    // }
+            if(hasDensity){
 
+                std::vector<TRIANGLE> currTriangles = std::vector<TRIANGLE>();
+                double currIsolevel = mIsolevel;
+
+                int totalTris = Polygonise(currCell, currIsolevel, currTriangles);
+
+
+                unsigned int indexCount = offset;
+
+                // push back vertex and index data
+                for(int u = 0; u < totalTris; u++)
+                {
+
+                    for(int v = 0; v < 3; v++) {
+
+                        glm::vec4 normal = calculateNormal(currTriangles[u].p[v]);
+                        vertices->push_back(currTriangles.at(u).p[v]); // push back first vertex of this triangle
+                        vertices->push_back(color); // then the color
+                        vertices->push_back(normal); // then the normal
+
+                        indices->push_back(indexCount);
+                        indexCount++;
+                    }
+                    offset += 3;
+
+                }
+
+            }
+            totalNumVoxels++;
+        }
+    }
 }
 
 
@@ -329,7 +320,7 @@ void CChunk::create()
     count = indices->size();
     generateIdx();
 
-    context->glFlush();
+   // context->glFlush();
 
     context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIdx);
     context->glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size() *
@@ -340,7 +331,7 @@ void CChunk::create()
     context->glBufferData(GL_ARRAY_BUFFER, vertices->size() *
                           sizeof(glm::vec4), vertices->data(), GL_STATIC_DRAW);
 
-     mCreated = true;
+    mCreated = true;
 }
 
 void CChunk::exportVerticesAndIndicesToFile()

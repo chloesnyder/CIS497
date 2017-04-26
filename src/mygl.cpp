@@ -106,7 +106,6 @@ void MyGL::slot_startLoading()
         mVoxelizer.setDensityThreshold(densityThreshold);
         processFiles();
         emit sig_send_max_layers(maxLayers);
-        emit sig_send_text("Begin loading");
         //  update();
     }
 }
@@ -194,10 +193,13 @@ void MyGL::processFiles() {
 #ifndef MULTITHREADING
     createChunkVector();
 #else
+
     createChunkVectorMT();
 #endif
     std::cout << "Process took " << timer.elapsed() << " milliseconds" << std::endl;
     slot_on_slider_moved(0);
+
+     emit sig_send_text(QString("Done"));
 
 }
 
@@ -272,23 +274,6 @@ void MyGL::onCameraMove()
 // For example, when the function updateGL is called, paintGL is called implicitly.
 void MyGL::paintGL()
 {
-
-    threadsDone = QThreadPool::globalInstance()->waitForDone(3000);
-   // std::cout << threadsDone << std::endl;
-    if(!threadsDone && !isCreating)
-    {
-
-        isCreating = true;
-        for(unsigned long c = 0; c < chunks.size(); c++)
-        {
-            chunks.at(c)->create();
-            isCreating = false;
-        }
-    } else if (!allDone && processStarted) {
-        emit sig_send_text("Process completed");
-        emit sig_update_progress(100);
-        allDone = true;
-    }
 
     onCameraMove();
 
@@ -366,8 +351,8 @@ void MyGL::progressFinishedBuildingChunks()
 
 void MyGL::progressFinishCreatingChunks()
 {
-    progress += 20;
-    emit sig_update_progress(progress);
+    // progress += 20;
+    emit sig_update_progress(100);
     emit sig_send_text(QString("Finished creating chunks"));
 }
 
@@ -375,6 +360,8 @@ void MyGL::progressFinishCreatingChunks()
 
 void MyGL::createChunkVectorMT()
 {
+
+    emit sig_send_text("Begin loading");
 
     QElapsedTimer worldTimer;
     QElapsedTimer chunkMemAllocTimer;
@@ -389,7 +376,7 @@ void MyGL::createChunkVectorMT()
 
     int totalLayers = allLayers->size();
     int idealThread = QThread::idealThreadCount();
-   // int incr = totalLayers / idealThread;
+    //int incr = totalLayers / idealThread;
     int incr = totalLayers / numThreads;
 
     int layer;
@@ -468,7 +455,7 @@ void MyGL::createChunkVectorMT()
 
 
         // create each chunk
-        /* if(QThreadPool::globalInstance()->waitForDone()){
+        if(QThreadPool::globalInstance()->waitForDone()){
 
 
             std::cout << "Elapsed time for threads to run: " << threadTimer.elapsed() << " milliseconds" << std::endl;
@@ -481,7 +468,7 @@ void MyGL::createChunkVectorMT()
             }
 
             progressFinishCreatingChunks();
-        }*/
+        }
 
         // set up slider's max value label
         maxLayers = allLayers->size();
@@ -496,91 +483,74 @@ void MyGL::createChunkVectorMT()
 void MyGL::createChunkVector()
 {
 
+    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
+    // std::vector<CCreateChunkTask*>* chunkTasks = new std::vector<CCreateChunkTask*>();
+    std::vector<CWorldTask*>* buildWorldTasks = new std::vector<CWorldTask*>();
+    mWorldArr = new CWorldArray(allLayers->size());
+    emit sig_send_text(QString("Start building world"));
 
-    /*    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
-    CChunk* allLayerChunk = new CChunk(this);
-    allLayerChunk ->setXMin(0);
-    allLayerChunk ->setXMax(512);
-    allLayerChunk ->setYMin(0);
-    allLayerChunk ->setYMax(allLayers->size());
-    allLayerChunk ->setZMin(0);
-    allLayerChunk ->setZMax(512);
-
-    allLayerChunk->setIsolevel(isolevel);
-
-    std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
-    std::vector<GLuint>* indices = new std::vector<GLuint>();
-    allLayerChunk->setVertices(vertices);
-    allLayerChunk->setIndices(indices);
-
-    // go through each layer, and voxelize that layer's voxel plane
     for(int i = 0; i < allLayers->size(); i++) {
+        // create a thread for each layer
+        CWorldTask* buildTask = new CWorldTask(allLayers->at(i), mWorldArr);
+        buildWorldTasks->push_back(buildTask);
 
-        std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
-        allLayerChunk ->setWorld(&mWorld);
+    }
 
-        for(CVoxel* v : *currVoxelPlane) {
+    // now run the threads
+    for(CWorldTask* build : *buildWorldTasks)
+    {
+        QThreadPool::globalInstance()->start(build);
+    }
 
-            glm::vec4 voxPos = v->getPosition();
-            glm::vec4 voxCol = v->getColor();
-            int voxID = v->getID();
 
-            mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
+    // Once the world is built, build the chunks
+    if(QThreadPool::globalInstance()->waitForDone()){
+
+
+        CChunk* allLayerChunk = new CChunk(this);
+        allLayerChunk ->setXMin(0);
+        allLayerChunk ->setXMax(512);
+        allLayerChunk ->setYMin(0);
+        allLayerChunk ->setYMax(allLayers->size());
+        allLayerChunk ->setZMin(0);
+        allLayerChunk ->setZMax(512);
+
+        allLayerChunk->setIsolevel(isolevel);
+
+        std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
+        std::vector<GLuint>* indices = new std::vector<GLuint>();
+        allLayerChunk->setVertices(vertices);
+        allLayerChunk->setIndices(indices);
+
+        // go through each layer, and voxelize that layer's voxel plane
+        for(int i = 0; i < allLayers->size(); i++) {
+
+            std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
+            allLayerChunk ->setWorld(mWorldArr);
+
+            for(CVoxel* v : *currVoxelPlane) {
+
+                glm::vec4 voxPos = v->getPosition();
+                glm::vec4 voxCol = v->getColor();
+                int voxID = v->getID();
+
+                mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
+            }
         }
+
+        allLayerChunk->createVoxelBuffer();
+        allLayerChunk->create();
+        chunks.push_back(allLayerChunk);
+
+        // after the chunk has been created, save the verts and indices to a file
+        // so they can be used
+        allLayerChunk->setNewFileName(newFileName);
+        allLayerChunk->setCtScanFilePath(ctScanFilePath);
+       // allLayerChunk->exportVerticesAndIndicesToFile();
+        maxLayers = allLayers->size();
     }
 
-    allLayerChunk->createVoxelBuffer();
-    allLayerChunk->create();
-    chunks.push_back(allLayerChunk);
-
-    // after the chunk has been created, save the verts and indices to a file
-    // so they can be used
-    allLayerChunk->setNewFileName(newFileName);
-    allLayerChunk->setCtScanFilePath(ctScanFilePath);
-    allLayerChunk->exportVerticesAndIndicesToFile();
-    maxLayers = allLayers->size();
-*/
 }
-
-
-/*void MyGL::keyPressEvent(QKeyEvent *e)
-{
-    float amount = 10.0f;
-    if(e->modifiers() & Qt::ShiftModifier){
-        amount = 10.0f;
-    }
-    // http://doc.qt.io/qt-5/qt.html#Key-enum
-    if (e->key() == Qt::Key_Escape) {
-        QApplication::quit();
-    } else if (e->key() == Qt::Key_Right) {
-        bool moveright = true;
-
-    } else if (e->key() == Qt::Key_Left) {
-        camera.RotateAboutUp(amount);
-    } else if (e->key() == Qt::Key_Up) {
-        camera.RotateAboutRight(-amount);
-    } else if (e->key() == Qt::Key_Down) {
-        camera.RotateAboutRight(amount);
-    } else if (e->key() == Qt::Key_1) {
-        camera.fovy += amount;
-    } else if (e->key() == Qt::Key_2) {
-        camera.fovy -= amount;
-    } else if (e->key() == Qt::Key_W) {
-        camera.TranslateAlongLook(amount);
-    } else if (e->key() == Qt::Key_S) {
-        camera.TranslateAlongLook(-amount);
-    } else if (e->key() == Qt::Key_D) {
-        camera.TranslateAlongRight(amount);
-    } else if (e->key() == Qt::Key_A) {
-        camera.TranslateAlongRight(-amount);
-    } else if (e->key() == Qt::Key_Q) {
-        camera.TranslateAlongUp(-amount);
-    } else if (e->key() == Qt::Key_E) {
-        camera.TranslateAlongUp(amount);
-    }
-    camera.RecomputeAttributes();
-   // update();  // Calls paintGL, among other things
-}*/
 
 void MyGL::keyPressEvent(QKeyEvent *e)
 {
@@ -620,7 +590,6 @@ void MyGL::keyPressEvent(QKeyEvent *e)
         shiftOperator = true;
     }
     camera.RecomputeAttributes();
-    // update();  // Calls paintGL, among other things
 }
 
 void MyGL::keyReleaseEvent(QKeyEvent *e)
@@ -651,7 +620,5 @@ void MyGL::keyReleaseEvent(QKeyEvent *e)
     } else if (e->key() == Qt::Key_Shift) {
         shiftOperator = false;
     }
-
-    // update();  // Calls paintGL, among other things
 }
 

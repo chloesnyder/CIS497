@@ -81,7 +81,7 @@ glm::vec4 CWorldArray::voxelAtIsColor(int x, int y, int z)
         int idx = calculateIndex(x, y, z);
         return voxColArr.at(idx);
     } else {
-       return glm::vec4(.5, .5, .5, 0);
+       return glm::vec4(-1, -1, -1, 0);
     }
 }
 
