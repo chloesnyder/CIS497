@@ -56,7 +56,6 @@ private:
     Camera camera;
 
     CVoxelizer mVoxelizer;
-    CWorld mWorld;
 
     CWorldArray* mWorldArr;
 
@@ -64,15 +63,12 @@ private:
 
     std::vector<CChunk*> chunks = std::vector<CChunk*>();
 
-    QString newFileName;
-
     QElapsedTimer timer;
 
     //bounds
     int boundNegX, boundNegZ, boundPosZ, boundPosX;
     int boundWorldX, boundWorldZ;
 
-    void createChunkVector();
     void processFiles();
 
     bool isOpacityEnabled = false;
@@ -149,7 +145,6 @@ signals:
 
 public slots:
     void slot_on_newMesh_clicked();
-    void slot_on_text_changed(QString s);
     void slot_on_opacity_checkbox_changed(bool opa);
     void slot_on_color_checkbox_changed(bool col);
     void slot_on_slider_moved(int num);

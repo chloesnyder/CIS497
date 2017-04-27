@@ -1,12 +1,9 @@
 #include "mygl.h"
 
 
-#define MULTITHREADING
-
 void MyGL::slot_on_show_plane_changed(bool b)
 {
     showPlane = b;
-    // update();
 }
 
 void MyGL::slot_set_num_threads(int t)
@@ -58,30 +55,19 @@ void MyGL::slot_on_slider_moved(int num)
 void MyGL::slot_on_color_checkbox_changed(bool col)
 {
     isColorEnabled = col;
-    // update();
 }
 
 void MyGL::slot_on_opacity_checkbox_changed(bool opa)
 {
     isOpacityEnabled = opa;
-    // update();
-}
-
-void MyGL::slot_on_text_changed(QString s)
-{
-    newFileName = "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/preloaded_volumes/" + s;
 }
 
 void MyGL::slot_on_newMesh_clicked()
 {
-    // allow user to select a directory, set this in voxelizer
-    // run the program as normal, but at end, export the indices and vertices to a file
-
-
 
     QString dirName = QFileDialog::getExistingDirectory(this,
                                                         tr("Open Directory"),
-                                                        "/Users/chloebrownsnyder/Desktop/Spring2017/SeniorDesign/CTScanImages/",
+                                                        "../",
                                                         QFileDialog::ShowDirsOnly);
     if(!dirName.isNull() && !dirName.isEmpty()){
         chunks.clear();
@@ -189,13 +175,8 @@ void MyGL::processFiles() {
     emit sig_update_progress(progress);
     emit sig_send_text(QString("Finished reading CT Scans"));
 
-
-#ifndef MULTITHREADING
-    createChunkVector();
-#else
-
     createChunkVectorMT();
-#endif
+
     std::cout << "Process took " << timer.elapsed() << " milliseconds" << std::endl;
     slot_on_slider_moved(0);
 
@@ -306,7 +287,6 @@ void MyGL::paintGL()
     prog_lambert.setModelMatrix(model);
 
     if(isOpacityEnabled){
-        // PLAY WITH BLEND FUNC? GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     } else {
@@ -370,14 +350,12 @@ void MyGL::createChunkVectorMT()
     worldTimer.start();
 
     std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
-    // std::vector<CCreateChunkTask*>* chunkTasks = new std::vector<CCreateChunkTask*>();
     std::vector<CWorldTask*>* buildWorldTasks = new std::vector<CWorldTask*>();
 
 
     int totalLayers = allLayers->size();
     int idealThread = QThread::idealThreadCount();
-    //int incr = totalLayers / idealThread;
-    int incr = totalLayers / numThreads;
+    int incr = totalLayers;// / numThreads; For now, keep as one thread. One thread vs not multithreaded makes a small speed difference, but multiple threads actually slows the operation down
 
     int layer;
     int curr_ymin;
@@ -385,7 +363,6 @@ void MyGL::createChunkVectorMT()
 
     // build the world. All threads will read from this world
     // go through each layer, and voxelize that layer's voxel plane
-
     mWorldArr = new CWorldArray(allLayers->size());
     emit sig_send_text(QString("Start building world"));
 
@@ -480,77 +457,6 @@ void MyGL::createChunkVectorMT()
     }
 }
 
-void MyGL::createChunkVector()
-{
-
-    std::vector<std::vector<CVoxel*>*>* allLayers = mVoxelizer.getAllLayers();
-    // std::vector<CCreateChunkTask*>* chunkTasks = new std::vector<CCreateChunkTask*>();
-    std::vector<CWorldTask*>* buildWorldTasks = new std::vector<CWorldTask*>();
-    mWorldArr = new CWorldArray(allLayers->size());
-    emit sig_send_text(QString("Start building world"));
-
-    for(int i = 0; i < allLayers->size(); i++) {
-        // create a thread for each layer
-        CWorldTask* buildTask = new CWorldTask(allLayers->at(i), mWorldArr);
-        buildWorldTasks->push_back(buildTask);
-
-    }
-
-    // now run the threads
-    for(CWorldTask* build : *buildWorldTasks)
-    {
-        QThreadPool::globalInstance()->start(build);
-    }
-
-
-    // Once the world is built, build the chunks
-    if(QThreadPool::globalInstance()->waitForDone()){
-
-
-        CChunk* allLayerChunk = new CChunk(this);
-        allLayerChunk ->setXMin(0);
-        allLayerChunk ->setXMax(512);
-        allLayerChunk ->setYMin(0);
-        allLayerChunk ->setYMax(allLayers->size());
-        allLayerChunk ->setZMin(0);
-        allLayerChunk ->setZMax(512);
-
-        allLayerChunk->setIsolevel(isolevel);
-
-        std::vector<glm::vec4>* vertices = new std::vector<glm::vec4>();
-        std::vector<GLuint>* indices = new std::vector<GLuint>();
-        allLayerChunk->setVertices(vertices);
-        allLayerChunk->setIndices(indices);
-
-        // go through each layer, and voxelize that layer's voxel plane
-        for(int i = 0; i < allLayers->size(); i++) {
-
-            std::vector<CVoxel*> *currVoxelPlane = allLayers->at(i);
-            allLayerChunk ->setWorld(mWorldArr);
-
-            for(CVoxel* v : *currVoxelPlane) {
-
-                glm::vec4 voxPos = v->getPosition();
-                glm::vec4 voxCol = v->getColor();
-                int voxID = v->getID();
-
-                mWorld.createChunkVoxelData(voxPos, voxCol, voxID);
-            }
-        }
-
-        allLayerChunk->createVoxelBuffer();
-        allLayerChunk->create();
-        chunks.push_back(allLayerChunk);
-
-        // after the chunk has been created, save the verts and indices to a file
-        // so they can be used
-        allLayerChunk->setNewFileName(newFileName);
-        allLayerChunk->setCtScanFilePath(ctScanFilePath);
-       // allLayerChunk->exportVerticesAndIndicesToFile();
-        maxLayers = allLayers->size();
-    }
-
-}
 
 void MyGL::keyPressEvent(QKeyEvent *e)
 {

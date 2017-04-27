@@ -13,7 +13,6 @@ SOURCES += \
     $$PWD/voxelizer.cpp \
     $$PWD/cvoxel.cpp \
     $$PWD/drawable.cpp \
-    $$PWD/cworld.cpp \
     $$PWD/cchunk.cpp \
     $$PWD/cvoxelizeanimageslicetask.cpp \
     $$PWD/277files/scene/arcballcamera.cpp \
@@ -34,7 +33,6 @@ HEADERS += \
     $$PWD/voxelizer.h \
     $$PWD/cvoxel.h \
     $$PWD/drawable.h \
-    $$PWD/cworld.h \
     $$PWD/cchunk.h \
     $$PWD/cvoxelizeanimageslicetask.h \
     $$PWD/marching_cubes_data.h \
