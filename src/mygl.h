@@ -27,7 +27,6 @@
 
 
 #include "cchunk.h"
-#include "cworld.h"
 #include "cvoxel.h"
 #include "voxelizer.h"
 #include "squareplane.h"
